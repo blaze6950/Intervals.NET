@@ -1,0 +1,157 @@
+﻿using Intervals.NET.Parsers;
+
+namespace Intervals.NET.Factories;
+
+/// <summary>
+/// Provides factory methods for creating ranges with different inclusivity options.
+/// </summary>
+public static class Range
+{
+    /// <summary>
+    /// Creates a closed range [start, end].
+    /// </summary>
+    /// <param name="start">
+    /// The start value of the range.
+    /// Use RangeValue&lt;T&gt;.NegativeInfinity for unbounded start.
+    /// </param>
+    /// <param name="end">
+    /// The end value of the range.
+    /// Use RangeValue&lt;T&gt;.PositiveInfinity for unbounded end.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt; and ISpanParsable&lt;T&gt;.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="Range{T}"/> representing the closed range [start, end].
+    /// </returns>
+    public static Range<T> Closed<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>, ISpanParsable<T>
+        => new(start, end, true, true);
+
+    /// <summary>
+    /// Creates an open range (start, end).
+    /// </summary>
+    /// <param name="start">
+    /// The start value of the range.
+    /// Use RangeValue&lt;T&gt;.NegativeInfinity for unbounded start.
+    /// </param>
+    /// <param name="end">
+    /// The end value of the range.
+    /// Use RangeValue&lt;T&gt;.PositiveInfinity for unbounded end.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt; and ISpanParsable&lt;T&gt;.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="Range{T}"/> representing the open range (start, end).
+    /// </returns>
+    public static Range<T> Open<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>, ISpanParsable<T>
+        => new(start, end, false, false);
+
+    /// <summary>
+    /// Creates a half-open range (start, end].
+    /// </summary>
+    /// <param name="start">
+    /// The start value of the range.
+    /// Use RangeValue&lt;T&gt;.NegativeInfinity for unbounded start.
+    /// </param>
+    /// <param name="end">
+    /// The end value of the range.
+    /// Use RangeValue&lt;T&gt;.PositiveInfinity for unbounded end.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt; and ISpanParsable&lt;T&gt;.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="Range{T}"/> representing the half-open range (start, end].
+    /// </returns>
+    public static Range<T> OpenClosed<T>(RangeValue<T> start, RangeValue<T> end)
+        where T : IComparable<T>, ISpanParsable<T>
+        => new(start, end, false, true);
+
+    /// <summary>
+    /// Creates a half-open range [start, end).
+    /// </summary>
+    /// <param name="start">
+    /// The start value of the range.
+    /// Use RangeValue&lt;T&gt;.NegativeInfinity for unbounded start.
+    /// </param>
+    /// <param name="end">
+    /// The end value of the range.
+    /// Use RangeValue&lt;T&gt;.PositiveInfinity for unbounded end.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt; and ISpanParsable&lt;T&gt;.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="Range{T}"/> representing the half-open range [start, end).
+    /// </returns>
+    public static Range<T> ClosedOpen<T>(RangeValue<T> start, RangeValue<T> end)
+        where T : IComparable<T>, ISpanParsable<T>
+        => new(start, end, true, false);
+
+    /// <summary>
+    /// Parses a range from the given input string.
+    /// The expected format is:
+    /// [start,end], (start,end), [start,end), or (start,end]
+    /// where start and end are values of type T, or empty for infinite bounds (+infinity/-infinity).
+    /// </summary>
+    /// <param name="input">
+    /// The input string representing the range.
+    /// </param>
+    /// <param name="formatProvider">
+    /// An optional format provider for parsing the boundary values.
+    /// The default is CultureInfo.InvariantCulture.
+    /// </param>
+    /// <typeparam name="T">
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt; and ISpanParsable&lt;T&gt;.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="Range{T}"/> representing the parsed range.
+    /// </returns>
+    public static Range<T> FromString<T>(ReadOnlySpan<char> input, IFormatProvider? formatProvider = null)
+        where T : IComparable<T>, ISpanParsable<T>
+        => RangeStringParser.Parse<T>(input, formatProvider);
+
+    /// <summary>
+    /// Parses a range from an interpolated string with zero allocations.
+    /// The expected format is: $"[{start}, {end}]" or $"{bracket}{start}, {end}{bracket}"
+    /// Values are parsed directly from the interpolation without building the final string.
+    /// This overload is automatically selected by the compiler when using interpolated strings.
+    /// </summary>
+    /// <param name="handler">The interpolated string handler that performs zero-allocation parsing.</param>
+    /// <typeparam name="T">
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt; and ISpanParsable&lt;T&gt;.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="Range{T}"/> representing the parsed range.
+    /// </returns>
+    /// <exception cref="FormatException">Thrown if the interpolated string format is invalid.</exception>
+    /// <example>
+    /// <code>
+    /// // Compiler automatically uses the handler overload for interpolated strings
+    /// // Using literal brackets (cleanest and most readable)
+    /// var range1 = Range.FromString&lt;int&gt;($"[{10}, {20}]");
+    /// var range2 = Range.FromString&lt;int&gt;($"({0}, {100})");
+    /// var range3 = Range.FromString&lt;double&gt;($"[{1.5}, {9.5})");
+    /// 
+    /// // Using variables - zero allocations!
+    /// int start = 10;
+    /// int end = 20;
+    /// var range4 = Range.FromString&lt;int&gt;($"[{start}, {end}]");
+    /// 
+    /// // Using char bracket variables (when brackets need to be dynamic)
+    /// char openBracket = '[';
+    /// char closeBracket = ')';
+    /// var range5 = Range.FromString&lt;int&gt;($"{openBracket}{start}, {end}{closeBracket}");
+    /// 
+    /// // Using infinity
+    /// var range6 = Range.FromString&lt;int&gt;($"[{RangeValue&lt;int&gt;.NegativeInfinity}, {100}]");
+    /// 
+    /// // For regular strings, use the string overload:
+    /// var range7 = Range.FromString&lt;int&gt;("[10, 20]");
+    /// </code>
+    /// </example>
+    public static Range<T> FromString<T>(RangeInterpolatedStringHandler<T> handler)
+        where T : IComparable<T>, ISpanParsable<T>
+        => handler.GetRange();
+}

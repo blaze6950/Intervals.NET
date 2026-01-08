@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>Intervals.NET</PackageId>
+        <Version>0.0.0-rc.1</Version>
+        <Authors>blaze6950</Authors>
+        <Description>High-performance, zero-allocation .NET library for mathematical intervals and ranges. Features type-safe range operations (intersection, union, contains, overlaps), first-class infinity support, span-based parsing, and zero-allocation interpolated string parsing. Built with modern C# using structs, spans, and records for optimal performance.</Description>
+        <PackageReleaseNotes>Initial release candidate (v0.0.0-rc.1):
+- Core range operations with all bracket types: [], (), [), (]
+- Rich API: Overlaps, Contains, Intersect, Union, Except, IsAdjacent, IsBefore, IsAfter
+- First-class infinity support with RangeValue&lt;T&gt;
+- Zero-allocation struct-based design
+- String parsing with ReadOnlySpan&lt;char&gt; and culture support
+- Interpolated string parsing with custom handler for zero allocations
+- Infinity symbol support (∞, -∞) in parsing
+- Comprehensive extension methods
+- Full XML documentation
+- .NET 8.0 target</PackageReleaseNotes>
+        <PackageTags>range;interval;math;mathematics;intervals;ranges;span;performance;zero-allocation;generic;comparable;infinity;parsing;set-operations;intersection;union;datetime;numeric</PackageTags>
+        <RepositoryUrl>https://github.com/blaze6950/Intervals.NET</RepositoryUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    </PropertyGroup>
+
+</Project>
