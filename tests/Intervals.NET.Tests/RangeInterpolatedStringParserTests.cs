@@ -300,7 +300,8 @@ public class RangeInterpolatedStringParserTests
         // Assert
         Assert.NotNull(exception);
         Assert.IsType<FormatException>(exception);
-        Assert.Contains("opening bracket", exception.Message, StringComparison.OrdinalIgnoreCase);
+        // Generic error message since we removed _errorMessage field for zero-allocation
+        Assert.Contains("Failed to parse range", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -319,7 +320,8 @@ public class RangeInterpolatedStringParserTests
         // Assert
         Assert.NotNull(exception);
         Assert.IsType<FormatException>(exception);
-        Assert.Contains("closing bracket", exception.Message, StringComparison.OrdinalIgnoreCase);
+        // Generic error message since we removed _errorMessage field for zero-allocation
+        Assert.Contains("Failed to parse range", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     #endregion

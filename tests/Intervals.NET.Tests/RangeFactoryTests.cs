@@ -660,6 +660,168 @@ public class RangeFactoryTests
 
     #endregion
 
+    #region FromString with Interpolated String Handler Tests
+
+    [Fact]
+    public void FromString_InterpolatedString_WithLiteralBrackets_ParsesCorrectly()
+    {
+        // Arrange
+        int start = 10;
+        int end = 20;
+
+        // Act - using interpolated string with literal brackets
+        var range = Range.FromString<int>($"[{start}, {end}]");
+
+        // Assert
+        Assert.Equal(10, range.Start.Value);
+        Assert.Equal(20, range.End.Value);
+        Assert.True(range.IsStartInclusive);
+        Assert.True(range.IsEndInclusive);
+    }
+
+    [Fact]
+    public void FromString_InterpolatedString_OpenRange_ParsesCorrectly()
+    {
+        // Arrange
+        int start = 5;
+        int end = 15;
+
+        // Act
+        var range = Range.FromString<int>($"({start}, {end})");
+
+        // Assert
+        Assert.Equal(5, range.Start.Value);
+        Assert.Equal(15, range.End.Value);
+        Assert.False(range.IsStartInclusive);
+        Assert.False(range.IsEndInclusive);
+    }
+
+    [Fact]
+    public void FromString_InterpolatedString_HalfOpen_ParsesCorrectly()
+    {
+        // Arrange
+        int start = 0;
+        int end = 100;
+
+        // Act
+        var range = Range.FromString<int>($"[{start}, {end})");
+
+        // Assert
+        Assert.Equal(0, range.Start.Value);
+        Assert.Equal(100, range.End.Value);
+        Assert.True(range.IsStartInclusive);
+        Assert.False(range.IsEndInclusive);
+    }
+
+    [Fact]
+    public void FromString_InterpolatedString_WithCharBrackets_ParsesCorrectly()
+    {
+        // Arrange
+        char openBracket = '[';
+        char closeBracket = ')';
+        int start = 10;
+        int end = 20;
+
+        // Act - brackets as interpolated chars
+        var range = Range.FromString<int>($"{openBracket}{start}, {end}{closeBracket}");
+
+        // Assert
+        Assert.Equal(10, range.Start.Value);
+        Assert.Equal(20, range.End.Value);
+        Assert.True(range.IsStartInclusive);
+        Assert.False(range.IsEndInclusive);
+    }
+
+    [Fact]
+    public void FromString_InterpolatedString_WithRangeValues_ParsesCorrectly()
+    {
+        // Arrange
+        RangeValue<int> start = 42;
+        RangeValue<int> end = 100;
+
+        // Act
+        var range = Range.FromString<int>($"[{start}, {end}]");
+
+        // Assert
+        Assert.Equal(42, range.Start.Value);
+        Assert.Equal(100, range.End.Value);
+        Assert.True(range.IsStartInclusive);
+        Assert.True(range.IsEndInclusive);
+    }
+
+    [Fact]
+    public void FromString_InterpolatedString_WithInfinity_ParsesCorrectly()
+    {
+        // Arrange
+        RangeValue<int> start = RangeValue<int>.NegativeInfinity;
+        int end = 100;
+
+        // Act
+        var range = Range.FromString<int>($"[{start}, {end}]");
+
+        // Assert
+        Assert.True(range.Start.IsNegativeInfinity);
+        Assert.Equal(100, range.End.Value);
+        Assert.True(range.IsStartInclusive);
+        Assert.True(range.IsEndInclusive);
+    }
+
+    [Fact]
+    public void FromString_InterpolatedString_RoundTrip_PreservesRange()
+    {
+        // Arrange
+        int start = 10;
+        int end = 20;
+        var originalFromInterpolated = Range.FromString<int>($"[{start}, {end})");
+
+        // Act
+        var stringRepresentation = originalFromInterpolated.ToString();
+        var parsedBack = Range.FromString<int>(stringRepresentation);
+
+        // Assert
+        Assert.Equal(originalFromInterpolated.Start.Value, parsedBack.Start.Value);
+        Assert.Equal(originalFromInterpolated.End.Value, parsedBack.End.Value);
+        Assert.Equal(originalFromInterpolated.IsStartInclusive, parsedBack.IsStartInclusive);
+        Assert.Equal(originalFromInterpolated.IsEndInclusive, parsedBack.IsEndInclusive);
+    }
+
+    [Fact]
+    public void FromString_InterpolatedString_WithDouble_ParsesCorrectly()
+    {
+        // Arrange
+        double start = 1.5;
+        double end = 9.5;
+
+        // Act
+        var range = Range.FromString<double>($"({start}, {end}]");
+
+        // Assert
+        Assert.Equal(1.5, range.Start.Value);
+        Assert.Equal(9.5, range.End.Value);
+        Assert.False(range.IsStartInclusive);
+        Assert.True(range.IsEndInclusive);
+    }
+
+    [Fact]
+    public void FromString_InterpolatedString_EquivalentToDirectConstruction()
+    {
+        // Arrange
+        int start = 10;
+        int end = 20;
+
+        // Act
+        var fromInterpolated = Range.FromString<int>($"[{start}, {end}]");
+        var fromFactory = Range.Closed<int>(start, end);
+
+        // Assert - both should produce identical ranges
+        Assert.Equal(fromFactory.Start.Value, fromInterpolated.Start.Value);
+        Assert.Equal(fromFactory.End.Value, fromInterpolated.End.Value);
+        Assert.Equal(fromFactory.IsStartInclusive, fromInterpolated.IsStartInclusive);
+        Assert.Equal(fromFactory.IsEndInclusive, fromInterpolated.IsEndInclusive);
+    }
+
+    #endregion
+
     #region Comparison Between Factory Methods Tests
 
     [Fact]

@@ -109,6 +109,149 @@ public class RangeExtensionsTests
 
     #region Contains Tests
 
+    // Contains(T value) tests
+    
+    [Fact]
+    public void Contains_Value_InsideClosedRange_ReturnsTrue()
+    {
+        // Arrange
+        var range = RangeFactory.Closed<int>(10, 20);
+        
+        // Act & Assert
+        Assert.True(range.Contains(15));
+        Assert.True(range.Contains(10)); // Start boundary
+        Assert.True(range.Contains(20)); // End boundary
+    }
+
+    [Fact]
+    public void Contains_Value_InsideOpenRange_ReturnsTrue()
+    {
+        // Arrange
+        var range = RangeFactory.Open<int>(10, 20);
+        
+        // Act & Assert
+        Assert.True(range.Contains(15));
+        Assert.False(range.Contains(10)); // Excluded start
+        Assert.False(range.Contains(20)); // Excluded end
+    }
+
+    [Fact]
+    public void Contains_Value_InsideHalfOpenRange_ReturnsTrue()
+    {
+        // Arrange
+        var range = RangeFactory.ClosedOpen<int>(10, 20);
+        
+        // Act & Assert
+        Assert.True(range.Contains(15));
+        Assert.True(range.Contains(10));  // Included start
+        Assert.False(range.Contains(20)); // Excluded end
+    }
+
+    [Fact]
+    public void Contains_Value_InsideHalfClosedRange_ReturnsTrue()
+    {
+        // Arrange
+        var range = RangeFactory.OpenClosed<int>(10, 20);
+        
+        // Act & Assert
+        Assert.True(range.Contains(15));
+        Assert.False(range.Contains(10)); // Excluded start
+        Assert.True(range.Contains(20));  // Included end
+    }
+
+    [Fact]
+    public void Contains_Value_OutsideRange_ReturnsFalse()
+    {
+        // Arrange
+        var range = RangeFactory.Closed<int>(10, 20);
+        
+        // Act & Assert
+        Assert.False(range.Contains(5));  // Before start
+        Assert.False(range.Contains(25)); // After end
+    }
+
+    [Fact]
+    public void Contains_Value_WithNegativeInfinityStart_ReturnsTrue()
+    {
+        // Arrange
+        var range = RangeFactory.Open(RangeValue<int>.NegativeInfinity, 100);
+        
+        // Act & Assert
+        Assert.True(range.Contains(-1000000));
+        Assert.True(range.Contains(0));
+        Assert.True(range.Contains(50));
+        Assert.False(range.Contains(100)); // Excluded end
+        Assert.False(range.Contains(101));
+    }
+
+    [Fact]
+    public void Contains_Value_WithPositiveInfinityEnd_ReturnsTrue()
+    {
+        // Arrange
+        var range = RangeFactory.Closed(0, RangeValue<int>.PositiveInfinity);
+        
+        // Act & Assert
+        Assert.False(range.Contains(-1));
+        Assert.True(range.Contains(0));   // Included start
+        Assert.True(range.Contains(100));
+        Assert.True(range.Contains(1000000));
+    }
+
+    [Fact]
+    public void Contains_Value_WithBothInfinity_ReturnsTrue()
+    {
+        // Arrange
+        var range = RangeFactory.Open(RangeValue<int>.NegativeInfinity, RangeValue<int>.PositiveInfinity);
+        
+        // Act & Assert
+        Assert.True(range.Contains(int.MinValue));
+        Assert.True(range.Contains(0));
+        Assert.True(range.Contains(int.MaxValue));
+    }
+
+    [Fact]
+    public void Contains_Value_WithDoubleType_WorksCorrectly()
+    {
+        // Arrange
+        var range = RangeFactory.Closed<double>(1.5, 9.5);
+        
+        // Act & Assert
+        Assert.False(range.Contains(1.4));
+        Assert.True(range.Contains(1.5));
+        Assert.True(range.Contains(5.0));
+        Assert.True(range.Contains(9.5));
+        Assert.False(range.Contains(9.6));
+    }
+
+    [Fact]
+    public void Contains_Value_WithDateTimeType_WorksCorrectly()
+    {
+        // Arrange
+        var start = new DateTime(2024, 1, 1);
+        var end = new DateTime(2024, 12, 31);
+        var range = RangeFactory.ClosedOpen<DateTime>(start, end);
+        
+        // Act & Assert
+        Assert.True(range.Contains(new DateTime(2024, 1, 1)));  // Included start
+        Assert.True(range.Contains(new DateTime(2024, 6, 15)));
+        Assert.False(range.Contains(new DateTime(2024, 12, 31))); // Excluded end
+        Assert.False(range.Contains(new DateTime(2025, 1, 1)));
+    }
+
+    [Fact]
+    public void Contains_Value_SinglePointRange_WorksCorrectly()
+    {
+        // Arrange
+        var range = RangeFactory.Closed<int>(10, 10);
+        
+        // Act & Assert
+        Assert.False(range.Contains(9));
+        Assert.True(range.Contains(10));
+        Assert.False(range.Contains(11));
+    }
+
+    // Contains(Range<T>) tests
+
     [Fact]
     public void Contains_WithContainedRange_ReturnsTrue()
     {
