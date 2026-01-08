@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOTNET_VERSION: '9.x.x'
+  DOTNET_VERSION: '8.x.x'
   PROJECT_PATH: 'src/Intervals.NET/Intervals.NET.csproj'
   TEST_PATH: 'tests/Intervals.NET.Tests/Intervals.NET.Tests.csproj'
 
@@ -45,7 +45,7 @@ jobs:
   publish-nuget:
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     
     steps:
       - name: Checkout code
