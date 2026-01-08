@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace Intervals.NET.Extensions;
 
 /// <summary>
@@ -13,6 +15,7 @@ public static class RangeExtensions
     /// <param name="range">The first range.</param>
     /// <param name="other">The second range to check for overlap.</param>
     /// <returns>True if the ranges overlap; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool Overlaps<T>(this Range<T> range, Range<T> other)
         where T : IComparable<T>
     {
@@ -40,6 +43,52 @@ public static class RangeExtensions
         {
             return false;
         }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Determines whether this range contains the specified value.
+    /// </summary>
+    /// <typeparam name="T">The type of values in the range.</typeparam>
+    /// <param name="range">The range to check.</param>
+    /// <param name="value">The value to check for containment.</param>
+    /// <returns>True if the range contains the value; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool Contains<T>(this Range<T> range, T value)
+        where T : IComparable<T>
+    {
+        // Check start boundary
+        if (range.Start.IsFinite)
+        {
+            var startComparison = value.CompareTo(range.Start.Value);
+            if (startComparison < 0)
+            {
+                return false;
+            }
+
+            if (startComparison == 0 && !range.IsStartInclusive)
+            {
+                return false;
+            }
+        }
+        // else: start is -infinity, so value is always >= start
+
+        // Check end boundary
+        if (range.End.IsFinite)
+        {
+            var endComparison = value.CompareTo(range.End.Value);
+            if (endComparison > 0)
+            {
+                return false;
+            }
+
+            if (endComparison == 0 && !range.IsEndInclusive)
+            {
+                return false;
+            }
+        }
+        // else: end is +infinity, so value is always <= end
 
         return true;
     }
@@ -256,6 +305,7 @@ public static class RangeExtensions
     /// <param name="range">The first range.</param>
     /// <param name="other">The second range.</param>
     /// <returns>True if the ranges are adjacent; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAdjacent<T>(this Range<T> range, Range<T> other)
         where T : IComparable<T>
     {
@@ -297,6 +347,7 @@ public static class RangeExtensions
     /// <param name="range">The first range.</param>
     /// <param name="other">The second range.</param>
     /// <returns>True if this range is completely before the other range; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsBefore<T>(this Range<T> range, Range<T> other)
         where T : IComparable<T>
     {
@@ -326,6 +377,7 @@ public static class RangeExtensions
     /// <param name="range">The first range.</param>
     /// <param name="other">The second range.</param>
     /// <returns>True if this range is completely after the other range; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAfter<T>(this Range<T> range, Range<T> other)
         where T : IComparable<T> => other.IsBefore(range);
 
@@ -336,6 +388,7 @@ public static class RangeExtensions
     /// <typeparam name="T">The type of values in the range.</typeparam>
     /// <param name="range">The range to check.</param>
     /// <returns>True if the range is empty; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsEmpty<T>(this Range<T> range)
         where T : IComparable<T>
     {
@@ -364,6 +417,7 @@ public static class RangeExtensions
     /// <typeparam name="T">The type of values in the range.</typeparam>
     /// <param name="range">The range to check.</param>
     /// <returns>True if the range has both start and end values; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsBounded<T>(this Range<T> range)
         where T : IComparable<T>
     {
@@ -376,6 +430,7 @@ public static class RangeExtensions
     /// <typeparam name="T">The type of values in the range.</typeparam>
     /// <param name="range">The range to check.</param>
     /// <returns>True if the range has infinite start or end; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsUnbounded<T>(this Range<T> range)
         where T : IComparable<T>
     {
@@ -388,6 +443,7 @@ public static class RangeExtensions
     /// <typeparam name="T">The type of values in the range.</typeparam>
     /// <param name="range">The range to check.</param>
     /// <returns>True if the range contains all values; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsInfinite<T>(this Range<T> range)
         where T : IComparable<T>
     {

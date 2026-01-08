@@ -1,4 +1,6 @@
-﻿namespace Intervals.NET;
+﻿using System.Runtime.CompilerServices;
+
+namespace Intervals.NET;
 
 /// <summary>
 /// Represents a range of values of type T.
@@ -44,6 +46,19 @@ public readonly record struct Range<T> where T : IComparable<T>
             }
         }
 
+        Start = start;
+        End = end;
+        IsStartInclusive = isStartInclusive;
+        IsEndInclusive = isEndInclusive;
+    }
+
+    /// <summary>
+    /// Internal constructor that skips validation for performance.
+    /// Use only when values are already validated (e.g., from parser).
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal Range(RangeValue<T> start, RangeValue<T> end, bool isStartInclusive, bool isEndInclusive, bool skipValidation)
+    {
         Start = start;
         End = end;
         IsStartInclusive = isStartInclusive;

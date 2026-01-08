@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Intervals.NET.Enums;
 
 namespace Intervals.NET;
@@ -75,6 +76,7 @@ public readonly struct RangeValue<T> :
     /// Attempts to get the finite value.
     /// Returns false if the value is infinite.
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryGetValue([MaybeNullWhen(false)] out T value)
     {
         if (_kind == RangeValueKind.Finite)
@@ -123,6 +125,7 @@ public readonly struct RangeValue<T> :
     /// <summary>
     /// Compares two range values.
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Compare(RangeValue<T> left, RangeValue<T> right)
         => left.CompareTo(right);
 
@@ -131,6 +134,7 @@ public readonly struct RangeValue<T> :
     #region Equality
 
     /// <inheritdoc />
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool Equals(RangeValue<T> other)
     {
         if (_kind != other._kind)
@@ -174,6 +178,7 @@ public readonly struct RangeValue<T> :
     /// <param name="left">The left range value.</param>
     /// <param name="right">The right range value.</param>
     /// <returns>True if the two range values are equal; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(RangeValue<T> left, RangeValue<T> right)
         => left.Equals(right);
 
@@ -183,6 +188,7 @@ public readonly struct RangeValue<T> :
     /// <param name="left">The left range value.</param>
     /// <param name="right">The right range value.</param>
     /// <returns>True if the two range values are not equal; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator !=(RangeValue<T> left, RangeValue<T> right)
         => !left.Equals(right);
 
@@ -192,6 +198,7 @@ public readonly struct RangeValue<T> :
     /// <param name="left">The left range value.</param>
     /// <param name="right">The right range value.</param>
     /// <returns>True if the left range value is less than the right range value; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator <(RangeValue<T> left, RangeValue<T> right)
         => Compare(left, right) < 0;
 
@@ -201,6 +208,7 @@ public readonly struct RangeValue<T> :
     /// <param name="left">The left range value.</param>
     /// <param name="right">The right range value.</param>
     /// <returns>True if the left range value is greater than the right range value; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >(RangeValue<T> left, RangeValue<T> right)
         => Compare(left, right) > 0;
 
@@ -210,6 +218,7 @@ public readonly struct RangeValue<T> :
     /// <param name="left">The left range value.</param>
     /// <param name="right">The right range value.</param>
     /// <returns>True if the left range value is less than or equal to the right range value; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator <=(RangeValue<T> left, RangeValue<T> right)
         => Compare(left, right) <= 0;
 
@@ -219,6 +228,7 @@ public readonly struct RangeValue<T> :
     /// <param name="left">The left range value.</param>
     /// <param name="right">The right range value.</param>
     /// <returns>True if the left range value is greater than or equal to the right range value; otherwise, false.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator >=(RangeValue<T> left, RangeValue<T> right)
         => Compare(left, right) >= 0;
 
@@ -233,6 +243,7 @@ public readonly struct RangeValue<T> :
     /// var range = Range.Closed(10, 20); // Uses implicit conversion
     /// </code>
     /// </example>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static implicit operator RangeValue<T>(T value)
         => new(value);
 
@@ -253,8 +264,9 @@ public readonly struct RangeValue<T> :
     /// // int invalid = (int)RangeValue&lt;int&gt;.PositiveInfinity;
     /// </code>
     /// </example>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static explicit operator T(RangeValue<T> rangeValue)
-        => rangeValue.Value; // Uses the Value property which already throws for infinity
+        => rangeValue.Value;
 
     #endregion
 

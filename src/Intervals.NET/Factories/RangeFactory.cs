@@ -1,4 +1,5 @@
-﻿using Intervals.NET.Parsers;
+﻿using System.Runtime.CompilerServices;
+using Intervals.NET.Parsers;
 
 namespace Intervals.NET.Factories;
 
@@ -24,6 +25,7 @@ public static class Range
     /// <returns>
     /// A new instance of <see cref="Range{T}"/> representing the closed range [start, end].
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Range<T> Closed<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>, ISpanParsable<T>
         => new(start, end, true, true);
 
@@ -44,6 +46,7 @@ public static class Range
     /// <returns>
     /// A new instance of <see cref="Range{T}"/> representing the open range (start, end).
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Range<T> Open<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>, ISpanParsable<T>
         => new(start, end, false, false);
 
@@ -64,6 +67,7 @@ public static class Range
     /// <returns>
     /// A new instance of <see cref="Range{T}"/> representing the half-open range (start, end].
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Range<T> OpenClosed<T>(RangeValue<T> start, RangeValue<T> end)
         where T : IComparable<T>, ISpanParsable<T>
         => new(start, end, false, true);
@@ -85,6 +89,7 @@ public static class Range
     /// <returns>
     /// A new instance of <see cref="Range{T}"/> representing the half-open range [start, end).
     /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Range<T> ClosedOpen<T>(RangeValue<T> start, RangeValue<T> end)
         where T : IComparable<T>, ISpanParsable<T>
         => new(start, end, true, false);
