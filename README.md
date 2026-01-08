@@ -1,26 +1,75 @@
-# 📊 Intervals.NET
+<div align="center">
 
-> **Type-safe mathematical intervals and ranges for .NET**
+# 📏
+
+# Intervals.NET
+
+**Type-safe mathematical intervals and ranges for .NET**
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![NuGet](https://img.shields.io/nuget/v/Intervals.NET.svg)](https://www.nuget.org/packages/Intervals.NET/)
 
+</div>
+
+---
+
 A production-ready .NET library for working with mathematical intervals and ranges. Designed for correctness, performance, and zero allocations.
 
 **Intervals.NET** provides robust, type-safe interval operations over any `IComparable<T>`. Whether you're validating business rules, scheduling time windows, or filtering numeric data, this library delivers correct range semantics with comprehensive edge case handling—without heap allocations.
 
+<div align="center">
+
 **Key characteristics:**
-- ✅ **Correctness first**: Explicit infinity, validated boundaries, fail-fast construction
-- ⚡ **Zero-allocation design**: Struct-based API, no boxing, stack-allocated ranges
-- 🎯 **Generic and expressive**: Works with int, double, DateTime, TimeSpan, strings, custom types
-- 🛡️ **Real-world ready**: 100% test coverage, battle-tested edge cases, production semantics
+
+✅ **Correctness first**: Explicit infinity, validated boundaries, fail-fast construction
+
+⚡ **Zero-allocation design**: Struct-based API, no boxing, stack-allocated ranges
+
+🎯 **Generic and expressive**: Works with int, double, DateTime, TimeSpan, strings, custom types
+
+🛡️ **Real-world ready**: 100% test coverage, battle-tested edge cases, production semantics
+
+</div>
+
+## 📑 Table of Contents
+
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Real-World Use Cases](#-real-world-use-cases) 👈 *Click to expand examples*
+- [Core Concepts](#-core-concepts)
+  - [Range Notation](#range-notation)
+  - [Infinity Support](#infinity-support)
+- [API Overview](#-api-overview)
+  - [Creating Ranges](#creating-ranges)
+  - [Containment Checks](#containment-checks)
+  - [Set Operations](#set-operations)
+  - [Range Relationships](#range-relationships)
+  - [Parsing from Strings](#parsing-from-strings)
+  - [Zero-Allocation Parsing](#zero-allocation-parsing)
+  - [Working with Custom Types](#working-with-custom-types)
+  - [Advanced Usage Examples](#advanced-usage-examples) 👈 *Click to expand*
+- [Performance](#-performance)
+  - [Detailed Benchmark Results](#detailed-benchmark-results) 👈 *Click to expand*
+- [Testing & Quality](#-testing--quality)
+- [API Reference](#api-reference)
+- [Best Practices](#-best-practices) 👈 *Click to expand*
+- [Why Use Intervals.NET?](#-why-use-intervalsnet)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Resources](#-resources)
+
+> 💡 **Tip**: Look for sections marked with 👈 or **▶ Click to expand** — they contain detailed examples and advanced content!
 
 ## 📦 Installation
+
+<div align="center">
 
 ```bash
 dotnet add package Intervals.NET
 ```
+
+</div>
 
 ## 🚀 Quick Start
 
@@ -55,6 +104,18 @@ var times = Range.Closed(TimeSpan.FromHours(9), TimeSpan.FromHours(17));
 ```
 
 ## 💼 Real-World Use Cases
+
+<details>
+<summary><strong>▶ Click to expand: 8 Real-World Scenarios</strong></summary>
+
+> 📖 **Inside this section:**
+> - Scheduling & Calendar Systems
+> - Booking Systems & Resource Allocation
+> - Validation & Configuration
+> - Pricing Tiers & Discounts
+> - Access Control & Time Windows
+> - Data Filtering & Analytics
+> - Sliding Window Validation
 
 ### Scheduling & Calendar Systems
 ```csharp
@@ -199,6 +260,8 @@ foreach (var dataPoint in sensorStream)
     }
 }
 ```
+
+</details>
 
 ## 🔑 Core Concepts
 
@@ -398,7 +461,14 @@ bool isLetter = alphabet.Contains("M");  // true
 ```
 
 <details>
-<summary><strong>Advanced Usage Examples</strong></summary>
+<summary><strong>▶ Click to expand: Advanced Usage Examples</strong></summary>
+
+> 📚 **Inside this section:**
+> - Building Complex Conditions
+> - Progressive Discount System
+> - Range-Based Configuration
+> - Safe Range Operations
+> - Validation Helpers
 
 ### Building Complex Conditions
 
@@ -519,7 +589,17 @@ public void ValidateCoordinates(double lat, double lon)
 **Trade-off:** Some set operations are slower than ultra-simple implementations due to comprehensive edge case validation, generic type support, and production-ready correctness guarantees.
 
 <details>
-<summary><strong>Detailed Benchmark Results</strong></summary>
+<summary><strong>▶ Click to expand: Detailed Benchmark Results</strong></summary>
+
+> 📊 **Inside this section:**
+> - About These Benchmarks
+> - Parsing Performance
+> - Construction Performance
+> - Containment Checks (Hot Path)
+> - Set Operations Performance
+> - Real-World Scenarios
+> - Performance Summary
+> - Understanding "Naive" Baseline
 
 ### About These Benchmarks
 
@@ -647,6 +727,8 @@ which may introduce slight overhead compared to naive or NodaTime implementation
 
 ### Performance Summary
 
+<div align="center">
+
 ```
 🚀 Parsing:      3.6× faster with interpolated strings
 💎 Construction: 0 bytes allocated (struct-based)
@@ -654,6 +736,8 @@ which may introduce slight overhead compared to naive or NodaTime implementation
 🎯 Set Ops:       0 bytes allocated (100% reduction)
 🔥 Real-World:    1.7× faster for sliding windows
 ```
+
+</div>
 
 **Design Trade-offs:**
 - **Slower set operations** → Comprehensive edge case handling, generic constraints, infinity support
@@ -800,7 +884,12 @@ RangeParser.TryParse<T>(string input, IFormatProvider provider, out Range<T> res
 ## 💎 Best Practices
 
 <details>
-<summary><strong>✅ Do's and ❌ Don'ts</strong></summary>
+<summary><strong>▶ Click to expand: Do's and Don'ts</strong></summary>
+
+> ✅ **Inside this section:**
+> - Recommended patterns and best practices
+> - Common pitfalls to avoid
+> - Safe usage examples
 
 ### ✅ Do's
 
@@ -856,6 +945,8 @@ var good = Range.FromString<double>("[1,5, 9,5]", CultureInfo.GetCultureInfo("de
 
 ### vs. Manual Implementation
 
+<div align="center">
+
 | Aspect         | Intervals.NET             | Manual Implementation   |
 |----------------|---------------------------|-------------------------|
 | Type Safety    | ✅ Generic constraints     | ⚠️ Must implement       |
@@ -865,6 +956,8 @@ var good = Range.FromString<double>("[1,5, 9,5]", CultureInfo.GetCultureInfo("de
 | Set Operations | ✅ Rich API (6+ methods)   | ❌ Must implement       |
 | Allocations    | ✅ Zero (struct-based)     | ⚠️ Usually class-based  |
 | Testing        | ✅ 100% coverage           | ⚠️ Your responsibility  |
+
+</div>
 
 ### vs. Other Libraries
 
@@ -917,4 +1010,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
+<div align="center">
+
 **Built with modern C# for the .NET community**
+
+</div>
