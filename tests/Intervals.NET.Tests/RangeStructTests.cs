@@ -697,6 +697,22 @@ public class RangeStructTests
         Assert.NotEqual(hash1, hash2);
     }
 
+    [Fact]
+    public void RecordStruct_CreateNewWith_NewNotEqualToSource()
+    {
+        // Arrange
+        var range1 = new Range<int>(new RangeValue<int>(10), new RangeValue<int>(20), true, false);
+
+        // Act
+        var range2 = range1 with { Start = 11 };
+
+        // Assert
+        Assert.NotEqual(range1.Start, range2.Start);
+        Assert.Equal(range1.End, range2.End);
+        Assert.Equal(range1.IsStartInclusive, range2.IsStartInclusive);
+        Assert.Equal(range1.IsEndInclusive, range2.IsEndInclusive);
+    }
+
     #endregion
 
     #region Edge Cases and Different Types
