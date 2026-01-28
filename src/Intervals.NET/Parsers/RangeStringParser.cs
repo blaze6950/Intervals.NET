@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+﻿﻿using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace Intervals.NET.Parsers;
@@ -32,11 +32,9 @@ public static class RangeStringParser
         IFormatProvider? formatProvider = null
     ) where T : IComparable<T>, ISpanParsable<T>
     {
-        if (!TryParseCore<T>(input, out var range, formatProvider, throwOnError: true))
-        {
-            // This should never be reached since throwOnError=true
-            throw new InvalidOperationException("Unexpected parse failure.");
-        }
+        // Call core parser with throwOnError = true
+        // Ignore the boolean result since we expect it to succeed or throw
+        _ = TryParseCore<T>(input, out var range, formatProvider, throwOnError: true);
 
         return range;
     }
@@ -202,9 +200,6 @@ public static class RangeStringParser
 
     private static void ThrowMissingComma() =>
         throw new FormatException("Missing comma separator.");
-
-    private static void ThrowMultipleCommas() =>
-        throw new FormatException("Invalid range format. More than one comma found.");
 
     /// <summary>
     /// Checks if the span represents a positive infinity symbol.

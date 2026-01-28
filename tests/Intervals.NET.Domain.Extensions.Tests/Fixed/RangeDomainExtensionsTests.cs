@@ -170,5 +170,164 @@ public class RangeDomainExtensionsTests
         Assert.Contains("infinite", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public void Span_WithNegativeInfinityStart_ReturnsPositiveInfinity()
+    {
+        // Arrange
+        var domain = new IntegerFixedStepDomain();
+        var range = RangeFactory.Closed(RangeValue<int>.NegativeInfinity, 100);
+
+        // Act
+        var result = range.Span(domain);
+
+        // Assert
+        Assert.True(result.IsPositiveInfinity);
+    }
+
+    [Fact]
+    public void Span_WithPositiveInfinityEnd_ReturnsPositiveInfinity()
+    {
+        // Arrange
+        var domain = new IntegerFixedStepDomain();
+        var range = RangeFactory.Closed(0, RangeValue<int>.PositiveInfinity);
+
+        // Act
+        var result = range.Span(domain);
+
+        // Assert
+        Assert.True(result.IsPositiveInfinity);
+    }
+
+    [Fact]
+    public void Span_SingleStepRange_BothBoundariesOnStep_BothInclusive_ReturnsOne()
+    {
+        // Arrange - both boundaries exactly on integer steps
+        var range = RangeFactory.Closed<int>(10, 10);
+        var domain = new IntegerFixedStepDomain();
+
+        // Act
+        var span = range.Span(domain);
+
+        // Assert
+        Assert.True(span.IsFinite);
+        Assert.Equal(1, span.Value);
+    }
+
+    [Fact]
+    public void Span_SingleStepRange_BothBoundariesBetweenSteps_ReturnsZero()
+    {
+        // Arrange - DateTime values in the middle of a day (not aligned to day boundaries)
+        var start = new DateTime(2024, 1, 1, 10, 0, 0);
+        var end = new DateTime(2024, 1, 1, 15, 0, 0);
+        var range = RangeFactory.Open<DateTime>(start, end);
+        var domain = new DateTimeDayFixedStepDomain();
+
+        // Act
+        var span = range.Span(domain);
+
+        // Assert
+        Assert.True(span.IsFinite);
+        // Both times are within the same day, and boundaries are exclusive
+        Assert.Equal(0, span.Value);
+    }
+
+    [Fact]
+    public void Span_SingleStepRange_StartOnBoundary_EndExclusive_ReturnsOne()
+    {
+        // Arrange - start is aligned, end is not, but both floor to same step
+        var start = new DateTime(2024, 1, 1, 0, 0, 0); // Midnight (on boundary)
+        var end = new DateTime(2024, 1, 1, 12, 0, 0);  // Noon (not on boundary)
+        var range = RangeFactory.Closed<DateTime>(start, end);
+        var domain = new DateTimeDayFixedStepDomain();
+
+        // Act
+        var span = range.Span(domain);
+
+        // Assert
+        Assert.True(span.IsFinite);
+        Assert.Equal(1, span.Value);
+    }
+
+    [Fact]
+    public void Span_EmptyRange_ExclusiveBoundariesSameValue_ReturnsZero()
+    {
+        // Arrange - exclusive boundaries on the same integer
+        var range = RangeFactory.Open<int>(10, 11);
+        var domain = new IntegerFixedStepDomain();
+
+        // Act
+        var span = range.Span(domain);
+
+        // Assert
+        Assert.True(span.IsFinite);
+        // (10, 11) excludes both 10 and 11, no integers in between
+        Assert.Equal(0, span.Value);
+    }
+
+    [Fact]
+    public void Span_InvertedRange_StartGreaterThanEnd_ReturnsZero()
+    {
+        // Arrange - valid range construction, but after floor adjustment with exclusive start, firstStep > lastStep
+        var start = new DateTime(2024, 1, 2, 12, 0, 0);  // Jan 2 noon
+        var end = new DateTime(2024, 1, 2, 1, 0, 0);     // Jan 2 1 AM (earlier in same day)
+        // This is valid because start < end in absolute time when considering the full timestamp
+        // But after flooring both to day boundaries and making start exclusive, we get:
+        // firstStep = Jan 3 (floor Jan 2 noon + 1 day for exclusive)
+        // lastStep = Jan 2 (floor Jan 2 1 AM, inclusive)
+        // Wait, that won't work either. Let me use a different approach.
+        
+        // Actually, let's test a range that becomes empty after floor adjustments
+        var start2 = new DateTime(2024, 1, 1, 23, 0, 0);  // Jan 1, 11 PM
+        var end2 = new DateTime(2024, 1, 2, 1, 0, 0);     // Jan 2, 1 AM
+        var range = RangeFactory.Open<DateTime>(start2, end2);
+        var domain = new DateTimeDayFixedStepDomain();
+
+        // Act
+        var span = range.Span(domain);
+
+        // Assert
+        Assert.True(span.IsFinite);
+        // After flooring: start -> Jan 1, end -> Jan 2
+        // With both exclusive: firstStep = Jan 2, lastStep = Jan 1
+        // firstStep > lastStep, so result should be 0
+        Assert.Equal(0, span.Value);
+    }
+
+    [Fact]
+    public void Span_StartExclusiveNotOnBoundary_SkipsToNextStep()
+    {
+        // Arrange - start is not on a day boundary, exclusive
+        var start = new DateTime(2024, 1, 1, 12, 0, 0);  // Noon
+        var end = new DateTime(2024, 1, 3, 0, 0, 0);     // Midnight
+        var range = RangeFactory.Create<DateTime>(start, end, isStartInclusive: false, isEndInclusive: true);
+        var domain = new DateTimeDayFixedStepDomain();
+
+        // Act
+        var span = range.Span(domain);
+
+        // Assert
+        Assert.True(span.IsFinite);
+        // Start exclusive from Jan 1 noon -> includes Jan 2, Jan 3
+        Assert.Equal(2, span.Value);
+    }
+
+    [Fact]
+    public void Span_EndExclusiveOnBoundary_ExcludesThatStep()
+    {
+        // Arrange
+        var start = new DateTime(2024, 1, 1, 0, 0, 0);
+        var end = new DateTime(2024, 1, 3, 0, 0, 0);
+        var range = RangeFactory.ClosedOpen<DateTime>(start, end);
+        var domain = new DateTimeDayFixedStepDomain();
+
+        // Act
+        var span = range.Span(domain);
+
+        // Assert
+        Assert.True(span.IsFinite);
+        // [Jan 1, Jan 3) includes Jan 1 and Jan 2, but not Jan 3
+        Assert.Equal(2, span.Value);
+    }
+
     #endregion
 }

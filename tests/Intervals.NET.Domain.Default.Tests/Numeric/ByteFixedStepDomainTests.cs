@@ -57,4 +57,14 @@ public class ByteFixedStepDomainTests
     {
         Assert.Throws<OverflowException>(() => _domain.Add(0, -1));
     }
+
+    [Fact]
+    public void Subtract_SubtractsOffsetCorrectly()
+    {
+        // Arrange & Act
+        var result = _domain.Subtract(100, 25);
+
+        // Assert
+        Assert.Equal(75, result);
+    }
 }

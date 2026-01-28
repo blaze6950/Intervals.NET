@@ -516,5 +516,18 @@ public class StandardDateOnlyBusinessDaysVariableStepDomainTests
         Assert.Equal(expectedMonday, result);
     }
 
+    [Fact]
+    public void Ceiling_AlreadyOnBusinessDay_ReturnsUnchanged()
+    {
+        // Arrange - Monday, January 1, 2024 (a business day)
+        var monday = new DateOnly(2024, 1, 1);
+
+        // Act
+        var result = _domain.Ceiling(monday);
+
+        // Assert
+        Assert.Equal(monday, result);
+    }
+
     #endregion
 }

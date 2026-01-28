@@ -103,12 +103,8 @@ public static class RangeDomainExtensions
         where TRangeValue : IComparable<TRangeValue>
         where TDomain : IVariableStepDomain<TRangeValue>
     {
-        if (!range.Start.IsFinite)
-        {
-            return RangeValue<double>.NegativeInfinity;
-        }
-
-        if (!range.End.IsFinite)
+        // If either boundary is unbounded in the direction that expands the range, span is infinite
+        if (range.Start.IsNegativeInfinity || range.End.IsPositiveInfinity)
         {
             return RangeValue<double>.PositiveInfinity;
         }
@@ -116,14 +112,14 @@ public static class RangeDomainExtensions
         var firstStep = CalculateFirstStep(range, domain);
         var lastStep = CalculateLastStep(range, domain);
 
-        if (firstStep.CompareTo(lastStep) > 0)
+        switch (firstStep.CompareTo(lastStep))
         {
-            return 0.0;
-        }
-
-        if (firstStep.CompareTo(lastStep) == 0)
-        {
-            return HandleSingleStepCase(range, domain);
+            // After domain alignment, boundaries can cross (e.g., open range smaller than one step)
+            // Example: (Jan 1 00:00, Jan 1 00:01) with day domain -> firstStep=Jan 2, lastStep=Dec 31
+            case > 0:
+                return 0.0;
+            case 0:
+                return HandleSingleStepCase(range, domain);
         }
 
         var distance = domain.Distance(firstStep, lastStep);

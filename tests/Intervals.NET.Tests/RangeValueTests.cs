@@ -1116,4 +1116,59 @@ public class RangeValueTests
     }
 
     #endregion
+
+    #region Nullable Reference Type Tests
+
+    [Fact]
+    public void RangeValue_NullableString_WithNullValue_GetHashCodeHandlesCorrectly()
+    {
+        // Arrange
+        string? nullValue = null;
+        var rangeValue = new RangeValue<string?>(nullValue);
+
+        // Act
+        var hashCode = rangeValue.GetHashCode();
+
+        // Assert - Should not throw, uses EqualityComparer<T>.Default
+        Assert.NotEqual(0, hashCode); // Hash should be based on kind
+    }
+
+    [Fact]
+    public void RangeValue_NullableString_WithNullValue_ToStringHandlesCorrectly()
+    {
+        // Arrange
+        string? nullValue = null;
+        var rangeValue = new RangeValue<string?>(nullValue);
+
+        // Act
+        var result = rangeValue.ToString();
+
+        // Assert - Should return empty string or null representation
+        Assert.NotNull(result);
+    }
+
+    [Fact]
+    public void RangeValue_NullableString_WithNullValue_AllOperationsWorkCorrectly()
+    {
+        // Arrange
+        string? nullValue1 = null;
+        string? nullValue2 = null;
+        var rangeValue1 = new RangeValue<string?>(nullValue1);
+        var rangeValue2 = new RangeValue<string?>(nullValue2);
+
+        // Act & Assert - Equality works
+        Assert.True(rangeValue1.Equals(rangeValue2));
+        Assert.True(rangeValue1 == rangeValue2);
+
+        // CompareTo works
+        var comparison = rangeValue1.CompareTo(rangeValue2);
+        Assert.Equal(0, comparison);
+
+        // GetHashCode doesn't throw
+        var hash1 = rangeValue1.GetHashCode();
+        var hash2 = rangeValue2.GetHashCode();
+        Assert.Equal(hash1, hash2);
+    }
+
+    #endregion
 }

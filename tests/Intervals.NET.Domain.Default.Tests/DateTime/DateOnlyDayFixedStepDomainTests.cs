@@ -126,4 +126,24 @@ public class DateOnlyDayFixedStepDomainTests
         // Assert
         Assert.Equal(1L, result);
     }
+
+    [Fact]
+    public void Add_ExceedingMaxDate_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var date = DateOnly.MaxValue.AddDays(-5);
+
+        // Act & Assert
+        Assert.Throws<ArgumentOutOfRangeException>(() => _domain.Add(date, 10));
+    }
+
+    [Fact]
+    public void Subtract_BelowMinDate_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var date = DateOnly.MinValue.AddDays(3);
+
+        // Act & Assert
+        Assert.Throws<ArgumentOutOfRangeException>(() => _domain.Subtract(date, 10));
+    }
 }

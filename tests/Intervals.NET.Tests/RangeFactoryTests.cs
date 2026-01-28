@@ -880,6 +880,106 @@ public class RangeFactoryTests
 
     #endregion
 
+    #region Create Method Tests
+
+    [Fact]
+    public void Create_WithAllCombinations_CreatesCorrectRanges()
+    {
+        // Arrange & Act
+        var closedClosed = Range.Create<int>(10, 20, true, true);
+        var closedOpen = Range.Create<int>(10, 20, true, false);
+        var openClosed = Range.Create<int>(10, 20, false, true);
+        var openOpen = Range.Create<int>(10, 20, false, false);
+
+        // Assert
+        Assert.True(closedClosed.IsStartInclusive && closedClosed.IsEndInclusive);
+        Assert.True(closedOpen.IsStartInclusive && !closedOpen.IsEndInclusive);
+        Assert.True(!openClosed.IsStartInclusive && openClosed.IsEndInclusive);
+        Assert.True(!openOpen.IsStartInclusive && !openOpen.IsEndInclusive);
+    }
+
+    [Fact]
+    public void Create_EquivalentToSpecificFactoryMethods()
+    {
+        // Arrange
+        var start = 10;
+        var end = 20;
+
+        // Act
+        var createClosed = Range.Create<int>(start, end, true, true);
+        var factoryClosed = Range.Closed<int>(start, end);
+
+        var createOpen = Range.Create<int>(start, end, false, false);
+        var factoryOpen = Range.Open<int>(start, end);
+
+        // Assert
+        Assert.Equal(factoryClosed, createClosed);
+        Assert.Equal(factoryOpen, createOpen);
+    }
+
+    [Fact]
+    public void Create_WithInfinityBoundaries_WorksCorrectly()
+    {
+        // Arrange & Act
+        var range = Range.Create(RangeValue<int>.NegativeInfinity, RangeValue<int>.PositiveInfinity, false, false);
+
+        // Assert
+        Assert.True(range.Start.IsNegativeInfinity);
+        Assert.True(range.End.IsPositiveInfinity);
+        Assert.False(range.IsStartInclusive);
+        Assert.False(range.IsEndInclusive);
+    }
+
+    [Fact]
+    public void Create_WithInvalidRange_ThrowsArgumentException()
+    {
+        // Arrange
+        var start = new RangeValue<int>(20);
+        var end = new RangeValue<int>(10);
+
+        // Act
+        var exception = Record.Exception(() => Range.Create(start, end, true, false));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<ArgumentException>(exception);
+    }
+
+    [Fact]
+    public void Create_WithEqualValuesBothExclusive_ThrowsArgumentException()
+    {
+        // Arrange
+        var start = new RangeValue<int>(10);
+        var end = new RangeValue<int>(10);
+
+        // Act
+        var exception = Record.Exception(() => Range.Create(start, end, false, false));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<ArgumentException>(exception);
+    }
+
+    [Fact]
+    public void Create_PreservesInclusivitySettings()
+    {
+        // Arrange
+        var start = new RangeValue<int>(10);
+        var end = new RangeValue<int>(20);
+
+        // Act
+        var range1 = Range.Create(start, end, true, false);
+        var range2 = Range.Create(start, end, false, true);
+
+        // Assert
+        Assert.True(range1.IsStartInclusive);
+        Assert.False(range1.IsEndInclusive);
+        Assert.False(range2.IsStartInclusive);
+        Assert.True(range2.IsEndInclusive);
+    }
+
+    #endregion
+
     #region Edge Cases Tests
 
     [Fact]

@@ -46,4 +46,24 @@ public class UIntFixedStepDomainTests
     {
         Assert.Throws<OverflowException>(() => _domain.Add(0, -1));
     }
+
+    [Fact]
+    public void Ceiling_ReturnsUnchanged()
+    {
+        // Arrange & Act - Unsigned integers don't need rounding
+        var result = _domain.Ceiling(42u);
+
+        // Assert
+        Assert.Equal(42u, result);
+    }
+
+    [Fact]
+    public void Subtract_SubtractsCorrectly()
+    {
+        // Arrange & Act
+        var result = _domain.Subtract(100u, 25);
+
+        // Assert
+        Assert.Equal(75u, result);
+    }
 }

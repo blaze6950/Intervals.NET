@@ -144,18 +144,28 @@ public readonly struct StandardDateTimeBusinessDaysVariableStepDomain : IVariabl
 
         // If weekend, move to Monday
         if (date.DayOfWeek == DayOfWeek.Saturday)
+        {
             return date.AddDays(2); // Saturday -> Monday
+        }
+
         if (date.DayOfWeek == DayOfWeek.Sunday)
+        {
             return date.AddDays(1); // Sunday -> Monday
+        }
 
         // Business day with time component - move to next day
         var nextDay = date.AddDays(1);
 
         // If next day is weekend, skip to Monday
         if (nextDay.DayOfWeek == DayOfWeek.Saturday)
+        {
             return nextDay.AddDays(2); // Skip to Monday
+        }
+
         if (nextDay.DayOfWeek == DayOfWeek.Sunday)
+        {
             return nextDay.AddDays(1); // Skip to Monday
+        }
 
         return nextDay;
     }
@@ -177,7 +187,9 @@ public readonly struct StandardDateTimeBusinessDaysVariableStepDomain : IVariabl
         var target = Floor(end);
 
         if (current == target)
+        {
             return 0.0; // Same date = 0 steps needed
+        }
 
         double count = 0;
 

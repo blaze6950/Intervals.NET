@@ -7,6 +7,8 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IsTestProject>false</IsTestProject>
+    <ExcludeFromCodeCoverage>true</ExcludeFromCodeCoverage>
   </PropertyGroup>
 
   <ItemGroup>

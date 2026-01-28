@@ -51,6 +51,21 @@ public static class Range
         => new(start, end, false, false);
 
     /// <summary>
+    /// Creates an open range (start, end).
+    /// </summary>
+    /// <param name="start">The start value of the range.</param>
+    /// <param name="end">The end value of the range.</param>
+    /// <typeparam name="T">
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt;.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="Range{T}"/> representing the open range (start, end).
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Range<T> Open<T>(T start, T end) where T : IComparable<T>
+        => new(start, end, false, false);
+
+    /// <summary>
     /// Creates a half-open range (start, end].
     /// </summary>
     /// <param name="start">
@@ -90,6 +105,21 @@ public static class Range
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Range<T> ClosedOpen<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>
+        => new(start, end, true, false);
+
+    /// <summary>
+    /// Creates a half-open range [start, end).
+    /// </summary>
+    /// <param name="start">The start value of the range.</param>
+    /// <param name="end">The end value of the range.</param>
+    /// <typeparam name="T">
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt;.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="Range{T}"/> representing the half-open range [start, end).
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Range<T> ClosedOpen<T>(T start, T end) where T : IComparable<T>
         => new(start, end, true, false);
 
     /// <summary>

@@ -57,4 +57,14 @@ public class UShortFixedStepDomainTests
     {
         Assert.Throws<OverflowException>(() => _domain.Add(0, -1));
     }
+
+    [Fact]
+    public void Subtract_SubtractsCorrectly()
+    {
+        // Arrange & Act
+        var result = _domain.Subtract((ushort)100, 25);
+
+        // Assert
+        Assert.Equal((ushort)75, result);
+    }
 }

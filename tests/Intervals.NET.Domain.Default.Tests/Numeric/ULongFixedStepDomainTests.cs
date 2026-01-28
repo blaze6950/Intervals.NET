@@ -74,4 +74,14 @@ public class ULongFixedStepDomainTests
         var result = _domain.Subtract(1000ul, -500L);
         Assert.Equal(1500ul, result);
     }
+
+    [Fact]
+    public void Ceiling_ReturnsUnchanged()
+    {
+        // Arrange & Act - Unsigned longs don't need rounding
+        var result = _domain.Ceiling(42uL);
+
+        // Assert
+        Assert.Equal(42uL, result);
+    }
 }

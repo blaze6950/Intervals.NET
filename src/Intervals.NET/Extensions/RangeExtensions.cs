@@ -111,6 +111,11 @@ public static class RangeExtensions
             {
                 return false;
             }
+            // Both have infinite start - check inclusivity
+            if (other.IsStartInclusive && !range.IsStartInclusive)
+            {
+                return false;
+            }
         }
         else if (!range.Start.IsNegativeInfinity)
         {
@@ -137,6 +142,11 @@ public static class RangeExtensions
         {
             // other has infinite end, so range must also have infinite end
             if (!range.End.IsPositiveInfinity)
+            {
+                return false;
+            }
+            // Both have infinite end - check inclusivity
+            if (other.IsEndInclusive && !range.IsEndInclusive)
             {
                 return false;
             }

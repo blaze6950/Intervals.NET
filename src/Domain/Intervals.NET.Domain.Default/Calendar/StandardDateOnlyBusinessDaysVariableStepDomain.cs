@@ -164,7 +164,9 @@ public readonly struct StandardDateOnlyBusinessDaysVariableStepDomain : IVariabl
         var target = Floor(end);
 
         if (current == target)
+        {
             return 0.0; // Same date = 0 steps needed
+        }
 
         double count = 0;
 

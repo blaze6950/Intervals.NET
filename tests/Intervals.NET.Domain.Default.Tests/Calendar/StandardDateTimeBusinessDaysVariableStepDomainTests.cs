@@ -442,5 +442,18 @@ public class StandardDateTimeBusinessDaysVariableStepDomainTests
         Assert.Equal(expectedMonday, result);
     }
 
+    [Fact]
+    public void Ceiling_BusinessDayExactlyAtMidnight_ReturnsUnchanged()
+    {
+        // Arrange - Monday, January 6, 2025 at midnight (a business day)
+        var monday = new DateTime(2025, 1, 6, 0, 0, 0);
+
+        // Act
+        var result = _domain.Ceiling(monday);
+
+        // Assert
+        Assert.Equal(monday, result);
+    }
+
     #endregion
 }
