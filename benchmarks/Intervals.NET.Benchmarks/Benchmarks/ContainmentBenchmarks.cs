@@ -4,7 +4,7 @@ using Intervals.NET.Extensions;
 using NodaTime;
 using Range = Intervals.NET.Factories.Range;
 
-namespace Intervals.NET.Benchmarks;
+namespace Intervals.NET.Benchmarks.Benchmarks;
 
 /// <summary>
 /// Benchmarks containment checks - one of the most common operations.

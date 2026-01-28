@@ -69,25 +69,25 @@ public readonly record struct Range<T> where T : IComparable<T>
     /// The start value of the range.
     /// Can be finite, negative infinity, or positive infinity.
     /// </summary>
-    public RangeValue<T> Start { get; init; }
+    public RangeValue<T> Start { get; }
 
     /// <summary>
     /// The end value of the range.
     /// Can be finite, negative infinity, or positive infinity.
     /// </summary>
-    public RangeValue<T> End { get; init; }
+    public RangeValue<T> End { get; }
 
     /// <summary>
     /// Indicates whether the start value is inclusive.
     /// Meaning the range includes the start value: [start, ...
     /// </summary>
-    public bool IsStartInclusive { get; init; }
+    public bool IsStartInclusive { get; }
 
     /// <summary>
     /// Indicates whether the end value is inclusive.
     /// Meaning the range includes the end value: ..., end]
     /// </summary>
-    public bool IsEndInclusive { get; init; }
+    public bool IsEndInclusive { get; }
 
     /// <summary>
     /// Returns a string representation of the range.

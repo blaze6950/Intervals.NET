@@ -536,7 +536,7 @@ public class RangeStringParserTests
         // Arrange
         var original = new Range<int>(RangeValue<int>.NegativeInfinity, RangeValue<int>.PositiveInfinity, false, false);
         var stringRepresentation = original.ToString();
-        
+
         // Verify ToString produces infinity symbols
         Assert.Equal("(-∞, ∞)", stringRepresentation);
 

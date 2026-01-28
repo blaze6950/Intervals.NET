@@ -2,7 +2,7 @@ using BenchmarkDotNet.Attributes;
 using Intervals.NET.Benchmarks.Competitors;
 using Range = Intervals.NET.Factories.Range;
 
-namespace Intervals.NET.Benchmarks;
+namespace Intervals.NET.Benchmarks.Benchmarks;
 
 /// <summary>
 /// Benchmarks string parsing - critical for configuration, serialization, user input.

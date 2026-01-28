@@ -3,7 +3,7 @@ using Intervals.NET.Benchmarks.Competitors;
 using NodaTime;
 using Range = Intervals.NET.Factories.Range;
 
-namespace Intervals.NET.Benchmarks;
+namespace Intervals.NET.Benchmarks.Benchmarks;
 
 /// <summary>
 /// Benchmarks construction patterns for interval/range types.

@@ -9,14 +9,14 @@ namespace Intervals.NET.Parsers;
 public static class RangeInterpolatedStringParser
 {
     // ...existing code...
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Range<T> Parse<T>(
         RangeInterpolatedStringHandler<T> handler
     ) where T : IComparable<T>, ISpanParsable<T> => handler.GetRange();
 
     // ...existing code...
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool TryParse<T>(
         RangeInterpolatedStringHandler<T> handler,

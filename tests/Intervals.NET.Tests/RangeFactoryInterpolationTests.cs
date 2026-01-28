@@ -244,7 +244,7 @@ public class RangeFactoryFromStringInterpolatedTests
         char invalidBracket = '{';
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
             RangeFactory.FromString<int>($"{invalidBracket}{10}, {20}]"));
 
         // Assert

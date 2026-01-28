@@ -294,7 +294,7 @@ public class RangeInterpolatedStringParserTests
         char closeBracket = ']';
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
             RangeInterpolatedStringParser.Parse<int>($"{openBracket}{start}, {end}{closeBracket}"));
 
         // Assert
@@ -314,7 +314,7 @@ public class RangeInterpolatedStringParserTests
         char closeBracket = '}';
 
         // Act
-        var exception = Record.Exception(() => 
+        var exception = Record.Exception(() =>
             RangeInterpolatedStringParser.Parse<int>($"{openBracket}{start}, {end}{closeBracket}"));
 
         // Assert
@@ -333,19 +333,19 @@ public class RangeInterpolatedStringParserTests
     {
         // Arrange
         var brackets = new[] { ('[', ']'), ('(', ')'), ('[', ')'), ('(', ']') };
-        var expectedInclusivity = new[] 
-        { 
-            (true, true), 
-            (false, false), 
-            (true, false), 
-            (false, true) 
+        var expectedInclusivity = new[]
+        {
+            (true, true),
+            (false, false),
+            (true, false),
+            (false, true)
         };
 
         for (int i = 0; i < brackets.Length; i++)
         {
             var (open, close) = brackets[i];
             var (startInc, endInc) = expectedInclusivity[i];
-            
+
             int start = 10;
             int end = 20;
 

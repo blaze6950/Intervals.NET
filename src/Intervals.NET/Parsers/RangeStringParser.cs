@@ -249,20 +249,20 @@ public static class RangeStringParser
         // Try each comma position until we find one where both sides parse
         var searchStart = 0;
         var currentCommaIndex = commaIndex;
-        
+
         while (currentCommaIndex >= 0)
         {
             var leftSpan = span.Slice(0, currentCommaIndex).Trim();
             var rightSpan = span.Slice(currentCommaIndex + 1).Trim();
 
             // Empty spans are valid (infinity), otherwise try to parse
-            var leftValid = leftSpan.IsEmpty || 
-                           IsNegativeInfinitySymbol(leftSpan) || 
+            var leftValid = leftSpan.IsEmpty ||
+                           IsNegativeInfinitySymbol(leftSpan) ||
                            IsPositiveInfinitySymbol(leftSpan) ||
                            T.TryParse(leftSpan, formatProvider, out _);
-                           
-            var rightValid = rightSpan.IsEmpty || 
-                            IsNegativeInfinitySymbol(rightSpan) || 
+
+            var rightValid = rightSpan.IsEmpty ||
+                            IsNegativeInfinitySymbol(rightSpan) ||
                             IsPositiveInfinitySymbol(rightSpan) ||
                             T.TryParse(rightSpan, formatProvider, out _);
 
