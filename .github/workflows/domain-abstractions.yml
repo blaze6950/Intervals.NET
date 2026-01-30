@@ -1,24 +1,21 @@
-name: CI/CD - Intervals.NET
+name: CI/CD - Domain.Abstractions
 
 on:
   push:
     branches: [ master, main ]
     paths:
-      - 'src/Intervals.NET/**'
-      - 'tests/Intervals.NET.Tests/**'
-      - '*.sln'
+      - 'src/Domain/Intervals.NET.Domain.Abstractions/**'
+      - '.github/workflows/domain-abstractions.yml'
   pull_request:
     branches: [ master, main ]
     paths:
-      - 'src/Intervals.NET/**'
-      - 'tests/Intervals.NET.Tests/**'
-      - '*.sln'
+      - 'src/Domain/Intervals.NET.Domain.Abstractions/**'
+      - '.github/workflows/domain-abstractions.yml'
   workflow_dispatch:
 
 env:
   DOTNET_VERSION: '8.x.x'
-  PROJECT_PATH: 'src/Intervals.NET/Intervals.NET.csproj'
-  TEST_PATH: 'tests/Intervals.NET.Tests/Intervals.NET.Tests.csproj'
+  PROJECT_PATH: 'src/Domain/Intervals.NET.Domain.Abstractions/Intervals.NET.Domain.Abstractions.csproj'
 
 jobs:
   build-and-test:
@@ -34,18 +31,15 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ${{ env.PROJECT_PATH }}
 
-      - name: Build solution
-        run: dotnet build --configuration Release --no-restore /p:DefineConstants=UNIT_TESTS
-
-      - name: Run tests
-        run: dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal
+      - name: Build Domain.Abstractions
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
   
   publish-nuget:
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     
     steps:
       - name: Checkout code
@@ -57,19 +51,19 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ${{ env.PROJECT_PATH }}
 
-      - name: Build Intervals.NET
+      - name: Build Domain.Abstractions
         run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
 
-      - name: Pack Intervals.NET
+      - name: Pack Domain.Abstractions
         run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --no-build --output ./artifacts
 
-      - name: Publish Intervals.NET to NuGet
-        run: dotnet nuget push ./artifacts/Intervals.NET.*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Publish Domain.Abstractions to NuGet
+        run: dotnet nuget push ./artifacts/Intervals.NET.Domain.Abstractions.*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Upload package artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: intervals-net-package
+          name: domain-abstractions-package
           path: ./artifacts/*.nupkg

@@ -32,11 +32,9 @@ public static class RangeStringParser
         IFormatProvider? formatProvider = null
     ) where T : IComparable<T>, ISpanParsable<T>
     {
-        if (!TryParseCore<T>(input, out var range, formatProvider, throwOnError: true))
-        {
-            // This should never be reached since throwOnError=true
-            throw new InvalidOperationException("Unexpected parse failure.");
-        }
+        // Call core parser with throwOnError = true
+        // Ignore the boolean result since we expect it to succeed or throw
+        _ = TryParseCore<T>(input, out var range, formatProvider, throwOnError: true);
 
         return range;
     }
@@ -203,9 +201,6 @@ public static class RangeStringParser
     private static void ThrowMissingComma() =>
         throw new FormatException("Missing comma separator.");
 
-    private static void ThrowMultipleCommas() =>
-        throw new FormatException("Invalid range format. More than one comma found.");
-
     /// <summary>
     /// Checks if the span represents a positive infinity symbol.
     /// </summary>
@@ -249,20 +244,20 @@ public static class RangeStringParser
         // Try each comma position until we find one where both sides parse
         var searchStart = 0;
         var currentCommaIndex = commaIndex;
-        
+
         while (currentCommaIndex >= 0)
         {
             var leftSpan = span.Slice(0, currentCommaIndex).Trim();
             var rightSpan = span.Slice(currentCommaIndex + 1).Trim();
 
             // Empty spans are valid (infinity), otherwise try to parse
-            var leftValid = leftSpan.IsEmpty || 
-                           IsNegativeInfinitySymbol(leftSpan) || 
+            var leftValid = leftSpan.IsEmpty ||
+                           IsNegativeInfinitySymbol(leftSpan) ||
                            IsPositiveInfinitySymbol(leftSpan) ||
                            T.TryParse(leftSpan, formatProvider, out _);
-                           
-            var rightValid = rightSpan.IsEmpty || 
-                            IsNegativeInfinitySymbol(rightSpan) || 
+
+            var rightValid = rightSpan.IsEmpty ||
+                            IsNegativeInfinitySymbol(rightSpan) ||
                             IsPositiveInfinitySymbol(rightSpan) ||
                             T.TryParse(rightSpan, formatProvider, out _);
 

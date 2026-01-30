@@ -110,13 +110,13 @@ public class RangeExtensionsTests
     #region Contains Tests
 
     // Contains(T value) tests
-    
+
     [Fact]
     public void Contains_Value_InsideClosedRange_ReturnsTrue()
     {
         // Arrange
         var range = RangeFactory.Closed<int>(10, 20);
-        
+
         // Act & Assert
         Assert.True(range.Contains(15));
         Assert.True(range.Contains(10)); // Start boundary
@@ -128,7 +128,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range = RangeFactory.Open<int>(10, 20);
-        
+
         // Act & Assert
         Assert.True(range.Contains(15));
         Assert.False(range.Contains(10)); // Excluded start
@@ -140,7 +140,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range = RangeFactory.ClosedOpen<int>(10, 20);
-        
+
         // Act & Assert
         Assert.True(range.Contains(15));
         Assert.True(range.Contains(10));  // Included start
@@ -152,7 +152,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range = RangeFactory.OpenClosed<int>(10, 20);
-        
+
         // Act & Assert
         Assert.True(range.Contains(15));
         Assert.False(range.Contains(10)); // Excluded start
@@ -164,7 +164,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range = RangeFactory.Closed<int>(10, 20);
-        
+
         // Act & Assert
         Assert.False(range.Contains(5));  // Before start
         Assert.False(range.Contains(25)); // After end
@@ -175,7 +175,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range = RangeFactory.Open(RangeValue<int>.NegativeInfinity, 100);
-        
+
         // Act & Assert
         Assert.True(range.Contains(-1000000));
         Assert.True(range.Contains(0));
@@ -189,7 +189,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range = RangeFactory.Closed(0, RangeValue<int>.PositiveInfinity);
-        
+
         // Act & Assert
         Assert.False(range.Contains(-1));
         Assert.True(range.Contains(0));   // Included start
@@ -202,7 +202,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range = RangeFactory.Open(RangeValue<int>.NegativeInfinity, RangeValue<int>.PositiveInfinity);
-        
+
         // Act & Assert
         Assert.True(range.Contains(int.MinValue));
         Assert.True(range.Contains(0));
@@ -214,7 +214,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range = RangeFactory.Closed<double>(1.5, 9.5);
-        
+
         // Act & Assert
         Assert.False(range.Contains(1.4));
         Assert.True(range.Contains(1.5));
@@ -230,7 +230,7 @@ public class RangeExtensionsTests
         var start = new DateTime(2024, 1, 1);
         var end = new DateTime(2024, 12, 31);
         var range = RangeFactory.ClosedOpen<DateTime>(start, end);
-        
+
         // Act & Assert
         Assert.True(range.Contains(new DateTime(2024, 1, 1)));  // Included start
         Assert.True(range.Contains(new DateTime(2024, 6, 15)));
@@ -243,7 +243,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range = RangeFactory.Closed<int>(10, 10);
-        
+
         // Act & Assert
         Assert.False(range.Contains(9));
         Assert.True(range.Contains(10));
@@ -1185,6 +1185,161 @@ public class RangeExtensionsTests
 
     #endregion
 
+    #region Except - Additional Infinity and Boundary Edge Cases
+
+    [Fact]
+    public void Except_BothRangesStartAtNegativeInfinity_ReturnsOnlyRightPortion()
+    {
+        // Arrange - Both start at negative infinity
+        var range = RangeFactory.Closed(RangeValue<int>.NegativeInfinity, 50);
+        var other = RangeFactory.Closed(RangeValue<int>.NegativeInfinity, 30);
+
+        // Act
+        var result = range.Except(other).ToList();
+
+        // Assert
+        Assert.Single(result);
+        Assert.Equal(30, result[0].Start.Value);
+        Assert.Equal(50, result[0].End.Value);
+        Assert.False(result[0].IsStartInclusive); // !other.IsStartInclusive
+        Assert.True(result[0].IsEndInclusive);
+    }
+
+    [Fact]
+    public void Except_BothRangesEndAtPositiveInfinity_ReturnsOnlyLeftPortion()
+    {
+        // Arrange - Both end at positive infinity
+        var range = RangeFactory.Closed(10, RangeValue<int>.PositiveInfinity);
+        var other = RangeFactory.Closed(30, RangeValue<int>.PositiveInfinity);
+
+        // Act
+        var result = range.Except(other).ToList();
+
+        // Assert
+        Assert.Single(result);
+        Assert.Equal(10, result[0].Start.Value);
+        Assert.Equal(30, result[0].End.Value);
+        Assert.True(result[0].IsStartInclusive);
+        Assert.False(result[0].IsEndInclusive); // !other.IsEndInclusive
+    }
+
+    [Fact]
+    public void Except_FullInfiniteRangeExceptFullInfiniteRange_ReturnsEmpty()
+    {
+        // Arrange - Both are fully infinite
+        var range = RangeFactory.Open(RangeValue<int>.NegativeInfinity, RangeValue<int>.PositiveInfinity);
+        var other = RangeFactory.Open(RangeValue<int>.NegativeInfinity, RangeValue<int>.PositiveInfinity);
+
+        // Act
+        var result = range.Except(other).ToList();
+
+        // Assert
+        Assert.Empty(result); // Complete overlap, nothing left
+    }
+
+    [Fact]
+    public void Except_EqualStartBoundaries_RangeInclusiveOtherExclusive_PreservesSinglePoint()
+    {
+        // Arrange - Start boundaries equal, range inclusive, other exclusive
+        var range = RangeFactory.Closed<int>(10, 50);  // [10, 50]
+        var other = RangeFactory.OpenClosed<int>(10, 30); // (10, 30]
+
+        // Act
+        var result = range.Except(other).ToList();
+
+        // Assert
+        Assert.Equal(2, result.Count);
+        
+        // First result: single point at 10
+        Assert.Equal(10, result[0].Start.Value);
+        Assert.Equal(10, result[0].End.Value);
+        Assert.True(result[0].IsStartInclusive);
+        Assert.True(result[0].IsEndInclusive);
+
+        // Second result: remaining portion
+        Assert.Equal(30, result[1].Start.Value);
+        Assert.Equal(50, result[1].End.Value);
+    }
+
+    [Fact]
+    public void Except_EqualStartBoundaries_BothInclusive_NoSinglePointPreserved()
+    {
+        // Arrange - Start boundaries equal, both inclusive
+        var range = RangeFactory.Closed<int>(10, 50);  // [10, 50]
+        var other = RangeFactory.Closed<int>(10, 30);  // [10, 30]
+
+        // Act
+        var result = range.Except(other).ToList();
+
+        // Assert - Only one portion, no single point
+        Assert.Single(result);
+        Assert.Equal(30, result[0].Start.Value);
+        Assert.Equal(50, result[0].End.Value);
+        Assert.False(result[0].IsStartInclusive); // !other.IsStartInclusive would be false
+    }
+
+    [Fact]
+    public void Except_EqualEndBoundaries_RangeInclusiveOtherExclusive_PreservesSinglePoint()
+    {
+        // Arrange - End boundaries equal, range inclusive, other exclusive
+        var range = RangeFactory.Closed<int>(10, 50);   // [10, 50]
+        var other = RangeFactory.ClosedOpen<int>(30, 50); // [30, 50)
+
+        // Act
+        var result = range.Except(other).ToList();
+
+        // Assert
+        Assert.Equal(2, result.Count);
+
+        // First result: remaining portion
+        Assert.Equal(10, result[0].Start.Value);
+        Assert.Equal(30, result[0].End.Value);
+
+        // Second result: single point at 50
+        Assert.Equal(50, result[1].Start.Value);
+        Assert.Equal(50, result[1].End.Value);
+        Assert.True(result[1].IsStartInclusive);
+        Assert.True(result[1].IsEndInclusive);
+    }
+
+    [Fact]
+    public void Except_EqualEndBoundaries_BothInclusive_NoSinglePointAtEnd()
+    {
+        // Arrange - End boundaries equal, both inclusive
+        var range = RangeFactory.Closed<int>(10, 50);  // [10, 50]
+        var other = RangeFactory.Closed<int>(30, 50);  // [30, 50]
+
+        // Act
+        var result = range.Except(other).ToList();
+
+        // Assert - Only one portion, no single point
+        Assert.Single(result);
+        Assert.Equal(10, result[0].Start.Value);
+        Assert.Equal(30, result[0].End.Value);
+        Assert.True(result[0].IsStartInclusive);
+        Assert.False(result[0].IsEndInclusive);
+    }
+
+    [Fact]
+    public void Except_RangeWithNegInfinityStart_OtherAlsoNegInfinityStart_NoLeftPortion()
+    {
+        // Arrange - Both have negative infinity start, other ends before range
+        var range = RangeFactory.Closed(RangeValue<int>.NegativeInfinity, 100);
+        var other = RangeFactory.Open(RangeValue<int>.NegativeInfinity, 50);
+
+        // Act
+        var result = range.Except(other).ToList();
+
+        // Assert - Only right portion exists (no left portion when both start at -infinity)
+        Assert.Single(result);
+        Assert.Equal(50, result[0].Start.Value);
+        Assert.Equal(100, result[0].End.Value);
+        Assert.True(result[0].IsStartInclusive); // !other.IsEndInclusive = true
+        Assert.True(result[0].IsEndInclusive);
+    }
+
+    #endregion
+
     #region Integration Tests - Multiple Extension Methods
 
     [Fact]
@@ -1226,6 +1381,94 @@ public class RangeExtensionsTests
         Assert.NotNull(intersection);
         Assert.Equal(3.0, intersection.Value.Start.Value);
         Assert.Equal(5.5, intersection.Value.End.Value);
+    }
+
+    #endregion
+
+    #region Additional Edge Case Coverage Tests
+
+    [Fact]
+    public void Contains_Range_WithBothUnboundedButDifferentInclusivity_ChecksCorrectly()
+    {
+        // Arrange - Both infinite, testing inclusivity edge case
+        var outer = RangeFactory.Open(RangeValue<int>.NegativeInfinity, RangeValue<int>.PositiveInfinity);
+        var inner = RangeFactory.Closed(RangeValue<int>.NegativeInfinity, RangeValue<int>.PositiveInfinity);
+
+        // Act - Tests infinity + inclusivity logic in Contains(Range,Range)
+        var result = outer.Contains(inner);
+
+        // Assert - Open boundaries at infinity can't contain closed boundaries
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void IsEmpty_WithSinglePoint_ExclusiveBoundaries_ReturnsTrue()
+    {
+        // Arrange - Single point but both exclusive = empty
+        var range = new Range<int>(10, 10, false, false, skipValidation: true);
+
+        // Act - Tests uncovered branch in IsEmpty
+        var result = range.IsEmpty();
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void Intersect_WithTouchingRanges_ExclusiveBoundaries_ReturnsNull()
+    {
+        // Arrange - [10,20) and [20,30) - touching at 20 but exclusive
+        var range1 = RangeFactory.ClosedOpen<int>(new RangeValue<int>(10), new RangeValue<int>(20));
+        var range2 = RangeFactory.ClosedOpen<int>(new RangeValue<int>(20), new RangeValue<int>(30));
+
+        // Act - Tests edge case in Intersect
+        var result = range1.Intersect(range2);
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void Overlaps_WithSameBoundaries_DifferentInclusivity_DetectsCorrectly()
+    {
+        // Arrange - Same values, one inclusive one exclusive
+        var range1 = RangeFactory.Closed<int>(new RangeValue<int>(10), new RangeValue<int>(20));
+        var range2 = RangeFactory.Open<int>(new RangeValue<int>(10), new RangeValue<int>(20));
+
+        // Act - Tests inclusivity check in Overlaps
+        var result = range1.Overlaps(range2);
+
+        // Assert
+        Assert.True(result); // They overlap in the interior (10, 20)
+    }
+
+    [Fact]
+    public void Union_WithGap_BothExclusive_ReturnsNull()
+    {
+        // Arrange - Gap between ranges [10,20) and (25,30]
+        var range1 = RangeFactory.ClosedOpen<int>(new RangeValue<int>(10), new RangeValue<int>(20));
+        var range2 = RangeFactory.OpenClosed<int>(new RangeValue<int>(25), new RangeValue<int>(30));
+
+        // Act - Tests gap detection in Union
+        var result = range1.Union(range2);
+
+        // Assert
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void BitwiseOrOperator_PerformsUnion_SameAsUnionMethod()
+    {
+        // Arrange
+        var range1 = RangeFactory.Closed<int>(new RangeValue<int>(10), new RangeValue<int>(20));
+        var range2 = RangeFactory.Closed<int>(new RangeValue<int>(15), new RangeValue<int>(25));
+
+        // Act - Tests op_BitwiseOr (uncovered operator)
+        var resultOperator = range1 | range2;
+        var resultMethod = range1.Union(range2);
+
+        // Assert
+        Assert.Equal(resultMethod, resultOperator);
     }
 
     #endregion

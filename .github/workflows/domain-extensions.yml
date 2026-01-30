@@ -1,0 +1,79 @@
+name: CI/CD - Domain.Extensions
+
+on:
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'src/Domain/Intervals.NET.Domain.Extensions/**'
+      - 'src/Domain/Intervals.NET.Domain.Abstractions/**'
+      - 'src/Intervals.NET/**'
+      - 'tests/Intervals.NET.Domain.Extensions.Tests/**'
+      - '.github/workflows/domain-extensions.yml'
+  pull_request:
+    branches: [ master, main ]
+    paths:
+      - 'src/Domain/Intervals.NET.Domain.Extensions/**'
+      - 'src/Domain/Intervals.NET.Domain.Abstractions/**'
+      - 'src/Intervals.NET/**'
+      - 'tests/Intervals.NET.Domain.Extensions.Tests/**'
+      - '.github/workflows/domain-extensions.yml'
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.x.x'
+  PROJECT_PATH: 'src/Domain/Intervals.NET.Domain.Extensions/Intervals.NET.Domain.Extensions.csproj'
+  TEST_PATH: 'tests/Intervals.NET.Domain.Extensions.Tests/Intervals.NET.Domain.Extensions.Tests.csproj'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build Domain.Extensions
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Run Domain.Extensions tests
+        run: dotnet test ${{ env.TEST_PATH }} --configuration Release --verbosity normal
+  
+  publish-nuget:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build Domain.Extensions
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Pack Domain.Extensions
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --no-build --output ./artifacts
+
+      - name: Publish Domain.Extensions to NuGet
+        run: dotnet nuget push ./artifacts/Intervals.NET.Domain.Extensions.*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: domain-extensions-package
+          path: ./artifacts/*.nupkg

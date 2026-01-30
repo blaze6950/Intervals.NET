@@ -20,13 +20,13 @@ public static class Range
     /// Use RangeValue&lt;T&gt;.PositiveInfinity for unbounded end.
     /// </param>
     /// <typeparam name="T">
-    /// The type of the values in the range. Must implement IComparable&lt;T&gt; and ISpanParsable&lt;T&gt;.
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt;.
     /// </typeparam>
     /// <returns>
     /// A new instance of <see cref="Range{T}"/> representing the closed range [start, end].
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Range<T> Closed<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>, ISpanParsable<T>
+    public static Range<T> Closed<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>
         => new(start, end, true, true);
 
     /// <summary>
@@ -41,13 +41,28 @@ public static class Range
     /// Use RangeValue&lt;T&gt;.PositiveInfinity for unbounded end.
     /// </param>
     /// <typeparam name="T">
-    /// The type of the values in the range. Must implement IComparable&lt;T&gt; and ISpanParsable&lt;T&gt;.
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt;.
     /// </typeparam>
     /// <returns>
     /// A new instance of <see cref="Range{T}"/> representing the open range (start, end).
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Range<T> Open<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>, ISpanParsable<T>
+    public static Range<T> Open<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>
+        => new(start, end, false, false);
+
+    /// <summary>
+    /// Creates an open range (start, end).
+    /// </summary>
+    /// <param name="start">The start value of the range.</param>
+    /// <param name="end">The end value of the range.</param>
+    /// <typeparam name="T">
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt;.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="Range{T}"/> representing the open range (start, end).
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Range<T> Open<T>(T start, T end) where T : IComparable<T>
         => new(start, end, false, false);
 
     /// <summary>
@@ -62,14 +77,13 @@ public static class Range
     /// Use RangeValue&lt;T&gt;.PositiveInfinity for unbounded end.
     /// </param>
     /// <typeparam name="T">
-    /// The type of the values in the range. Must implement IComparable&lt;T&gt; and ISpanParsable&lt;T&gt;.
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt;.
     /// </typeparam>
     /// <returns>
     /// A new instance of <see cref="Range{T}"/> representing the half-open range (start, end].
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Range<T> OpenClosed<T>(RangeValue<T> start, RangeValue<T> end)
-        where T : IComparable<T>, ISpanParsable<T>
+    public static Range<T> OpenClosed<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>
         => new(start, end, false, true);
 
     /// <summary>
@@ -84,15 +98,51 @@ public static class Range
     /// Use RangeValue&lt;T&gt;.PositiveInfinity for unbounded end.
     /// </param>
     /// <typeparam name="T">
-    /// The type of the values in the range. Must implement IComparable&lt;T&gt; and ISpanParsable&lt;T&gt;.
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt;.
     /// </typeparam>
     /// <returns>
     /// A new instance of <see cref="Range{T}"/> representing the half-open range [start, end).
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Range<T> ClosedOpen<T>(RangeValue<T> start, RangeValue<T> end)
-        where T : IComparable<T>, ISpanParsable<T>
+    public static Range<T> ClosedOpen<T>(RangeValue<T> start, RangeValue<T> end) where T : IComparable<T>
         => new(start, end, true, false);
+
+    /// <summary>
+    /// Creates a half-open range [start, end).
+    /// </summary>
+    /// <param name="start">The start value of the range.</param>
+    /// <param name="end">The end value of the range.</param>
+    /// <typeparam name="T">
+    /// The type of the values in the range. Must implement IComparable&lt;T&gt;.
+    /// </typeparam>
+    /// <returns>
+    /// A new instance of <see cref="Range{T}"/> representing the half-open range [start, end).
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Range<T> ClosedOpen<T>(T start, T end) where T : IComparable<T>
+        => new(start, end, true, false);
+
+    /// <summary>
+    /// Creates a range with explicit inclusivity settings.
+    /// This is a general-purpose factory for cases where inclusivity needs to be preserved or specified explicitly.
+    /// Useful for domain operations and transformations that maintain the original range's boundary semantics.
+    /// </summary>
+    /// <param name="start">
+    /// The start value of the range.
+    /// Use RangeValue&lt;T&gt;.NegativeInfinity for unbounded start.
+    /// </param>
+    /// <param name="end">
+    /// The end value of the range.
+    /// Use RangeValue&lt;T&gt;.PositiveInfinity for unbounded end.
+    /// </param>
+    /// <param name="isStartInclusive">Whether the start boundary is inclusive.</param>
+    /// <param name="isEndInclusive">Whether the end boundary is inclusive.</param>
+    /// <typeparam name="T">The type of values in the range. Must implement IComparable&lt;T&gt;.</typeparam>
+    /// <returns>A new validated Range&lt;T&gt; instance.</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Range<T> Create<T>(RangeValue<T> start, RangeValue<T> end, bool isStartInclusive, bool isEndInclusive)
+        where T : IComparable<T>
+        => new(start, end, isStartInclusive, isEndInclusive);
 
     /// <summary>
     /// Parses a range from the given input string.

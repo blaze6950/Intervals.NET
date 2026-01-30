@@ -6,7 +6,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{5D2B78C6-39CB-44C2-9E02-57CE792FEC93}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
-		.github\workflows\ci-cd.yml = .github\workflows\ci-cd.yml
+		.github\workflows\domain-abstractions.yml = .github\workflows\domain-abstractions.yml
+		.github\workflows\domain-default.yml = .github\workflows\domain-default.yml
+		.github\workflows\domain-extensions.yml = .github\workflows\domain-extensions.yml
+		.github\workflows\intervals-net.yml = .github\workflows\intervals-net.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EAF02F30-A5E4-4237-B402-6F946F2B2C09}"
@@ -16,9 +19,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Tests", "tests\Intervals.NET.Tests\Intervals.NET.Tests.csproj", "{8703AF16-1CD4-40CF-81B4-3579FDF858EF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{479FF156-A58F-4508-8EF5-A7A3DCD4C643}"
-	ProjectSection(SolutionItems) = preProject
-		benchmarks\BENCHMARK-ANALYSIS.md = benchmarks\BENCHMARK-ANALYSIS.md
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Benchmarks", "benchmarks\Intervals.NET.Benchmarks\Intervals.NET.Benchmarks.csproj", "{C3ECBB81-C7E1-4B63-9284-74A48BD14305}"
 EndProject
@@ -29,7 +29,31 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Results", "Results", "{F375
 		benchmarks\Results\Intervals.NET.Benchmarks.ParsingBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.ParsingBenchmarks-report-github.md
 		benchmarks\Results\Intervals.NET.Benchmarks.RealWorldScenariosBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.RealWorldScenariosBenchmarks-report-github.md
 		benchmarks\Results\Intervals.NET.Benchmarks.SetOperationsBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.SetOperationsBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ConstructionBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ConstructionBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ContainmentBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ContainmentBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.CrossGranularityDomainBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.CrossGranularityDomainBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.DomainHotPathScenariosBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.DomainHotPathScenariosBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.DomainOperationsBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.DomainOperationsBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.FixedStepExtensionsBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.FixedStepExtensionsBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ParsingBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ParsingBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.RealWorldScenariosBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.RealWorldScenariosBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.SetOperationsBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.SetOperationsBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.VariableStepDomainBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.VariableStepDomainBenchmarks-report-github.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Domain.Abstractions", "src\Domain\Intervals.NET.Domain.Abstractions\Intervals.NET.Domain.Abstractions.csproj", "{EE258066-15D2-413B-B2F5-9122A0FA2387}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{BE05E07A-0EF1-4AAA-A12E-88A89AE715A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Domain.Extensions", "src\Domain\Intervals.NET.Domain.Extensions\Intervals.NET.Domain.Extensions.csproj", "{AA13C99C-EDBD-4933-A1AC-D896772B6F18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Domain.Default", "src\Domain\Intervals.NET.Domain.Default\Intervals.NET.Domain.Default.csproj", "{23F763C3-E80F-4CDB-A56B-EE2A9E84BCFE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{592DCBFE-8570-44E3-B9DD-351AA775BFC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Domain.Default.Tests", "tests\Intervals.NET.Domain.Default.Tests\Intervals.NET.Domain.Default.Tests.csproj", "{EAC4D033-A7D7-4242-8661-3F231257B4FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Domain.Extensions.Tests", "tests\Intervals.NET.Domain.Extensions.Tests\Intervals.NET.Domain.Extensions.Tests.csproj", "{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,11 +73,38 @@ Global
 		{C3ECBB81-C7E1-4B63-9284-74A48BD14305}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3ECBB81-C7E1-4B63-9284-74A48BD14305}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3ECBB81-C7E1-4B63-9284-74A48BD14305}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE258066-15D2-413B-B2F5-9122A0FA2387}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE258066-15D2-413B-B2F5-9122A0FA2387}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE258066-15D2-413B-B2F5-9122A0FA2387}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE258066-15D2-413B-B2F5-9122A0FA2387}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA13C99C-EDBD-4933-A1AC-D896772B6F18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA13C99C-EDBD-4933-A1AC-D896772B6F18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA13C99C-EDBD-4933-A1AC-D896772B6F18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA13C99C-EDBD-4933-A1AC-D896772B6F18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23F763C3-E80F-4CDB-A56B-EE2A9E84BCFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23F763C3-E80F-4CDB-A56B-EE2A9E84BCFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23F763C3-E80F-4CDB-A56B-EE2A9E84BCFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23F763C3-E80F-4CDB-A56B-EE2A9E84BCFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EAC4D033-A7D7-4242-8661-3F231257B4FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAC4D033-A7D7-4242-8661-3F231257B4FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAC4D033-A7D7-4242-8661-3F231257B4FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAC4D033-A7D7-4242-8661-3F231257B4FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A2F7DF66-08BE-438A-A354-C09499B8B8B7} = {EAF02F30-A5E4-4237-B402-6F946F2B2C09}
 		{8703AF16-1CD4-40CF-81B4-3579FDF858EF} = {28A5727D-3EDB-4F19-8B68-1DBD790EB8E2}
 		{C3ECBB81-C7E1-4B63-9284-74A48BD14305} = {479FF156-A58F-4508-8EF5-A7A3DCD4C643}
 		{F3754280-1B2F-4C7C-9BD0-E54001301567} = {479FF156-A58F-4508-8EF5-A7A3DCD4C643}
+		{BE05E07A-0EF1-4AAA-A12E-88A89AE715A4} = {EAF02F30-A5E4-4237-B402-6F946F2B2C09}
+		{EE258066-15D2-413B-B2F5-9122A0FA2387} = {BE05E07A-0EF1-4AAA-A12E-88A89AE715A4}
+		{AA13C99C-EDBD-4933-A1AC-D896772B6F18} = {BE05E07A-0EF1-4AAA-A12E-88A89AE715A4}
+		{23F763C3-E80F-4CDB-A56B-EE2A9E84BCFE} = {BE05E07A-0EF1-4AAA-A12E-88A89AE715A4}
+		{592DCBFE-8570-44E3-B9DD-351AA775BFC8} = {28A5727D-3EDB-4F19-8B68-1DBD790EB8E2}
+		{EAC4D033-A7D7-4242-8661-3F231257B4FE} = {592DCBFE-8570-44E3-B9DD-351AA775BFC8}
+		{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25} = {592DCBFE-8570-44E3-B9DD-351AA775BFC8}
 	EndGlobalSection
 EndGlobal

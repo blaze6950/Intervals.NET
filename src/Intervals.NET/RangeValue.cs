@@ -111,7 +111,21 @@ public readonly struct RangeValue<T> :
                 return 0;
             }
 
-            return _value!.CompareTo(other._value!);
+            // Handle null values for nullable types
+            if (_value is null && other._value is null)
+            {
+                return 0;
+            }
+            if (_value is null)
+            {
+                return -1;
+            }
+            if (other._value is null)
+            {
+                return 1;
+            }
+
+            return Comparer<T>.Default.Compare(_value, other._value);
         }
 
         return _kind switch
@@ -159,12 +173,21 @@ public readonly struct RangeValue<T> :
     {
         unchecked
         {
-            return _kind switch
+            switch (_kind)
             {
-                RangeValueKind.PositiveInfinity => int.MaxValue,
-                RangeValueKind.NegativeInfinity => int.MinValue,
-                _ => (EqualityComparer<T>.Default.GetHashCode(_value!) * 397) ^ (int)_kind
-            };
+                case RangeValueKind.PositiveInfinity:
+                    return int.MaxValue;
+                case RangeValueKind.NegativeInfinity:
+                    return int.MinValue;
+                default:
+                {
+                    // For finite values, combine value hash with kind
+                    // Use EqualityComparer directly - it handles null properly
+                    var valueHash = EqualityComparer<T>.Default.GetHashCode(_value!);
+                    // Combine value hash with kind for better distribution
+                    return (valueHash * 397) ^ ((int)_kind * 17);
+                }
+            }
         }
     }
 

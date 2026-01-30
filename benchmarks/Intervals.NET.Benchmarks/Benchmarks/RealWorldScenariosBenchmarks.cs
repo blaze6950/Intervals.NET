@@ -3,7 +3,7 @@ using Intervals.NET.Benchmarks.Competitors;
 using Intervals.NET.Extensions;
 using Range = Intervals.NET.Factories.Range;
 
-namespace Intervals.NET.Benchmarks;
+namespace Intervals.NET.Benchmarks.Benchmarks;
 
 /// <summary>
 /// Benchmarks real-world usage patterns: sliding windows, validation loops, range checking.

@@ -9,6 +9,11 @@
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![NuGet](https://img.shields.io/nuget/v/Intervals.NET.svg)](https://www.nuget.org/packages/Intervals.NET/)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Intervals.NET.svg)](https://www.nuget.org/packages/Intervals.NET/)
+[![Build - Intervals.NET](https://img.shields.io/github/actions/workflow/status/blaze6950/Intervals.NET/intervals-net.yml?branch=main&label=Intervals.NET)](https://github.com/blaze6950/Intervals.NET/actions/workflows/intervals-net.yml)
+[![Build - Domain.Abstractions](https://img.shields.io/github/actions/workflow/status/blaze6950/Intervals.NET/domain-abstractions.yml?branch=main&label=Domain.Abstractions)](https://github.com/blaze6950/Intervals.NET/actions/workflows/domain-abstractions.yml)
+[![Build - Domain.Default](https://img.shields.io/github/actions/workflow/status/blaze6950/Intervals.NET/domain-default.yml?branch=main&label=Domain.Default)](https://github.com/blaze6950/Intervals.NET/actions/workflows/domain-default.yml)
+[![Build - Domain.Extensions](https://img.shields.io/github/actions/workflow/status/blaze6950/Intervals.NET/domain-extensions.yml?branch=main&label=Domain.Extensions)](https://github.com/blaze6950/Intervals.NET/actions/workflows/domain-extensions.yml)
 
 </div>
 
@@ -35,7 +40,13 @@ A production-ready .NET library for working with mathematical intervals and rang
 ## 📑 Table of Contents
 
 - [Installation](#-installation)
+- [Understanding Intervals](#-understanding-intervals) 👈 *Start here if new to intervals*
+  - [What Are Intervals?](#what-are-intervals)
+  - [Visual Guide](#visual-guide)
+  - [Mathematical Foundation](#mathematical-foundation) *(collapsible)*
+  - [When to Use Intervals](#when-to-use-intervals) *(collapsible)*
 - [Quick Start](#-quick-start)
+  - [Getting Started Guide](#getting-started-guide) *(collapsible)*
 - [Real-World Use Cases](#-real-world-use-cases) 👈 *Click to expand examples*
 - [Core Concepts](#-core-concepts)
   - [Range Notation](#range-notation)
@@ -48,6 +59,7 @@ A production-ready .NET library for working with mathematical intervals and rang
   - [Parsing from Strings](#parsing-from-strings)
   - [Zero-Allocation Parsing](#zero-allocation-parsing)
   - [Working with Custom Types](#working-with-custom-types)
+  - [Domain Extensions](#domain-extensions) 👈 *NEW: Step-based operations*
   - [Advanced Usage Examples](#advanced-usage-examples) 👈 *Click to expand*
 - [Performance](#-performance)
   - [Detailed Benchmark Results](#detailed-benchmark-results) 👈 *Click to expand*
@@ -70,6 +82,315 @@ dotnet add package Intervals.NET
 ```
 
 </div>
+
+---
+
+## 📐 Understanding Intervals
+
+### What Are Intervals?
+
+An **interval** (or range) is a mathematical concept representing all values between two endpoints. In programming, intervals provide a precise way to express continuous or discrete value ranges with explicit boundary behavior—whether endpoints are included or excluded.
+
+**Why intervals matter:** They transform implicit boundary logic scattered across conditionals into explicit, reusable, testable data structures. Instead of `if (x >= 10 && x <= 20)`, you write `range.Contains(x)`.
+
+**Common applications:** Date ranges, numeric validation, time windows, pricing tiers, access control, scheduling conflicts, data filtering, and any domain requiring boundary semantics.
+
+---
+
+### Visual Guide
+
+Understanding boundary inclusivity is crucial. Here's how the four interval types work:
+
+```
+Number Line: ... 8 --- 9 --- 10 --- 11 --- 12 --- 13 --- 14 --- 15 --- 16 ...
+
+Closed Interval [10, 15]
+    Includes both endpoints (10 and 15)
+    ●━━━━━━━━━━━━━━━━━━━━━━━━━━●
+    10                         15
+    Values: {10, 11, 12, 13, 14, 15}
+    Code: Range.Closed(10, 15)
+
+Open Interval (10, 15)
+    Excludes both endpoints
+    ○━━━━━━━━━━━━━━━━━━━━━━━━━━○
+    10                         15
+    Values: {11, 12, 13, 14}
+    Code: Range.Open(10, 15)
+
+Half-Open Interval [10, 15)
+    Includes start (10), excludes end (15)
+    ●━━━━━━━━━━━━━━━━━━━━━━━━━━○
+    10                         15
+    Values: {10, 11, 12, 13, 14}
+    Code: Range.ClosedOpen(10, 15)
+    Common for: Array indices, iteration bounds
+
+Half-Closed Interval (10, 15]
+    Excludes start (10), includes end (15)
+    ○━━━━━━━━━━━━━━━━━━━━━━━━━━●
+    10                         15
+    Values: {11, 12, 13, 14, 15}
+    Code: Range.OpenClosed(10, 15)
+
+Legend: ● = included endpoint  ○ = excluded endpoint  ━ = values in range
+```
+
+**Unbounded intervals** use infinity (∞) to represent ranges with no upper or lower limit:
+
+```
+Positive Unbounded [18, ∞)
+    All values from 18 onwards
+    ●━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━→
+    18                                  ∞
+    Code: Range.Closed(18, RangeValue<int>.PositiveInfinity)
+    Example: Adult age ranges
+
+Negative Unbounded (-∞, 0)
+    All values before 0
+    ←━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━○
+    -∞                                  0
+    Code: Range.Open(RangeValue<int>.NegativeInfinity, 0)
+    Example: Historical dates
+
+Fully Unbounded (-∞, ∞)
+    All possible values
+    ←━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━→
+    -∞                                  ∞
+    Code: Range.Open(RangeValue<T>.NegativeInfinity, RangeValue<T>.PositiveInfinity)
+```
+
+---
+
+<details>
+<summary><strong>▶ Click to expand: Mathematical Foundation</strong></summary>
+
+> 🎓 **Deep Dive:** Mathematical theory behind intervals
+
+### Set Theory Perspective
+
+In mathematics, an interval is a **convex subset** of an ordered set. For real numbers:
+
+- **Closed interval:** `[a, b] = {x ∈ ℝ : a ≤ x ≤ b}`
+- **Open interval:** `(a, b) = {x ∈ ℝ : a < x < b}`
+- **Half-open:** `[a, b) = {x ∈ ℝ : a ≤ x < b}`
+- **Half-closed:** `(a, b] = {x ∈ ℝ : a < x ≤ b}`
+
+Where `∈` means "is an element of" and `ℝ` represents all real numbers.
+
+### Key Properties
+
+**Convexity:** If two values are in an interval, all values between them are also in the interval.
+- If `x ∈ I` and `y ∈ I`, then for all `z` where `x < z < y`, we have `z ∈ I`
+- This property distinguishes intervals from arbitrary sets
+
+**Ordering:** Intervals require an ordering relation (≤) on elements.
+- In Intervals.NET, this is enforced via `IComparable<T>` constraint
+- Enables intervals over integers, decimals, dates, times, and custom types
+
+**Boundary Semantics:** The crucial distinction between interval types:
+- **Closed boundaries** satisfy `≤` (less than or equal)
+- **Open boundaries** satisfy `<` (strictly less than)
+- Mixed boundaries combine both semantics
+
+### Set Operations
+
+Intervals support standard set operations:
+
+**Intersection (∩):** `A ∩ B` contains values in both A and B
+```
+[10, 30] ∩ [20, 40] = [20, 30]
+```
+
+**Union (∪):** `A ∪ B` combines A and B (only if contiguous/overlapping)
+```
+[10, 30] ∪ [20, 40] = [10, 40]
+[10, 20] ∪ [30, 40] = undefined (disjoint)
+```
+
+**Difference (∖):** `A ∖ B` contains values in A but not in B
+```
+[10, 30] ∖ [20, 40] = [10, 20)
+```
+
+**Containment (⊆):** `A ⊆ B` means A is fully contained within B
+```
+[15, 25] ⊆ [10, 30] = true
+```
+
+### Domain Theory
+
+Intervals operate over **continuous** or **discrete** domains:
+
+**Continuous domains** (ℝ, floating-point):
+- Infinite values between any two points
+- Open/closed boundaries have subtle differences
+- Example: Temperature ranges, probabilities
+
+**Discrete domains** (ℤ, integers):
+- Finite values between points
+- `(10, 15)` and `[11, 14]` are equivalent in integers
+- Example: Array indices, counts, discrete time units
+
+**Hybrid domains** (DateTime, calendar):
+- Continuous representation (ticks) with discrete semantics (days)
+- Domain extensions handle granularity (see [Domain Extensions](#domain-extensions))
+
+### Why Explicit Boundaries Matter
+
+Consider age validation:
+
+```csharp
+// Ambiguous: Is 18 adult or minor?
+if (age >= 18) { /* adult */ }
+
+// Explicit: Minor range excludes 18
+var minorRange = Range.ClosedOpen(0, 18);  // [0, 18) - 18 is NOT included
+minorRange.Contains(17); // true
+minorRange.Contains(18); // false - unambiguous!
+```
+
+**Correctness through precision:** Explicit boundary semantics eliminate entire classes of off-by-one errors.
+
+</details>
+
+---
+
+<details>
+<summary><strong>▶ Click to expand: When to Use Intervals</strong></summary>
+
+> 🎯 **Decision Guide:** Choosing the right tool for the job
+
+### ✅ Use Intervals When You Need
+
+**Boundary Validation**
+- ✅ Port numbers must be 1-65535
+- ✅ Percentage values must be 0.0-100.0
+- ✅ Age must be 0-150
+- ✅ HTTP status codes must be 100-599
+
+```csharp
+var validPort = Range.Closed(1, 65535);
+if (!validPort.Contains(port))
+    throw new ArgumentOutOfRangeException(nameof(port));
+```
+
+**Time Window Operations**
+- ✅ Business hours: 9 AM - 5 PM
+- ✅ Meeting conflict detection
+- ✅ Booking/reservation overlaps
+- ✅ Rate limiting time windows
+- ✅ Maintenance windows
+
+```csharp
+var meeting1 = Range.Closed(startTime1, endTime1);
+var meeting2 = Range.Closed(startTime2, endTime2);
+if (meeting1.Overlaps(meeting2))
+    throw new InvalidOperationException("Meetings conflict!");
+```
+
+**Tiered Systems**
+- ✅ Pricing tiers based on quantity
+- ✅ Discount brackets
+- ✅ Age demographics
+- ✅ Performance bands
+- ✅ Risk categories
+
+```csharp
+var tier1 = Range.ClosedOpen(0, 100);     // 0-99 units
+var tier2 = Range.ClosedOpen(100, 500);   // 100-499 units
+var tier3 = Range.Closed(500, RangeValue<int>.PositiveInfinity);  // 500+
+```
+
+**Range Queries**
+- ✅ Filter data by date range
+- ✅ Find values within bounds
+- ✅ Temperature/sensor thresholds
+- ✅ Geographic bounding boxes (with lat/lon)
+
+```csharp
+var criticalTemp = Range.Closed(50.0, RangeValue<double>.PositiveInfinity);
+var alerts = readings.Where(r => criticalTemp.Contains(r.Temperature));
+```
+
+**Complex Scheduling**
+- ✅ Shift patterns
+- ✅ Seasonal pricing
+- ✅ Access control windows
+- ✅ Feature flag rollouts
+- ✅ Sliding time windows
+
+### ❌ Don't Use Intervals When
+
+**Simple Equality Checks**
+- ❌ Checking if value equals specific constant
+- ❌ Boolean flags
+- ❌ Enum matching
+- **Use:** Direct equality (`==`) or switch expressions
+
+**Discrete Set Membership**
+- ❌ Value must be one of {1, 5, 9, 15} (non-contiguous)
+- ❌ Allowed values: {"admin", "user", "guest"}
+- ❌ Valid status codes: {200, 201, 204} only
+- **Use:** `HashSet<T>`, arrays, or enum flags
+
+**Complex Non-Convex Regions**
+- ❌ Multiple disjoint ranges: [1-10] OR [50-60] OR [100-110]
+- ❌ Exclusion ranges: All values EXCEPT [20-30]
+- ❌ Irregular polygons, non-continuous shapes
+- **Use:** Collections of intervals, custom predicates, or spatial libraries
+
+**Performance-Critical Simple Comparisons**
+- ❌ Ultra-hot path with single boundary check: `x >= min`
+- ❌ JIT-sensitive tight loops with minimal logic
+- **Use:** Direct comparison (though benchmark first—intervals may inline!)
+
+### Decision Flowchart
+
+```
+Do you need to check if a value falls within boundaries?
+├─ YES → Are the boundaries continuous/contiguous?
+│        ├─ YES → Are boundary semantics important (inclusive/exclusive)?
+│        │        ├─ YES → ✅ USE INTERVALS.NET
+│        │        └─ NO  → ⚠️ Consider intervals for clarity anyway
+│        └─ NO  → Are there multiple disjoint ranges?
+│                 ├─ YES → Use List<Range<T>> or custom logic
+│                 └─ NO  → Use HashSet<T> or enum
+└─ NO → Use direct equality or boolean logic
+```
+
+### Real-World Pattern Recognition
+
+**You probably need intervals if your code has:**
+- Multiple `if (x >= a && x <= b)` checks
+- Scattered boundary validation logic
+- Date/time overlap detection
+- Tiered pricing/categorization
+- Scheduling conflict detection
+- Range-based filtering in LINQ
+- Off-by-one errors in boundary conditions
+
+**Example transformation:**
+
+```csharp
+// ❌ Before: Scattered, error-prone
+if (age >= 0 && age < 13) return "Child";
+if (age >= 13 && age < 18) return "Teen";  // Bug: overlaps at 13!
+if (age >= 18) return "Adult";
+
+// ✅ After: Explicit, testable, reusable
+var childRange = Range.ClosedOpen(0, 13);   // [0, 13)
+var teenRange = Range.ClosedOpen(13, 18);   // [13, 18)
+var adultRange = Range.Closed(18, RangeValue<int>.PositiveInfinity);
+
+if (childRange.Contains(age)) return "Child";
+if (teenRange.Contains(age)) return "Teen";
+if (adultRange.Contains(age)) return "Adult";
+```
+
+</details>
+
+---
 
 ## 🚀 Quick Start
 
@@ -102,6 +423,164 @@ var parsed = Range.FromString<int>("[10, 20]");
 var dates = Range.Closed(DateTime.Today, DateTime.Today.AddDays(7));
 var times = Range.Closed(TimeSpan.FromHours(9), TimeSpan.FromHours(17));
 ```
+
+---
+
+<details>
+<summary><strong>▶ Click to expand: Getting Started Guide</strong></summary>
+
+> 🎓 **Complete walkthrough** from problem to solution
+
+### Scenario: E-Commerce Discount System
+
+**Problem:** You need to apply different discount rates based on order totals:
+- Orders under $100: No discount
+- Orders $100-$499.99: 10% discount
+- Orders $500+: 15% discount
+
+**Traditional approach (error-prone):**
+
+```csharp
+// ❌ Problems: Magic numbers, duplicate boundaries, easy to introduce gaps/overlaps
+decimal GetDiscount(decimal orderTotal)
+{
+    if (orderTotal < 100) return 0m;
+    if (orderTotal >= 100 && orderTotal < 500) return 0.10m;
+    if (orderTotal >= 500) return 0.15m;
+    return 0m;  // Unreachable but needed for compiler
+}
+```
+
+**Issues with traditional approach:**
+- Boundary value `100` appears twice (DRY violation)
+- Easy to create gaps: What if someone writes `orderTotal > 100` instead of `>=`?
+- Easy to create overlaps at boundaries
+- Not reusable—logic is embedded in function
+- Hard to test—can't validate ranges independently
+- No explicit handling of edge cases (negative values, infinity)
+
+---
+
+**Intervals.NET approach (explicit, testable, reusable):**
+
+```csharp
+using Intervals.NET.Factories;
+
+// ✅ Step 1: Define your ranges explicitly (declare once, reuse everywhere)
+public static class DiscountTiers
+{
+    // No discount tier: $0 to just under $100
+    public static readonly Range<decimal> NoDiscount = 
+        Range.ClosedOpen(0m, 100m);  // [0, 100)
+    
+    // Standard discount tier: $100 to just under $500
+    public static readonly Range<decimal> StandardDiscount = 
+        Range.ClosedOpen(100m, 500m);  // [100, 500)
+    
+    // Premium discount tier: $500 and above
+    public static readonly Range<decimal> PremiumDiscount = 
+        Range.Closed(500m, RangeValue<decimal>.PositiveInfinity);  // [500, ∞)
+}
+
+// ✅ Step 2: Use ranges for clear, readable logic
+decimal GetDiscount(decimal orderTotal)
+{
+    if (DiscountTiers.NoDiscount.Contains(orderTotal)) return 0m;
+    if (DiscountTiers.StandardDiscount.Contains(orderTotal)) return 0.10m;
+    if (DiscountTiers.PremiumDiscount.Contains(orderTotal)) return 0.15m;
+    
+    // Invalid input (negative, NaN, etc.)
+    throw new ArgumentOutOfRangeException(nameof(orderTotal), 
+        $"Order total must be non-negative: {orderTotal}");
+}
+
+// ✅ Step 3: Easy to extend with additional features
+decimal CalculateFinalPrice(decimal orderTotal)
+{
+    var discount = GetDiscount(orderTotal);
+    var discountAmount = orderTotal * discount;
+    var finalPrice = orderTotal - discountAmount;
+    
+    Console.WriteLine($"Order Total: {orderTotal:C}");
+    Console.WriteLine($"Discount: {discount:P0}");
+    Console.WriteLine($"You Save: {discountAmount:C}");
+    Console.WriteLine($"Final Price: {finalPrice:C}");
+    
+    return finalPrice;
+}
+```
+
+**Try it out:**
+
+```csharp
+CalculateFinalPrice(50m);    // No discount
+// Order Total: $50.00
+// Discount: 0%
+// Final Price: $50.00
+
+CalculateFinalPrice(150m);   // 10% discount
+// Order Total: $150.00
+// Discount: 10%
+// You Save: $15.00
+// Final Price: $135.00
+
+CalculateFinalPrice(600m);   // 15% discount
+// Order Total: $600.00
+// Discount: 15%
+// You Save: $90.00
+// Final Price: $510.00
+```
+
+---
+
+**Benefits achieved:**
+
+✅ **No boundary duplication** - Each boundary defined once  
+✅ **No gaps or overlaps** - Ranges are explicitly defined  
+✅ **Reusable** - `DiscountTiers` can be used across application  
+✅ **Testable** - Can unit test ranges independently  
+✅ **Self-documenting** - Range names explain business rules  
+✅ **Type-safe** - Works with decimal, int, DateTime, etc.  
+✅ **Explicit infinity** - Clear unbounded upper limit  
+
+---
+
+**Testing your ranges:**
+
+```csharp
+[Test]
+public void DiscountTiers_ShouldNotOverlap()
+{
+    // Verify no overlaps between tiers
+    Assert.IsFalse(DiscountTiers.NoDiscount.Overlaps(DiscountTiers.StandardDiscount));
+    Assert.IsFalse(DiscountTiers.StandardDiscount.Overlaps(DiscountTiers.PremiumDiscount));
+}
+
+[Test]
+public void DiscountTiers_ShouldBeAdjacent()
+{
+    // Verify tiers are properly adjacent (no gaps)
+    Assert.IsTrue(DiscountTiers.NoDiscount.IsAdjacent(DiscountTiers.StandardDiscount));
+    Assert.IsTrue(DiscountTiers.StandardDiscount.IsAdjacent(DiscountTiers.PremiumDiscount));
+}
+
+[Test]
+public void DiscountTiers_BoundaryValues()
+{
+    // Verify boundary behavior
+    Assert.IsTrue(DiscountTiers.NoDiscount.Contains(99.99m));
+    Assert.IsFalse(DiscountTiers.NoDiscount.Contains(100m));
+    Assert.IsTrue(DiscountTiers.StandardDiscount.Contains(100m));
+    Assert.IsFalse(DiscountTiers.StandardDiscount.Contains(500m));
+    Assert.IsTrue(DiscountTiers.PremiumDiscount.Contains(500m));
+}
+```
+
+**Key Insight:** Intervals transform boundary logic from imperative conditionals into declarative, testable data structures—making your code more maintainable and less error-prone.
+
+</details>
+
+---
 
 ## 💼 Real-World Use Cases
 
@@ -265,7 +744,8 @@ foreach (var dataPoint in sensorStream)
 
 ## 🔑 Core Concepts
 
-### Range Notation
+<details open>
+<summary><strong>▶ Range Notation</strong></summary>
 
 Intervals.NET uses standard mathematical interval notation:
 
@@ -276,7 +756,10 @@ Intervals.NET uses standard mathematical interval notation:
 | `[a, b)` | Half-open   | Includes `a`, excludes `b`   | `Range.ClosedOpen(1, 10)`     |
 | `(a, b]` | Half-closed | Excludes `a`, includes `b`   | `Range.OpenClosed(1, 10)`     |
 
-### Infinity Support
+</details>
+
+<details open>
+<summary><strong>▶ Infinity Support</strong></summary>
 
 Represent unbounded ranges with explicit infinity:
 
@@ -299,6 +782,10 @@ var shorthand = Range.FromString<int>("[, 100]");
 ```
 
 **Why explicit infinity?** Avoids null-checking and makes unbounded semantics clear in code.
+
+</details>
+
+---
 
 ## 📚 API Overview
 
@@ -459,6 +946,558 @@ if (comfortable.Contains(current))
 var alphabet = Range.Closed("A", "Z");
 bool isLetter = alphabet.Contains("M");  // true
 ```
+
+---
+
+### Domain Extensions
+
+**Domain extensions** bridge the gap between continuous ranges and discrete step-based operations. A **domain** (`IRangeDomain<T>`) defines how to work with discrete points within a continuous value space, enabling operations like counting discrete values in a range, shifting boundaries by steps, and expanding ranges proportionally.
+
+#### 📦 Installation
+
+```bash
+dotnet add package Intervals.NET.Domain.Abstractions
+dotnet add package Intervals.NET.Domain.Default
+dotnet add package Intervals.NET.Domain.Extensions
+```
+
+#### 🎯 Core Concepts: What is a Domain?
+
+A **domain** is an abstraction that transforms continuous value spaces into discrete step-based systems. It provides:
+
+**Discrete Point Operations:**
+- **`Add(value, steps)`** - Navigate forward/backward by discrete steps
+- **`Subtract(value, steps)`** - Convenience method for backward navigation
+- **`Distance(start, end)`** - Calculate the number of discrete steps between values
+
+**Boundary Alignment:**
+- **`Floor(value)`** - Round down to the nearest discrete step boundary
+- **`Ceiling(value)`** - Round up to the nearest discrete step boundary
+
+**Why Domains Matter:**
+
+Think of a domain as a "ruler" that defines measurement units and tick marks:
+- **Integer domain**: Every integer is a discrete point (ruler marked 1, 2, 3, ...)
+- **Day domain**: Each day boundary is a discrete point (midnight transitions)
+- **Month domain**: Each month start is a discrete point (variable-length "ticks")
+- **Business day domain**: Only weekdays are discrete points (weekends skipped)
+
+**Two Domain Types:**
+
+| Type | Interface | Distance Complexity | Step Size | Examples |
+|------|-----------|---------------------|-----------|----------|
+| **Fixed-Step** | `IFixedStepDomain<T>` | O(1) - Constant time | Uniform | Integers, days, hours, minutes |
+| **Variable-Step** | `IVariableStepDomain<T>` | O(N) - May iterate | Non-uniform | Months (28-31 days), business days |
+
+**Extension Methods Connect Domains to Ranges:**
+
+Domains alone work with individual values. Extension methods combine domains with ranges to enable:
+- **`Span(domain)`** - Count discrete points within a range (returns `long` for fixed, `double` for variable)
+- **`Shift(domain, offset)`** - Move range boundaries by N steps
+- **`Expand(domain, left, right)`** - Expand/contract range by fixed step counts
+- **`ExpandByRatio(domain, leftRatio, rightRatio)`** - Proportional expansion based on span
+
+#### 🔢 Quick Example - Integer Domain
+
+```csharp
+using Intervals.NET.Domain.Default.Numeric;
+using Intervals.NET.Domain.Extensions.Fixed;
+
+var range = Range.Closed(10, 20);  // [10, 20] - continuous range
+var domain = new IntegerFixedStepDomain();  // Defines discrete integer steps
+
+// Span: Count discrete integer values within the range
+var span = range.Span(domain);  // 11 discrete values: {10, 11, 12, ..., 19, 20}
+
+// The domain defines the "measurement units" for the range:
+// - Floor/Ceiling align values to integer boundaries (already aligned for integers)
+// - Distance calculates steps between boundaries
+// - Extension method Span() uses domain operations to count discrete points
+
+// Expand range by 50% on each side (50% of 11 values = 5 steps on each side)
+var expanded = range.ExpandByRatio(domain, 0.5, 0.5);  // [5, 25]
+// [10, 20] → span of 11 → 11 * 0.5 = 5.5 → truncated to 5 steps
+// Left: 10 - 5 = 5; Right: 20 + 5 = 25
+
+// Shift range forward by 5 discrete integer steps
+var shifted = range.Shift(domain, 5);  // [15, 25]
+```
+
+#### 📅 DateTime Example - Day Granularity
+
+```csharp
+using Intervals.NET.Domain.Default.DateTime;
+using Intervals.NET.Domain.Extensions.Fixed;
+
+var week = Range.Closed(
+    new DateTime(2026, 1, 20, 14, 30, 0),  // Tuesday 2:30 PM
+    new DateTime(2026, 1, 26, 9, 15, 0)    // Monday 9:15 AM
+);
+var dayDomain = new DateTimeDayFixedStepDomain();
+
+// Domain discretizes continuous DateTime into day boundaries
+// Floor/Ceiling align to midnight: Jan 20 00:00, Jan 21 00:00, ..., Jan 26 00:00
+
+// Count complete day boundaries within the range
+var days = week.Span(dayDomain);  // 7 discrete day boundaries
+// Includes: Jan 20, 21, 22, 23, 24, 25, 26 (7 days)
+
+// Expand by 1 day boundary on each side
+var expanded = week.Expand(dayDomain, left: 1, right: 1);
+// Adds 1 day step to start: Jan 19 14:30 PM
+// Adds 1 day step to end: Jan 27 9:15 AM
+// Preserves original times within the day!
+
+// Key insight: Domain defines "what is a discrete step"
+// - Day domain: midnight boundaries are steps
+// - Hour domain: top-of-hour boundaries are steps  
+// - Month domain: first-of-month boundaries are steps
+```
+
+#### 💼 Business Days Example - Variable-Step Domain
+
+```csharp
+using Intervals.NET.Domain.Default.Calendar;
+using Intervals.NET.Domain.Extensions.Variable;
+
+var workWeek = Range.Closed(
+    new DateTime(2026, 1, 20),  // Tuesday
+    new DateTime(2026, 1, 26)   // Monday (next week)
+);
+var businessDayDomain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+// Variable-step domain: weekends are skipped, only weekdays count
+// Domain logic: Floor/Ceiling align to nearest business day boundary
+// Distance calculation: May iterate through range checking each day
+
+// Count only business days (Mon-Fri, skips Sat/Sun)
+var businessDays = workWeek.Span(businessDayDomain);  // 5.0 discrete business days
+// Includes: Jan 20 (Tue), 21 (Wed), 22 (Thu), 23 (Fri), 26 (Mon)
+// Excludes: Jan 24 (Sat), 25 (Sun) - not in domain's discrete point set
+
+// Add 3 business day steps - domain automatically skips weekends
+var deadline = businessDayDomain.Add(new DateTime(2026, 1, 23), 3);  
+// Jan 23 (Fri) + 3 business days = Jan 28 (Wed)
+// Calculation: Fri 23 → Mon 26 → Tue 27 → Wed 28
+
+// Why variable-step? 
+// - The "distance" between Friday and Monday is 1 business day, not 3 calendar days
+// - Step size varies based on position (weekday-to-weekday vs crossing weekend)
+// - Distance() may need to iterate to count actual business days
+```
+
+#### 📊 Available Domains (36 Total)
+
+<details>
+<summary><strong>▶ Numeric Domains</strong> (11 domains - all O(1))</summary>
+
+```csharp
+using Intervals.NET.Domain.Default.Numeric;
+
+new IntegerFixedStepDomain();        // int, step = 1
+new LongFixedStepDomain();           // long, step = 1
+new ShortFixedStepDomain();          // short, step = 1
+new ByteFixedStepDomain();           // byte, step = 1
+new SByteFixedStepDomain();          // sbyte, step = 1
+new UIntFixedStepDomain();           // uint, step = 1
+new ULongFixedStepDomain();          // ulong, step = 1
+new UShortFixedStepDomain();         // ushort, step = 1
+new FloatFixedStepDomain();          // float, step = 1.0f
+new DoubleFixedStepDomain();         // double, step = 1.0
+new DecimalFixedStepDomain();        // decimal, step = 1.0m
+```
+
+</details>
+
+<details>
+<summary><strong>▶ DateTime Domains</strong> (9 domains - all O(1))</summary>
+
+```csharp
+using Intervals.NET.Domain.Default.DateTime;
+
+new DateTimeDayFixedStepDomain();           // Step = 1 day
+new DateTimeHourFixedStepDomain();          // Step = 1 hour
+new DateTimeMinuteFixedStepDomain();        // Step = 1 minute
+new DateTimeSecondFixedStepDomain();        // Step = 1 second
+new DateTimeMillisecondFixedStepDomain();   // Step = 1 millisecond
+new DateTimeMicrosecondFixedStepDomain();   // Step = 1 microsecond
+new DateTimeTicksFixedStepDomain();         // Step = 1 tick (100ns)
+new DateTimeMonthFixedStepDomain();         // Step = 1 month
+new DateTimeYearFixedStepDomain();          // Step = 1 year
+```
+
+</details>
+
+<details>
+<summary><strong>▶ DateOnly / TimeOnly Domains</strong> (.NET 6+, 7 domains - all O(1))</summary>
+
+```csharp
+using Intervals.NET.Domain.Default.DateTime;
+
+// DateOnly
+new DateOnlyDayFixedStepDomain();           // Step = 1 day
+
+// TimeOnly (various granularities)
+new TimeOnlyTickFixedStepDomain();          // Step = 1 tick (100ns)
+new TimeOnlyMicrosecondFixedStepDomain();   // Step = 1 microsecond
+new TimeOnlyMillisecondFixedStepDomain();   // Step = 1 millisecond
+new TimeOnlySecondFixedStepDomain();        // Step = 1 second
+new TimeOnlyMinuteFixedStepDomain();        // Step = 1 minute
+new TimeOnlyHourFixedStepDomain();          // Step = 1 hour
+```
+
+</details>
+
+<details>
+<summary><strong>▶ TimeSpan Domains</strong> (7 domains - all O(1))</summary>
+
+```csharp
+using Intervals.NET.Domain.Default.TimeSpan;
+
+new TimeSpanTickFixedStepDomain();          // Step = 1 tick (100ns)
+new TimeSpanMicrosecondFixedStepDomain();   // Step = 1 microsecond
+new TimeSpanMillisecondFixedStepDomain();   // Step = 1 millisecond
+new TimeSpanSecondFixedStepDomain();        // Step = 1 second
+new TimeSpanMinuteFixedStepDomain();        // Step = 1 minute
+new TimeSpanHourFixedStepDomain();          // Step = 1 hour
+new TimeSpanDayFixedStepDomain();           // Step = 1 day (24 hours)
+```
+
+</details>
+
+<details>
+<summary><strong>▶ Calendar / Business Day Domains</strong> (2 domains - O(N) ⚠️)</summary>
+
+```csharp
+using Intervals.NET.Domain.Default.Calendar;
+
+// Standard Mon-Fri business week (no holidays)
+new StandardDateTimeBusinessDaysVariableStepDomain();  // DateTime version
+new StandardDateOnlyBusinessDaysVariableStepDomain();  // DateOnly version
+
+// ⚠️ Variable-step: Operations iterate through days
+// 💡 For custom calendars (holidays, different work weeks), implement IVariableStepDomain<T>
+```
+
+</details>
+
+#### 🔧 Extension Methods: Connecting Domains to Ranges
+
+**Extension methods bridge domains and ranges** - domains provide discrete point operations, extensions apply them to range boundaries.
+
+<details>
+<summary><strong>▶ Fixed-Step Extensions</strong> (O(1) - Guaranteed Constant Time)</summary>
+
+```csharp
+using Intervals.NET.Domain.Extensions.Fixed;
+
+// All methods in this namespace are O(1) and work with IFixedStepDomain<T>
+
+// Span: Count discrete domain steps within the range
+var span = range.Span(domain);  // Returns RangeValue<long>
+// How it works:
+// 1. Floor/Ceiling align range boundaries to domain steps (respecting inclusivity)
+// 2. domain.Distance(start, end) calculates steps between aligned boundaries (O(1))
+// 3. Returns count of discrete points
+
+// ExpandByRatio: Proportional expansion based on span
+var expanded = range.ExpandByRatio(domain, leftRatio: 0.5, rightRatio: 0.5);
+// How it works:
+// 1. Calculate span (count of discrete points)
+// 2. leftSteps = (long)(span * leftRatio), rightSteps = (long)(span * rightRatio)
+// 3. domain.Add(start, -leftSteps) and domain.Add(end, rightSteps)
+// 4. Returns new range with expanded boundaries
+
+// Example with integers
+var r = Range.Closed(10, 20);  // span = 11 discrete values
+var e = r.ExpandByRatio(new IntegerFixedStepDomain(), 0.5, 0.5);  
+// 11 * 0.5 = 5.5 → truncated to 5 steps
+// [10 - 5, 20 + 5] = [5, 25]
+```
+
+**Why O(1)?** Fixed-step domains have uniform step sizes, so `Distance()` uses arithmetic: `(end - start) / stepSize`.
+
+</details>
+
+<details>
+<summary><strong>▶ Variable-Step Extensions</strong> (O(N) - May Require Iteration ⚠️)</summary>
+
+```csharp
+using Intervals.NET.Domain.Extensions.Variable;
+
+// ⚠️ Methods may be O(N) depending on domain implementation
+// Work with IVariableStepDomain<T>
+
+// Span: Count domain steps (may iterate through range)
+var span = range.Span(domain);  // Returns RangeValue<double>
+// How it works:
+// 1. Floor/Ceiling align boundaries to domain steps
+// 2. domain.Distance(start, end) may iterate each step to count (O(N))
+// 3. Returns count (potentially fractional for partial steps)
+
+// ExpandByRatio: Proportional expansion (calculates span first)
+var expanded = range.ExpandByRatio(domain, leftRatio: 0.5, rightRatio: 0.5);
+// How it works:
+// 1. Calculate span (may be O(N))
+// 2. leftSteps = (long)(span * leftRatio), rightSteps = (long)(span * rightRatio)
+// 3. domain.Add() may iterate each step (O(N) per call)
+
+// Example with business days
+var week = Range.Closed(new DateTime(2026, 1, 20), new DateTime(2026, 1, 26));
+var businessDayDomain = new StandardDateTimeBusinessDaysVariableStepDomain();
+var businessDays = week.Span(businessDayDomain);  // 5.0 (iterates checking weekends)
+```
+
+**Why O(N)?** Variable-step domains have non-uniform steps (weekends, month lengths, holidays), requiring iteration to count.
+
+</details>
+
+<details>
+<summary><strong>▶ Common Extensions</strong> (Work with Any Domain)</summary>
+
+```csharp
+using Intervals.NET.Domain.Extensions;
+
+// These work with IRangeDomain<T> - both fixed and variable-step domains
+// Don't calculate span, so performance depends only on domain's Add() method
+
+// Shift: Move range by fixed step count (preserves span)
+var shifted = range.Shift(domain, offset: 5);  // Move 5 steps forward
+// How it works:
+// newStart = domain.Add(start, offset)
+// newEnd = domain.Add(end, offset)
+// Returns new range with same inclusivity
+
+// Expand: Expand/contract by fixed step amounts
+var expanded = range.Expand(domain, left: 2, right: 3);  // Expand 2 left, 3 right
+// How it works:
+// newStart = domain.Add(start, -left)   // Negative = move backward
+// newEnd = domain.Add(end, right)       // Positive = move forward
+// Returns new range with adjusted boundaries
+
+// Both preserve:
+// - Inclusivity flags (IsStartInclusive, IsEndInclusive)
+// - Infinity (infinity + offset = infinity)
+```
+
+**Performance:** Typically O(1) for most domains - just calls `Add()` twice. Variable-step domains may have O(N) `Add()` if they need to iterate.
+
+</details>
+
+#### 🎓 Real-World Scenarios
+
+<details>
+<summary><strong>▶ Scenario 1: Shift Maintenance Window</strong></summary>
+
+```csharp
+using Intervals.NET.Domain.Default.DateTime;
+using Intervals.NET.Domain.Extensions;
+
+// Original maintenance window: 2 AM - 4 AM
+var window = Range.Closed(
+    new DateTime(2025, 1, 28, 2, 0, 0),
+    new DateTime(2025, 1, 28, 4, 0, 0)
+);
+
+var hourDomain = new DateTimeHourFixedStepDomain();
+
+// Shift to next day (24 hours forward)
+var nextDay = window.Shift(hourDomain, 24);
+
+// Expand by 1 hour on each side: 1 AM - 5 AM
+var extended = window.Expand(hourDomain, left: 1, right: 1);
+```
+
+</details>
+
+<details>
+<summary><strong>▶ Scenario 2: Project Sprint Planning</strong></summary>
+
+```csharp
+using Intervals.NET.Domain.Default.Calendar;
+using Intervals.NET.Domain.Extensions.Variable;
+
+var sprint = Range.Closed(
+    new DateTime(2025, 1, 20),  // Sprint start (Monday)
+    new DateTime(2025, 2, 2)    // Sprint end (Sunday)
+);
+
+var businessDayDomain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+// Count working days in sprint
+var workingDays = sprint.Span(businessDayDomain);  // 10.0 business days
+
+// Add buffer: extend by 2 business days at end
+var withBuffer = sprint.Expand(businessDayDomain, left: 0, right: 2);
+```
+
+</details>
+
+<details>
+<summary><strong>▶ Scenario 3: Sliding Window Analysis</strong></summary>
+
+```csharp
+using Intervals.NET.Domain.Default.Numeric;
+using Intervals.NET.Domain.Extensions;
+
+var domain = new IntegerFixedStepDomain();
+
+// Start with window [0, 100]
+var window = Range.Closed(0, 100);
+
+// Slide window forward by 50 steps
+var next = window.Shift(domain, 50);  // [50, 150]
+
+// Expand window by 20% on each side
+var wider = window.ExpandByRatio(domain, 0.2, 0.2);  // [-20, 120]
+```
+
+</details>
+
+#### 🛠️ Creating Custom Domains
+
+You can define your own fixed or variable-step domains by implementing the appropriate interface:
+
+<details>
+<summary><strong>▶ Custom Fixed-Step Domain Example</strong></summary>
+
+```csharp
+using Intervals.NET.Domain.Abstractions;
+
+// Example: Temperature domain with 0.5°C steps
+public class HalfDegreeCelsiusDomain : IFixedStepDomain<double>
+{
+    private const double StepSize = 0.5;
+    
+    public double Add(double value, long steps) => value + (steps * StepSize);
+    
+    public double Subtract(double value, long steps) => value - (steps * StepSize);
+    
+    public double Floor(double value) => Math.Floor(value / StepSize) * StepSize;
+    
+    public double Ceiling(double value) => Math.Ceiling(value / StepSize) * StepSize;
+    
+    // O(1) distance calculation - fixed step size
+    public long Distance(double start, double end)
+    {
+        var alignedStart = Floor(start);
+        var alignedEnd = Floor(end);
+        return (long)Math.Round((alignedEnd - alignedStart) / StepSize);
+    }
+}
+
+// Usage
+var tempRange = Range.Closed(20.3, 22.7);
+var domain = new HalfDegreeCelsiusDomain();
+var steps = tempRange.Span(domain);  // Counts 0.5°C increments: 20.5, 21.0, 21.5, 22.0, 22.5
+```
+
+</details>
+
+<details>
+<summary><strong>▶ Custom Variable-Step Domain Example</strong></summary>
+
+```csharp
+using Intervals.NET.Domain.Abstractions;
+
+// Example: Custom business calendar with holidays
+public class CustomBusinessDayDomain : IVariableStepDomain<DateTime>
+{
+    private readonly HashSet<DateTime> _holidays;
+    
+    public CustomBusinessDayDomain(IEnumerable<DateTime> holidays)
+    {
+        _holidays = holidays.Select(d => d.Date).ToHashSet();
+    }
+    
+    private bool IsBusinessDay(DateTime date)
+    {
+        var dayOfWeek = date.DayOfWeek;
+        return dayOfWeek != DayOfWeek.Saturday 
+            && dayOfWeek != DayOfWeek.Sunday
+            && !_holidays.Contains(date.Date);
+    }
+    
+    public DateTime Add(DateTime value, long steps)
+    {
+        // Iterate through days, counting only business days
+        var current = value.Date;
+        var direction = steps > 0 ? 1 : -1;
+        var remaining = Math.Abs(steps);
+        
+        while (remaining > 0)
+        {
+            current = current.AddDays(direction);
+            if (IsBusinessDay(current)) remaining--;
+        }
+        
+        return current.Add(value.TimeOfDay);  // Preserve time component
+    }
+    
+    public DateTime Subtract(DateTime value, long steps) => Add(value, -steps);
+    
+    public DateTime Floor(DateTime value) => value.Date;
+    
+    public DateTime Ceiling(DateTime value) => 
+        value.TimeOfDay == TimeSpan.Zero ? value.Date : value.Date.AddDays(1);
+    
+    // O(N) distance - must check each day
+    public double Distance(DateTime start, DateTime end)
+    {
+        var current = Floor(start);
+        var endDate = Floor(end);
+        double count = 0;
+        
+        while (current <= endDate)
+        {
+            if (IsBusinessDay(current)) count++;
+            current = current.AddDays(1);
+        }
+        
+        return count;
+    }
+}
+
+// Usage
+var holidays = new[] { new DateTime(2026, 1, 26) };  // Monday holiday
+var customDomain = new CustomBusinessDayDomain(holidays);
+
+var range = Range.Closed(
+    new DateTime(2026, 1, 23),  // Friday
+    new DateTime(2026, 1, 27)   // Tuesday
+);
+
+var businessDays = range.Span(customDomain);  // 2.0 (Fri 23, Tue 27 - skips weekend and holiday)
+```
+
+</details>
+
+---
+
+#### ⚠️ Important Notes
+
+**Performance Awareness:**
+- Fixed-step namespaces: Guaranteed O(1)
+- Variable-step namespaces: May be O(N) - check domain docs
+- Use appropriate domain for your data type
+
+**Overflow Protection:**
+- Month/Year/DateOnly domains validate offset ranges
+- Throws `ArgumentOutOfRangeException` if offset exceeds int.MaxValue
+- Prevents silent data corruption
+
+**Truncation in ExpandByRatio:**
+- Offset = `(long)(span * ratio)` - fractional parts truncated
+- For variable-step domains with double spans, precision loss may occur
+- Use `Expand()` directly if exact offsets needed
+
+#### 🔗 Learn More
+
+- [Domain Abstractions](src/Domain/Intervals.NET.Domain.Abstractions/) - Interfaces for custom domains
+- [Default Implementations](src/Domain/Intervals.NET.Domain.Default/) - 36 ready-to-use domains
+- [Extension Methods](src/Domain/Intervals.NET.Domain.Extensions/) - Span, Expand, Shift operations
+
+---
 
 <details>
 <summary><strong>▶ Click to expand: Advanced Usage Examples</strong></summary>

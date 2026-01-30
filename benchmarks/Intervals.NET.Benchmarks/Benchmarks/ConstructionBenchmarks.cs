@@ -3,7 +3,7 @@ using Intervals.NET.Benchmarks.Competitors;
 using NodaTime;
 using Range = Intervals.NET.Factories.Range;
 
-namespace Intervals.NET.Benchmarks;
+namespace Intervals.NET.Benchmarks.Benchmarks;
 
 /// <summary>
 /// Benchmarks construction patterns for interval/range types.
@@ -24,8 +24,8 @@ public class ConstructionBenchmarks
 {
     private readonly Instant _instant1 = Instant.FromUnixTimeSeconds(1000000);
     private readonly Instant _instant2 = Instant.FromUnixTimeSeconds(2000000);
-    private readonly DateTime _dateTime1 = new DateTime(2024, 1, 1, 10, 0, 0, DateTimeKind.Utc);
-    private readonly DateTime _dateTime2 = new DateTime(2024, 12, 31, 18, 0, 0, DateTimeKind.Utc);
+    private readonly DateTime _dateTime1 = new(2024, 1, 1, 10, 0, 0, DateTimeKind.Utc);
+    private readonly DateTime _dateTime2 = new(2024, 12, 31, 18, 0, 0, DateTimeKind.Utc);
 
     #region Integer Ranges
 

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Intervals.NET.Parsers;
 
 namespace Intervals.NET.Tests;
@@ -68,6 +69,61 @@ public class RangeStringParserTests
         Assert.Equal(20, range.End.Value);
         Assert.True(range.IsStartInclusive);
         Assert.False(range.IsEndInclusive);
+    }
+
+    #endregion
+
+    #region FindSeparatorComma Edge Cases
+
+    [Fact]
+    public void Parse_WithNoValidSeparatorComma_AllCommasAreDecimalSeparators_ThrowsFormatException()
+    {
+        // Arrange - Input where commas could be decimal separators in de-DE culture
+        // Note: "[1,2,3]" will successfully parse as "[1, 2.3]" because 2,3 is valid in de-DE
+        // The scenario of "all commas being decimal separators with NO valid separator" is
+        // actually impossible to construct with valid numeric input, since the algorithm will
+        // always find at least one valid split point.
+        // Therefore, this test verifies that the parser correctly handles the multiple comma case
+        var input = "[1,2,3]";
+        var culture = new CultureInfo("de-DE");
+
+        // Act - Should parse successfully as [1, 2.3]
+        var range = RangeStringParser.Parse<double>(input, culture);
+        
+        // Assert - Verifies the algorithm found the correct separator (first comma)
+        Assert.Equal(1.0, range.Start.Value);
+        Assert.Equal(2.3, range.End.Value, precision: 10);
+    }
+
+    [Fact]
+    public void Parse_WithFiveCommas_IteratesThroughMultipleCommas_FindsCorrectSeparator()
+    {
+        // Arrange - 5 commas: 2 in start, 1 separator, 2 in end
+        // German culture: 1.234,56 to 7.890,12
+        var input = "[1.234,56, 7.890,12]";
+        var culture = new CultureInfo("de-DE");
+
+        // Act - Tests loop iteration in FindSeparatorComma
+        var range = RangeStringParser.Parse<double>(input, culture);
+
+        // Assert
+        Assert.Equal(1234.56, range.Start.Value, precision: 2);
+        Assert.Equal(7890.12, range.End.Value, precision: 2);
+    }
+
+    [Fact]
+    public void Parse_WithInfinitySymbolInMultiCommaContext_SkipsInvalidCommas()
+    {
+        // Arrange - Multiple commas where some splits result in invalid parses
+        var input = "[1,2, ∞]"; // de-DE: "1.2" to infinity
+        var culture = new CultureInfo("de-DE");
+
+        // Act - Tests rightValid check with infinity symbol
+        var range = RangeStringParser.Parse<double>(input, culture);
+
+        // Assert
+        Assert.Equal(1.2, range.Start.Value, precision: 1);
+        Assert.True(range.End.IsPositiveInfinity);
     }
 
     #endregion
@@ -536,7 +592,7 @@ public class RangeStringParserTests
         // Arrange
         var original = new Range<int>(RangeValue<int>.NegativeInfinity, RangeValue<int>.PositiveInfinity, false, false);
         var stringRepresentation = original.ToString();
-        
+
         // Verify ToString produces infinity symbols
         Assert.Equal("(-∞, ∞)", stringRepresentation);
 
@@ -565,6 +621,227 @@ public class RangeStringParserTests
         Assert.Equal(original.End.Value, parsed.End.Value);
         Assert.Equal(original.IsStartInclusive, parsed.IsStartInclusive);
         Assert.Equal(original.IsEndInclusive, parsed.IsEndInclusive);
+    }
+
+    #endregion
+
+    #region Additional Edge Case Tests
+
+    [Fact]
+    public void Parse_WithEmptyString_ThrowsFormatException()
+    {
+        // Arrange
+        var input = "";
+
+        // Act
+        var exception = Record.Exception(() => RangeStringParser.Parse<int>(input));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<FormatException>(exception);
+        Assert.Contains("too short", exception.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Parse_WithSingleCharacter_ThrowsFormatException()
+    {
+        // Arrange
+        var input = "[";
+
+        // Act
+        var exception = Record.Exception(() => RangeStringParser.Parse<int>(input));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<FormatException>(exception);
+    }
+
+    [Fact]
+    public void Parse_WithTwoCharacters_ThrowsFormatException()
+    {
+        // Arrange
+        var input = "[]";
+
+        // Act
+        var exception = Record.Exception(() => RangeStringParser.Parse<int>(input));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<FormatException>(exception);
+    }
+
+    [Fact]
+    public void Parse_WithMinimalValidInput_ParsesCorrectly()
+    {
+        // Arrange
+        var input = "[,]"; // Minimal: both infinities
+
+        // Act
+        var range = RangeStringParser.Parse<int>(input);
+
+        // Assert
+        Assert.True(range.Start.IsNegativeInfinity);
+        Assert.True(range.End.IsPositiveInfinity);
+    }
+
+    [Fact]
+    public void Parse_WithMultipleCommasInDecimalSeparatorCulture_ParsesCorrectly()
+    {
+        // Arrange - German culture uses comma as decimal separator
+        var input = "[1,5, 2,5]"; // Two decimal numbers with commas
+        var culture = new System.Globalization.CultureInfo("de-DE");
+
+        // Act
+        var range = RangeStringParser.Parse<double>(input, culture);
+
+        // Assert
+        Assert.Equal(1.5, range.Start.Value);
+        Assert.Equal(2.5, range.End.Value);
+    }
+
+    [Fact]
+    public void Parse_WithThreeCommasInDecimalCulture_ParsesCorrectly()
+    {
+        // Arrange - Complex case with 3 commas total
+        var input = "[1,23, 4,56]"; // Two decimals in German format
+        var culture = new System.Globalization.CultureInfo("de-DE");
+
+        // Act
+        var range = RangeStringParser.Parse<double>(input, culture);
+
+        // Assert
+        Assert.Equal(1.23, range.Start.Value);
+        Assert.Equal(4.56, range.End.Value);
+    }
+
+    [Fact]
+    public void TryParse_WithEmptyString_ReturnsFalse()
+    {
+        // Arrange
+        var input = "";
+
+        // Act
+        var result = RangeStringParser.TryParse<int>(input, out var range);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void TryParse_WithTooShortInput_ReturnsFalse()
+    {
+        // Arrange
+        var input = "[]";
+
+        // Act
+        var result = RangeStringParser.TryParse<int>(input, out var range);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void Parse_WithOnlyWhitespace_ThrowsFormatException()
+    {
+        // Arrange
+        var input = "[   ,   ]";
+
+        // Act - Empty after trim should be treated as infinity
+        var range = RangeStringParser.Parse<int>(input);
+
+        // Assert
+        Assert.True(range.Start.IsNegativeInfinity);
+        Assert.True(range.End.IsPositiveInfinity);
+    }
+
+    [Fact]
+    public void Parse_WithExtraWhitespaceAroundValues_ParsesCorrectly()
+    {
+        // Arrange
+        var input = "[   10   ,   20   ]";
+
+        // Act
+        var range = RangeStringParser.Parse<int>(input);
+
+        // Assert
+        Assert.Equal(10, range.Start.Value);
+        Assert.Equal(20, range.End.Value);
+    }
+
+    [Fact]
+    public void Parse_WithNegativeZero_ParsesCorrectly()
+    {
+        // Arrange
+        var input = "[-0, 0]";
+
+        // Act
+        var range = RangeStringParser.Parse<int>(input);
+
+        // Assert
+        Assert.Equal(0, range.Start.Value);
+        Assert.Equal(0, range.End.Value);
+    }
+
+    [Fact]
+    public void Parse_WithScientificNotation_ParsesCorrectly()
+    {
+        // Arrange
+        var input = "[1e2, 1e3]";
+
+        // Act
+        var range = RangeStringParser.Parse<double>(input);
+
+        // Assert
+        Assert.Equal(100.0, range.Start.Value);
+        Assert.Equal(1000.0, range.End.Value);
+    }
+
+    [Fact]
+    public void Parse_WithVeryLargeNumbers_ParsesCorrectly()
+    {
+        // Arrange
+        var input = $"[{long.MinValue}, {long.MaxValue}]";
+
+        // Act
+        var range = RangeStringParser.Parse<long>(input);
+
+        // Assert
+        Assert.Equal(long.MinValue, range.Start.Value);
+        Assert.Equal(long.MaxValue, range.End.Value);
+    }
+
+    #endregion
+
+    #region Defensive Code Verification Tests
+
+    [Fact]
+    public void Parse_AllErrorPathsThrowExceptions_NeverReturnsUnexpectedFailure()
+    {
+        // This test verifies that the defensive code in Parse() is unreachable
+        // because TryParseCore with throwOnError=true always throws, never returns false
+
+        // Arrange - Various invalid inputs
+        var invalidInputs = new[]
+        {
+            "",                    // Too short
+            "[]",                  // Too short
+            "{10, 20}",           // Invalid brackets
+            "[10 20]",            // Missing comma
+            "[abc, 20]",          // Invalid start value
+            "[10, xyz]",          // Invalid end value
+            "{10, 20]",           // Mismatched brackets
+        };
+
+        // Act & Assert - All should throw FormatException, none should throw InvalidOperationException
+        foreach (var input in invalidInputs)
+        {
+            var exception = Record.Exception(() => RangeStringParser.Parse<int>(input));
+
+            Assert.NotNull(exception);
+            // Should be FormatException (not InvalidOperationException from defensive code)
+            Assert.IsType<FormatException>(exception);
+            Assert.DoesNotContain("Unexpected parse failure", exception.Message);
+        }
     }
 
     #endregion

@@ -3,7 +3,7 @@ using Intervals.NET.Benchmarks.Competitors;
 using Intervals.NET.Extensions;
 using Range = Intervals.NET.Factories.Range;
 
-namespace Intervals.NET.Benchmarks;
+namespace Intervals.NET.Benchmarks.Benchmarks;
 
 /// <summary>
 /// Benchmarks set operations: Intersect, Union, Except

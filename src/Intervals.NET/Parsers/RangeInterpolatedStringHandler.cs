@@ -209,12 +209,13 @@ public ref struct RangeInterpolatedStringHandler<T> where T : IComparable<T>, IS
             return true; // Empty literal - brackets will come as chars
         }
 
-        if (value.Length == 0 || (value[0] != '[' && value[0] != '('))
+        var valueSpan = value.AsSpan().TrimStart();
+        if (valueSpan.Length == 0 || (valueSpan[0] != '[' && valueSpan[0] != '('))
         {
             return SetError();
         }
 
-        _isStartInclusive = value[0] == '[';
+        _isStartInclusive = valueSpan[0] == '[';
         _state = ParseState.ExpectingStartValue;
         return true;
     }
@@ -225,8 +226,8 @@ public ref struct RangeInterpolatedStringHandler<T> where T : IComparable<T>, IS
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool ProcessLiteralComma(string value)
     {
-        var trimmed = value.Trim();
-        if (!trimmed.StartsWith(','))
+        var trimmed = value.AsSpan().Trim();
+        if (trimmed.Length == 0 || trimmed[0] != ',')
         {
             return SetError();
         }
@@ -246,7 +247,7 @@ public ref struct RangeInterpolatedStringHandler<T> where T : IComparable<T>, IS
             return true; // Empty literal - bracket will come as char
         }
 
-        var trimmed = value.TrimStart();
+        var trimmed = value.AsSpan().TrimStart();
         if (trimmed.Length == 0 || (trimmed[0] != ']' && trimmed[0] != ')'))
         {
             return SetError();
