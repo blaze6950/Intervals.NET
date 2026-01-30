@@ -19,6 +19,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Intervals.NET\Intervals.NET.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Intervals.NET.Domain.Abstractions\Intervals.NET.Domain.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Intervals.NET.Domain.Default\Intervals.NET.Domain.Default.csproj" />
+    <ProjectReference Include="..\..\src\Domain\Intervals.NET.Domain.Extensions\Intervals.NET.Domain.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

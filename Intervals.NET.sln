@@ -19,9 +19,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Tests", "tests\Intervals.NET.Tests\Intervals.NET.Tests.csproj", "{8703AF16-1CD4-40CF-81B4-3579FDF858EF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{479FF156-A58F-4508-8EF5-A7A3DCD4C643}"
-	ProjectSection(SolutionItems) = preProject
-		benchmarks\BENCHMARK-ANALYSIS.md = benchmarks\BENCHMARK-ANALYSIS.md
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Benchmarks", "benchmarks\Intervals.NET.Benchmarks\Intervals.NET.Benchmarks.csproj", "{C3ECBB81-C7E1-4B63-9284-74A48BD14305}"
 EndProject
@@ -32,6 +29,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Results", "Results", "{F375
 		benchmarks\Results\Intervals.NET.Benchmarks.ParsingBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.ParsingBenchmarks-report-github.md
 		benchmarks\Results\Intervals.NET.Benchmarks.RealWorldScenariosBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.RealWorldScenariosBenchmarks-report-github.md
 		benchmarks\Results\Intervals.NET.Benchmarks.SetOperationsBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.SetOperationsBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ConstructionBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ConstructionBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ContainmentBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ContainmentBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.CrossGranularityDomainBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.CrossGranularityDomainBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.DomainHotPathScenariosBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.DomainHotPathScenariosBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.DomainOperationsBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.DomainOperationsBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.FixedStepExtensionsBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.FixedStepExtensionsBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ParsingBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.ParsingBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.RealWorldScenariosBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.RealWorldScenariosBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.SetOperationsBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.SetOperationsBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.VariableStepDomainBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.VariableStepDomainBenchmarks-report-github.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Domain.Abstractions", "src\Domain\Intervals.NET.Domain.Abstractions\Intervals.NET.Domain.Abstractions.csproj", "{EE258066-15D2-413B-B2F5-9122A0FA2387}"
