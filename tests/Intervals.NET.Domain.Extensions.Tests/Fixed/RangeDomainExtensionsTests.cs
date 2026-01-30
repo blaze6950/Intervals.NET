@@ -267,16 +267,7 @@ public class RangeDomainExtensionsTests
     [Fact]
     public void Span_InvertedRange_StartGreaterThanEnd_ReturnsZero()
     {
-        // Arrange - valid range construction, but after floor adjustment with exclusive start, firstStep > lastStep
-        var start = new DateTime(2024, 1, 2, 12, 0, 0);  // Jan 2 noon
-        var end = new DateTime(2024, 1, 2, 1, 0, 0);     // Jan 2 1 AM (earlier in same day)
-        // This is valid because start < end in absolute time when considering the full timestamp
-        // But after flooring both to day boundaries and making start exclusive, we get:
-        // firstStep = Jan 3 (floor Jan 2 noon + 1 day for exclusive)
-        // lastStep = Jan 2 (floor Jan 2 1 AM, inclusive)
-        // Wait, that won't work either. Let me use a different approach.
-        
-        // Actually, let's test a range that becomes empty after floor adjustments
+        // Arrange - test a range that becomes empty after floor adjustments
         var start2 = new DateTime(2024, 1, 1, 23, 0, 0);  // Jan 1, 11 PM
         var end2 = new DateTime(2024, 1, 2, 1, 0, 0);     // Jan 2, 1 AM
         var range = RangeFactory.Open<DateTime>(start2, end2);

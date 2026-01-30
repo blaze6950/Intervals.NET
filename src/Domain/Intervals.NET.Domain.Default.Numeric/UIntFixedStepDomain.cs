@@ -20,4 +20,6 @@ public readonly struct UIntFixedStepDomain : IFixedStepDomain<uint>
         }
         return (uint)result;
     }
+    
+    public uint Subtract(uint value, long offset) => Add(value, -offset);
 }

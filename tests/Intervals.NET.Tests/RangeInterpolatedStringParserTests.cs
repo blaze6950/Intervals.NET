@@ -680,7 +680,7 @@ public class RangeInterpolatedStringParserTests
         
         try
         {
-            var range = handler.GetRange();
+            _ = handler.GetRange();
             Assert.Fail("Should have thrown FormatException");
         }
         catch (FormatException)

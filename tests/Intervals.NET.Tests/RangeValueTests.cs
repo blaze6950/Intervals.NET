@@ -1130,7 +1130,8 @@ public class RangeValueTests
         var hashCode = rangeValue.GetHashCode();
 
         // Assert - Should not throw, uses EqualityComparer<T>.Default
-        Assert.NotEqual(0, hashCode); // Hash should be based on kind
+        // Hash codes are allowed to be any value including 0
+        _ = hashCode; // Verify no exception thrown
     }
 
     [Fact]

@@ -44,4 +44,6 @@ public readonly struct ULongFixedStepDomain : IFixedStepDomain<ulong>
             return value - uoffset;
         }
     }
+    
+    public ulong Subtract(ulong value, long offset) => Add(value, -offset);
 }

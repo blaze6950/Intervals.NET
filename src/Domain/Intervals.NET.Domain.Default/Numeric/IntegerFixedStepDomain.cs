@@ -22,7 +22,7 @@ public readonly struct IntegerFixedStepDomain : IFixedStepDomain<int>
     /// <inheritdoc/>
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public long Distance(int start, int end) => end - start;
+    public long Distance(int start, int end) => (long)end - (long)start;
 
     /// <inheritdoc/>
     [Pure]

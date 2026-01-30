@@ -48,7 +48,7 @@ namespace Intervals.NET.Domain.Default.Calendar;
 /// var monday = new DateOnly(2025, 1, 6);
 /// 
 /// // Distance skips weekend: Friday + 1 business day = Monday
-/// var distance = domain.Distance(friday, monday); // Returns 2.0 (Friday and Monday)
+/// var distance = domain.Distance(friday, monday); // Returns 1.0 (one business day step)
 /// 
 /// // Add skips weekend
 /// var nextDay = domain.Add(friday, 1); // Returns Monday, Jan 6
