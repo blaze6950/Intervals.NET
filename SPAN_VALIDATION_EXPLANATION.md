@@ -11,11 +11,11 @@ The `start > end` check in Span methods is checking **domain-aligned boundaries*
 
 ### Example Scenario
 
-Consider an **open integer range** that's smaller than one step:
+Consider an **open double range** that's smaller than one step:
 
 ```csharp
 var range = Range.Open(10.2, 10.8);  // Valid range: 10.2 < 10.8
-var domain = new IntegerFixedStepDomain();
+var domain = new DoubleFixedStepDomain();
 var span = range.Span(domain);
 ```
 

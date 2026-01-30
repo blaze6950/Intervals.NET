@@ -20,4 +20,6 @@ public readonly struct SByteFixedStepDomain : IFixedStepDomain<sbyte>
         }
         return (sbyte)result;
     }
+    
+    public sbyte Subtract(sbyte value, long offset) => Add(value, -offset);
 }

@@ -14,6 +14,7 @@ on:
       - 'src/Domain/Intervals.NET.Domain.Default/**'
       - 'src/Domain/Intervals.NET.Domain.Abstractions/**'
       - 'tests/Intervals.NET.Domain.Default.Tests/**'
+      - '.github/workflows/domain-default.yml'
   workflow_dispatch:
 
 env:

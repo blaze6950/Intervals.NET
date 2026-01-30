@@ -69,4 +69,13 @@ public readonly struct ShortFixedStepDomain : IFixedStepDomain<short>
         
         return (short)result;
     }
+    
+    /// <summary>
+    /// Subtracts the specified offset from the given short value.
+    /// </summary>
+    /// <param name="value">The base value.</param>
+    /// <param name="offset">The offset to subtract (can be negative).</param>
+    /// <returns>The result of value - offset.</returns>
+    /// <exception cref="OverflowException">Thrown when the result would overflow short bounds.</exception>
+    public short Subtract(short value, long offset) => Add(value, -offset);
 }

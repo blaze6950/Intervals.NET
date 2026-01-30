@@ -20,4 +20,6 @@ public readonly struct ByteFixedStepDomain : IFixedStepDomain<byte>
         }
         return (byte)result;
     }
+    
+    public byte Subtract(byte value, long offset) => Add(value, -offset);
 }

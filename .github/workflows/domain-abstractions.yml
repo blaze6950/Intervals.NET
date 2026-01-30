@@ -10,6 +10,7 @@ on:
     branches: [ master, main ]
     paths:
       - 'src/Domain/Intervals.NET.Domain.Abstractions/**'
+      - '.github/workflows/domain-abstractions.yml'
   workflow_dispatch:
 
 env:

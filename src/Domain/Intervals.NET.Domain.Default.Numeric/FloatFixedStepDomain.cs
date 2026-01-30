@@ -19,4 +19,5 @@ public readonly struct FloatFixedStepDomain : IFixedStepDomain<float>
     public long Distance(float start, float end) => (long)MathF.Floor(end - start);
     
     public float Add(float value, long offset) => value + (offset * 1.0f);
+    public float Subtract(float value, long offset) => Add(value, -offset);
 }
