@@ -33,10 +33,10 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.PROJECT_PATH }}
+        run: dotnet restore ${{ env.TEST_PATH }}
 
-      - name: Build Intervals.NET
-        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+      - name: Build test project and dependencies
+        run: dotnet build ${{ env.TEST_PATH }} --configuration Release --no-restore
 
       - name: Run Intervals.NET tests with coverage
         run: dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults
