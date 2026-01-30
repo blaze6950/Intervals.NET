@@ -15,12 +15,25 @@ public readonly struct ULongFixedStepDomain : IFixedStepDomain<ulong>
     
     public long Distance(ulong start, ulong end)
     {
-        var distance = end - start;
-        if (distance > (ulong)long.MaxValue)
+        if (end >= start)
         {
-            return long.MaxValue; // Clamp to max representable distance
+            var distance = end - start;
+            if (distance > (ulong)long.MaxValue)
+            {
+                return long.MaxValue; // Clamp to max representable distance
+            }
+            return (long)distance;
         }
-        return (long)distance;
+        else
+        {
+            // Negative distance
+            var distance = start - end;
+            if (distance > (ulong)long.MaxValue)
+            {
+                return long.MinValue; // Clamp to min representable distance
+            }
+            return -(long)distance;
+        }
     }
     
     public ulong Add(ulong value, long offset)

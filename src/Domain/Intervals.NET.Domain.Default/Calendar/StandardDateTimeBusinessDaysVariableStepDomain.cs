@@ -76,9 +76,14 @@ public readonly struct StandardDateTimeBusinessDaysVariableStepDomain : IVariabl
     [Pure]
     public System.DateTime Add(System.DateTime value, long steps)
     {
+        if (steps == 0)
+        {
+            return value;
+        }
+
         var current = value;
-        var remaining = Math.Abs(steps);
         var forward = steps > 0;
+        var remaining = forward ? steps : -steps; // Avoid Math.Abs(long.MinValue) overflow
 
         while (remaining > 0)
         {

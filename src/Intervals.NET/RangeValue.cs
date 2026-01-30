@@ -184,10 +184,8 @@ public readonly struct RangeValue<T> :
                     // For finite values, combine value hash with kind
                     // Use EqualityComparer directly - it handles null properly
                     var valueHash = EqualityComparer<T>.Default.GetHashCode(_value!);
-                    // Ensure non-zero result by adding kind contribution
-                    return valueHash == 0 
-                        ? ((int)_kind * 17) + 1  // Ensure non-zero for null values
-                        : (valueHash * 397) ^ ((int)_kind * 17);
+                    // Combine value hash with kind for better distribution
+                    return (valueHash * 397) ^ ((int)_kind * 17);
                 }
             }
         }
