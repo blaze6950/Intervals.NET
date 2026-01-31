@@ -565,6 +565,82 @@ public static class RangeDataExtensions
 
     #endregion
 
+    /// <summary>
+    /// Validates that the <see cref="RangeData{TRangeType,TDataType,TRangeDomain}.Data"/> sequence
+    /// exactly matches the number of logical elements implied by the <see cref="Range{TRangeType}"/>
+    /// and the associated domain instance.
+    /// <para>
+    /// IMPORTANT: This method enumerates the underlying <see cref="IEnumerable{T}"/> returned by
+    /// <c>RangeData.Data</c>. Enumeration may force deferred execution, be expensive, or produce
+    /// side-effects (for example if the sequence is generated on-the-fly). Callers should be
+    /// aware that calling this method will iterate the entire data sequence (up to the expected
+    /// count + 1 to detect oversize sequences).
+    /// </para>
+    /// </summary>
+    /// <param name="source">The RangeData instance to validate.</param>
+    /// <param name="message">When validation fails contains a descriptive message; null on success.</param>
+    /// <returns>True if the data sequence length matches the logical range length; otherwise false.</returns>
+    public static bool IsValid<TRangeType, TDataType, TRangeDomain>(
+        this RangeData<TRangeType, TDataType, TRangeDomain> source,
+        out string? message)
+        where TRangeType : IComparable<TRangeType>
+        where TRangeDomain : IRangeDomain<TRangeType>
+    {
+        // Calculate expected element count using the same index arithmetic as RangeData.TryGet
+        var startIndex = 0L;
+        var endIndex = source.Domain.Distance(source.Range.Start.Value, source.Range.End.Value);
+
+        if (!source.Range.IsStartInclusive)
+        {
+            startIndex++;
+        }
+
+        if (!source.Range.IsEndInclusive)
+        {
+            endIndex--;
+        }
+
+        long expectedCount = endIndex - startIndex + 1;
+        if (expectedCount <= 0)
+        {
+            expectedCount = 0;
+        }
+
+        try
+        {
+            using var e = source.Data.GetEnumerator();
+            long actualCount = 0;
+
+            // Enumerate but bail out early if we detect more elements than expected
+            while (e.MoveNext())
+            {
+                actualCount++;
+                if (actualCount > expectedCount)
+                {
+                    message =
+                        $"Data sequence contains more elements ({actualCount}) than expected ({expectedCount}) for range {source.Range}.";
+                    return false;
+                }
+            }
+
+            if (actualCount < expectedCount)
+            {
+                message =
+                    $"Data sequence contains fewer elements ({actualCount}) than expected ({expectedCount}) for range {source.Range}.";
+                return false;
+            }
+
+            message = null;
+            return true;
+        }
+        catch (Exception ex)
+        {
+            // If enumeration throws, surface a helpful message
+            message = $"Exception while enumerating data sequence: {ex.GetType().Name} - {ex.Message}";
+            return false;
+        }
+    }
+
     #region Relationship Checks
 
     /// <summary>
