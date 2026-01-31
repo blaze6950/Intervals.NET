@@ -1,5 +1,4 @@
 using BenchmarkDotNet.Attributes;
-using Intervals.NET.Domain.Abstractions;
 using Intervals.NET.Domain.Default.Numeric;
 using Intervals.NET.Domain.Default.DateTime;
 using Intervals.NET.Domain.Default.TimeSpan;

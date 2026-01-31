@@ -150,7 +150,7 @@ public class RangeFactoryTests
     public void Open_WithImplicitConversion_WorksCorrectly()
     {
         // Arrange & Act
-        var range = Range.Open<int>(5, 15);
+        var range = Range.Open(5, 15);
 
         // Assert
         Assert.Equal(5, range.Start.Value);
@@ -163,7 +163,7 @@ public class RangeFactoryTests
     public void Open_WithNegativeInfinityStart_CreatesUnboundedStartRange()
     {
         // Arrange & Act
-        var range = Range.Open<int>(RangeValue<int>.NegativeInfinity, 100);
+        var range = Range.Open(RangeValue<int>.NegativeInfinity, 100);
 
         // Assert
         Assert.True(range.Start.IsNegativeInfinity);
@@ -176,7 +176,7 @@ public class RangeFactoryTests
     public void Open_WithPositiveInfinityEnd_CreatesUnboundedEndRange()
     {
         // Arrange & Act
-        var range = Range.Open<int>(0, RangeValue<int>.PositiveInfinity);
+        var range = Range.Open(0, RangeValue<int>.PositiveInfinity);
 
         // Assert
         Assert.Equal(0, range.Start.Value);
@@ -202,7 +202,7 @@ public class RangeFactoryTests
     public void Open_ToString_ReturnsCorrectFormat()
     {
         // Arrange & Act
-        var range = Range.Open<int>(10, 20);
+        var range = Range.Open(10, 20);
         var result = range.ToString();
 
         // Assert
@@ -260,7 +260,7 @@ public class RangeFactoryTests
     public void OpenClosed_WithNegativeInfinityStart_CreatesUnboundedStartRange()
     {
         // Arrange & Act
-        var range = Range.OpenClosed<int>(RangeValue<int>.NegativeInfinity, 100);
+        var range = Range.OpenClosed(RangeValue<int>.NegativeInfinity, 100);
 
         // Assert
         Assert.True(range.Start.IsNegativeInfinity);
@@ -273,7 +273,7 @@ public class RangeFactoryTests
     public void OpenClosed_WithPositiveInfinityEnd_CreatesUnboundedEndRange()
     {
         // Arrange & Act
-        var range = Range.OpenClosed<int>(0, RangeValue<int>.PositiveInfinity);
+        var range = Range.OpenClosed(0, RangeValue<int>.PositiveInfinity);
 
         // Assert
         Assert.Equal(0, range.Start.Value);
@@ -331,7 +331,7 @@ public class RangeFactoryTests
     public void ClosedOpen_WithImplicitConversion_WorksCorrectly()
     {
         // Arrange & Act
-        var range = Range.ClosedOpen<int>(5, 15);
+        var range = Range.ClosedOpen(5, 15);
 
         // Assert
         Assert.Equal(5, range.Start.Value);
@@ -344,7 +344,7 @@ public class RangeFactoryTests
     public void ClosedOpen_WithNegativeInfinityStart_CreatesUnboundedStartRange()
     {
         // Arrange & Act
-        var range = Range.ClosedOpen<int>(RangeValue<int>.NegativeInfinity, 100);
+        var range = Range.ClosedOpen(RangeValue<int>.NegativeInfinity, 100);
 
         // Assert
         Assert.True(range.Start.IsNegativeInfinity);
@@ -357,7 +357,7 @@ public class RangeFactoryTests
     public void ClosedOpen_WithPositiveInfinityEnd_CreatesUnboundedEndRange()
     {
         // Arrange & Act
-        var range = Range.ClosedOpen<int>(0, RangeValue<int>.PositiveInfinity);
+        var range = Range.ClosedOpen(0, RangeValue<int>.PositiveInfinity);
 
         // Assert
         Assert.Equal(0, range.Start.Value);
@@ -370,7 +370,7 @@ public class RangeFactoryTests
     public void ClosedOpen_ToString_ReturnsCorrectFormat()
     {
         // Arrange & Act
-        var range = Range.ClosedOpen<int>(10, 20);
+        var range = Range.ClosedOpen(10, 20);
         var result = range.ToString();
 
         // Assert
@@ -398,7 +398,7 @@ public class RangeFactoryTests
         var endDate = new DateTime(2020, 12, 31);
 
         // Act
-        var range = Range.ClosedOpen<DateTime>(startDate, endDate);
+        var range = Range.ClosedOpen(startDate, endDate);
 
         // Assert
         Assert.Equal(startDate, range.Start.Value);
@@ -461,7 +461,7 @@ public class RangeFactoryTests
     public void FromString_RoundTrip_PreservesRange()
     {
         // Arrange
-        var original = Range.ClosedOpen<int>(10, 20);
+        var original = Range.ClosedOpen(10, 20);
         var stringRepresentation = original.ToString();
 
         // Act
@@ -492,7 +492,7 @@ public class RangeFactoryTests
     public void FromString_RoundTrip_OpenRange_PreservesRange()
     {
         // Arrange
-        var original = Range.Open<int>(5, 15);
+        var original = Range.Open(5, 15);
         var stringRepresentation = original.ToString();
 
         // Act
@@ -520,7 +520,7 @@ public class RangeFactoryTests
     public void FromString_RoundTrip_WithDoubles_PreservesRange()
     {
         // Arrange
-        var original = Range.ClosedOpen<double>(1.5, 9.5);
+        var original = Range.ClosedOpen(1.5, 9.5);
         var stringRepresentation = original.ToString();
 
         // Act
@@ -537,7 +537,7 @@ public class RangeFactoryTests
     public void FromString_RoundTrip_WithNegativeInfinity_PreservesRange()
     {
         // Arrange
-        var original = Range.Closed<int>(RangeValue<int>.NegativeInfinity, 100);
+        var original = Range.Closed(RangeValue<int>.NegativeInfinity, 100);
         var stringRepresentation = original.ToString();
 
         // Act
@@ -554,7 +554,7 @@ public class RangeFactoryTests
     public void FromString_RoundTrip_WithPositiveInfinity_PreservesRange()
     {
         // Arrange
-        var original = Range.Closed<int>(0, RangeValue<int>.PositiveInfinity);
+        var original = Range.Closed(0, RangeValue<int>.PositiveInfinity);
         var stringRepresentation = original.ToString();
 
         // Act
@@ -602,7 +602,7 @@ public class RangeFactoryTests
     public void FromString_InfinitySymbol_RoundTrip_WithNegativeInfinity_PreservesRange()
     {
         // Arrange - ToString outputs "-∞"
-        var original = Range.Closed<int>(RangeValue<int>.NegativeInfinity, 100);
+        var original = Range.Closed(RangeValue<int>.NegativeInfinity, 100);
         var stringRepresentation = original.ToString();
 
         // Verify ToString produces infinity symbol
@@ -622,7 +622,7 @@ public class RangeFactoryTests
     public void FromString_InfinitySymbol_RoundTrip_WithPositiveInfinity_PreservesRange()
     {
         // Arrange - ToString outputs "∞"
-        var original = Range.Open<int>(0, RangeValue<int>.PositiveInfinity);
+        var original = Range.Open(0, RangeValue<int>.PositiveInfinity);
         var stringRepresentation = original.ToString();
 
         // Verify ToString produces infinity symbol
@@ -833,9 +833,9 @@ public class RangeFactoryTests
 
         // Act
         var closed = Range.Closed<int>(start, end);
-        var open = Range.Open<int>(start, end);
+        var open = Range.Open(start, end);
         var openClosed = Range.OpenClosed<int>(start, end);
-        var closedOpen = Range.ClosedOpen<int>(start, end);
+        var closedOpen = Range.ClosedOpen(start, end);
 
         // Assert - All have same values but different inclusivity
         Assert.Equal(10, closed.Start.Value);
@@ -910,7 +910,7 @@ public class RangeFactoryTests
         var factoryClosed = Range.Closed<int>(start, end);
 
         var createOpen = Range.Create<int>(start, end, false, false);
-        var factoryOpen = Range.Open<int>(start, end);
+        var factoryOpen = Range.Open(start, end);
 
         // Assert
         Assert.Equal(factoryClosed, createClosed);

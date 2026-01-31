@@ -186,17 +186,17 @@ public readonly struct StandardDateTimeBusinessDaysVariableStepDomain : IVariabl
     /// <para>⚠️ <strong>Performance:</strong> O(N) - Iterates through each day in the range.</para>
     /// </remarks>
     [Pure]
-    public double Distance(System.DateTime start, System.DateTime end)
+    public long Distance(System.DateTime start, System.DateTime end)
     {
         var current = Floor(start);
         var target = Floor(end);
 
         if (current == target)
         {
-            return 0.0; // Same date = 0 steps needed
+            return 0; // Same date = 0 steps needed
         }
 
-        double count = 0;
+        long count = 0;
 
         if (current < target)
         {

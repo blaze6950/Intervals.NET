@@ -321,7 +321,7 @@ public class RangeFactoryFromStringInterpolatedTests
 
         // Act
         var fromInterpolated = RangeFactory.FromString<int>($"[{start}, {end})");
-        var fromFactory = RangeFactory.ClosedOpen<int>(start, end);
+        var fromFactory = RangeFactory.ClosedOpen(start, end);
 
         // Assert
         Assert.Equal(fromFactory, fromInterpolated);

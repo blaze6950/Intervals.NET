@@ -83,7 +83,7 @@ public class ConstructionBenchmarks
     [Benchmark]
     public void IntervalsNet_Int_FiniteOpen()
     {
-        _ = Range.Open<int>(10, 20);
+        _ = Range.Open(10, 20);
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public class ConstructionBenchmarks
     [Benchmark]
     public void IntervalsNet_Int_HalfOpen()
     {
-        _ = Range.ClosedOpen<int>(10, 20);
+        _ = Range.ClosedOpen(10, 20);
     }
 
     #endregion

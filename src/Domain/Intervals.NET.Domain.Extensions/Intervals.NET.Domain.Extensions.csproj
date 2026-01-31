@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>Intervals.NET.Domain.Extensions</PackageId>
-        <Version>0.0.1</Version>
+        <Version>0.0.2</Version>
         <Authors>blaze6950</Authors>
         <Description>Extension methods for domain-aware range operations in Intervals.NET. Provides Span (count steps), Expand, ExpandByRatio, and Shift operations. Clearly separated into Fixed (O(1)) and Variable (O(N)) namespaces for explicit performance semantics. Works seamlessly with all domain implementations.</Description>
         <PackageTags>range;interval;domain;extensions;span;expand;shift;performance;fixed-step;variable-step;intervals</PackageTags>

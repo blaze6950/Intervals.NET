@@ -53,7 +53,7 @@ public class RangeExtensionsTests
     public void Overlaps_WithAdjacentRanges_OneExclusive_ReturnsFalse()
     {
         // Arrange
-        var range1 = RangeFactory.ClosedOpen<int>(10, 20);
+        var range1 = RangeFactory.ClosedOpen(10, 20);
         var range2 = RangeFactory.Closed<int>(20, 30);
 
         // Act
@@ -127,7 +127,7 @@ public class RangeExtensionsTests
     public void Contains_Value_InsideOpenRange_ReturnsTrue()
     {
         // Arrange
-        var range = RangeFactory.Open<int>(10, 20);
+        var range = RangeFactory.Open(10, 20);
 
         // Act & Assert
         Assert.True(range.Contains(15));
@@ -139,7 +139,7 @@ public class RangeExtensionsTests
     public void Contains_Value_InsideHalfOpenRange_ReturnsTrue()
     {
         // Arrange
-        var range = RangeFactory.ClosedOpen<int>(10, 20);
+        var range = RangeFactory.ClosedOpen(10, 20);
 
         // Act & Assert
         Assert.True(range.Contains(15));
@@ -229,7 +229,7 @@ public class RangeExtensionsTests
         // Arrange
         var start = new DateTime(2024, 1, 1);
         var end = new DateTime(2024, 12, 31);
-        var range = RangeFactory.ClosedOpen<DateTime>(start, end);
+        var range = RangeFactory.ClosedOpen(start, end);
 
         // Act & Assert
         Assert.True(range.Contains(new DateTime(2024, 1, 1)));  // Included start
@@ -298,7 +298,7 @@ public class RangeExtensionsTests
     public void Contains_WithSameBoundaries_InnerInclusive_OuterExclusive_ReturnsFalse()
     {
         // Arrange
-        var outer = RangeFactory.Open<int>(10, 20);
+        var outer = RangeFactory.Open(10, 20);
         var inner = RangeFactory.Closed<int>(10, 20);
 
         // Act
@@ -313,7 +313,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var outer = RangeFactory.Closed<int>(10, 20);
-        var inner = RangeFactory.Open<int>(10, 20);
+        var inner = RangeFactory.Open(10, 20);
 
         // Act
         var result = outer.Contains(inner);
@@ -420,7 +420,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range1 = RangeFactory.Closed<int>(10, 20);
-        var range2 = RangeFactory.Open<int>(10, 20);
+        var range2 = RangeFactory.Open(10, 20);
 
         // Act
         var result = range1.Intersect(range2);
@@ -501,7 +501,7 @@ public class RangeExtensionsTests
     public void Union_WithAdjacentRanges_ReturnsUnion()
     {
         // Arrange
-        var range1 = RangeFactory.ClosedOpen<int>(10, 20);
+        var range1 = RangeFactory.ClosedOpen(10, 20);
         var range2 = RangeFactory.Closed<int>(20, 30);
 
         // Act
@@ -533,7 +533,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range1 = RangeFactory.Closed<int>(10, 20);
-        var range2 = RangeFactory.Open<int>(10, 20);
+        var range2 = RangeFactory.Open(10, 20);
 
         // Act
         var result = range1.Union(range2);
@@ -568,7 +568,7 @@ public class RangeExtensionsTests
     public void IsAdjacent_WithAdjacentRanges_OneInclusive_ReturnsTrue()
     {
         // Arrange
-        var range1 = RangeFactory.ClosedOpen<int>(10, 20);
+        var range1 = RangeFactory.ClosedOpen(10, 20);
         var range2 = RangeFactory.Closed<int>(20, 30);
 
         // Act
@@ -596,8 +596,8 @@ public class RangeExtensionsTests
     public void IsAdjacent_WithAdjacentRanges_BothExclusive_ReturnsFalse()
     {
         // Arrange
-        var range1 = RangeFactory.Open<int>(10, 20);
-        var range2 = RangeFactory.Open<int>(20, 30);
+        var range1 = RangeFactory.Open(10, 20);
+        var range2 = RangeFactory.Open(20, 30);
 
         // Act
         var result = range1.IsAdjacent(range2);
@@ -625,7 +625,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range1 = RangeFactory.Closed<int>(20, 30);
-        var range2 = RangeFactory.ClosedOpen<int>(10, 20);
+        var range2 = RangeFactory.ClosedOpen(10, 20);
 
         // Act
         var result = range1.IsAdjacent(range2);
@@ -684,7 +684,7 @@ public class RangeExtensionsTests
     public void IsBefore_WithAdjacentRanges_OneExclusive_ReturnsTrue()
     {
         // Arrange
-        var range1 = RangeFactory.ClosedOpen<int>(10, 20);
+        var range1 = RangeFactory.ClosedOpen(10, 20);
         var range2 = RangeFactory.Closed<int>(20, 30);
 
         // Act
@@ -1164,7 +1164,7 @@ public class RangeExtensionsTests
     {
         // Arrange
         var range = RangeFactory.Closed<int>(10, 20);
-        var other = RangeFactory.Open<int>(10, 20);
+        var other = RangeFactory.Open(10, 20);
 
         // Act
         var result = range.Except(other).ToList();
@@ -1283,7 +1283,7 @@ public class RangeExtensionsTests
     {
         // Arrange - End boundaries equal, range inclusive, other exclusive
         var range = RangeFactory.Closed<int>(10, 50);   // [10, 50]
-        var other = RangeFactory.ClosedOpen<int>(30, 50); // [30, 50)
+        var other = RangeFactory.ClosedOpen(30, 50); // [30, 50)
 
         // Act
         var result = range.Except(other).ToList();
@@ -1418,8 +1418,8 @@ public class RangeExtensionsTests
     public void Intersect_WithTouchingRanges_ExclusiveBoundaries_ReturnsNull()
     {
         // Arrange - [10,20) and [20,30) - touching at 20 but exclusive
-        var range1 = RangeFactory.ClosedOpen<int>(new RangeValue<int>(10), new RangeValue<int>(20));
-        var range2 = RangeFactory.ClosedOpen<int>(new RangeValue<int>(20), new RangeValue<int>(30));
+        var range1 = RangeFactory.ClosedOpen(new RangeValue<int>(10), new RangeValue<int>(20));
+        var range2 = RangeFactory.ClosedOpen(new RangeValue<int>(20), new RangeValue<int>(30));
 
         // Act - Tests edge case in Intersect
         var result = range1.Intersect(range2);
@@ -1432,8 +1432,8 @@ public class RangeExtensionsTests
     public void Overlaps_WithSameBoundaries_DifferentInclusivity_DetectsCorrectly()
     {
         // Arrange - Same values, one inclusive one exclusive
-        var range1 = RangeFactory.Closed<int>(new RangeValue<int>(10), new RangeValue<int>(20));
-        var range2 = RangeFactory.Open<int>(new RangeValue<int>(10), new RangeValue<int>(20));
+        var range1 = RangeFactory.Closed(new RangeValue<int>(10), new RangeValue<int>(20));
+        var range2 = RangeFactory.Open(new RangeValue<int>(10), new RangeValue<int>(20));
 
         // Act - Tests inclusivity check in Overlaps
         var result = range1.Overlaps(range2);
@@ -1446,8 +1446,8 @@ public class RangeExtensionsTests
     public void Union_WithGap_BothExclusive_ReturnsNull()
     {
         // Arrange - Gap between ranges [10,20) and (25,30]
-        var range1 = RangeFactory.ClosedOpen<int>(new RangeValue<int>(10), new RangeValue<int>(20));
-        var range2 = RangeFactory.OpenClosed<int>(new RangeValue<int>(25), new RangeValue<int>(30));
+        var range1 = RangeFactory.ClosedOpen(new RangeValue<int>(10), new RangeValue<int>(20));
+        var range2 = RangeFactory.OpenClosed(new RangeValue<int>(25), new RangeValue<int>(30));
 
         // Act - Tests gap detection in Union
         var result = range1.Union(range2);
@@ -1460,8 +1460,8 @@ public class RangeExtensionsTests
     public void BitwiseOrOperator_PerformsUnion_SameAsUnionMethod()
     {
         // Arrange
-        var range1 = RangeFactory.Closed<int>(new RangeValue<int>(10), new RangeValue<int>(20));
-        var range2 = RangeFactory.Closed<int>(new RangeValue<int>(15), new RangeValue<int>(25));
+        var range1 = RangeFactory.Closed(new RangeValue<int>(10), new RangeValue<int>(20));
+        var range2 = RangeFactory.Closed(new RangeValue<int>(15), new RangeValue<int>(25));
 
         // Act - Tests op_BitwiseOr (uncovered operator)
         var resultOperator = range1 | range2;

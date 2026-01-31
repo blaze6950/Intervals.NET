@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>Intervals.NET</PackageId>
-        <Version>0.0.3</Version>
+        <Version>0.0.4</Version>
         <Authors>blaze6950</Authors>
         <Description>Production-ready .NET library for type-safe mathematical intervals and ranges. Zero-allocation struct-based design with comprehensive set operations (intersection, union, contains, overlaps), explicit infinity support, span-based parsing, and custom interpolated string handler. Generic over IComparable&lt;T&gt; with 100% test coverage. Built for correctness and performance.</Description>
         <PackageReleaseNotes>Range record was updated by restricting the creation of new Range struct using the record with keyword</PackageReleaseNotes>

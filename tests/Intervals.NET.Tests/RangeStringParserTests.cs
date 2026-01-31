@@ -349,7 +349,7 @@ public class RangeStringParserTests
     {
         // Arrange
         var input = "[1,5, 9,5]"; // European decimal separator (comma)
-        var culture = new System.Globalization.CultureInfo("de-DE");
+        var culture = new CultureInfo("de-DE");
 
         // Act
         var range = RangeStringParser.Parse<double>(input, culture);
@@ -364,7 +364,7 @@ public class RangeStringParserTests
     {
         // Arrange
         var input = "[1.5, 9.5]";
-        var culture = System.Globalization.CultureInfo.InvariantCulture;
+        var culture = CultureInfo.InvariantCulture;
 
         // Act
         var range = RangeStringParser.Parse<double>(input, culture);
@@ -543,7 +543,7 @@ public class RangeStringParserTests
     {
         // Arrange
         var input = "[1,5, 9,5]";
-        var culture = new System.Globalization.CultureInfo("de-DE");
+        var culture = new CultureInfo("de-DE");
 
         // Act
         var result = RangeStringParser.TryParse<double>(input, out var range, culture);
@@ -689,7 +689,7 @@ public class RangeStringParserTests
     {
         // Arrange - German culture uses comma as decimal separator
         var input = "[1,5, 2,5]"; // Two decimal numbers with commas
-        var culture = new System.Globalization.CultureInfo("de-DE");
+        var culture = new CultureInfo("de-DE");
 
         // Act
         var range = RangeStringParser.Parse<double>(input, culture);
@@ -704,7 +704,7 @@ public class RangeStringParserTests
     {
         // Arrange - Complex case with 3 commas total
         var input = "[1,23, 4,56]"; // Two decimals in German format
-        var culture = new System.Globalization.CultureInfo("de-DE");
+        var culture = new CultureInfo("de-DE");
 
         // Act
         var range = RangeStringParser.Parse<double>(input, culture);
