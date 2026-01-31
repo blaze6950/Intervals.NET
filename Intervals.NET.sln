@@ -40,6 +40,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Results", "Results", "{F375
 		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.RealWorldScenariosBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.RealWorldScenariosBenchmarks-report-github.md
 		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.SetOperationsBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.SetOperationsBenchmarks-report-github.md
 		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.VariableStepDomainBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.VariableStepDomainBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.RangeDataBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.RangeDataBenchmarks-report-github.md
+		benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.RangeDataExtensionsBenchmarks-report-github.md = benchmarks\Results\Intervals.NET.Benchmarks.Benchmarks.RangeDataExtensionsBenchmarks-report-github.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Domain.Abstractions", "src\Domain\Intervals.NET.Domain.Abstractions\Intervals.NET.Domain.Abstractions.csproj", "{EE258066-15D2-413B-B2F5-9122A0FA2387}"
