@@ -81,12 +81,9 @@ public readonly record struct Range<T> where T : IComparable<T>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Range(RangeValue<T> start, RangeValue<T> end, bool isStartInclusive, bool isEndInclusive, bool skipValidation)
     {
-        if (!skipValidation)
+        if (!skipValidation && !TryValidateBounds(start, end, isStartInclusive, isEndInclusive, out var message))
         {
-            if (!TryValidateBounds(start, end, isStartInclusive, isEndInclusive, out var message))
-            {
-                throw new ArgumentException(message, nameof(start));
-            }
+            throw new ArgumentException(message, nameof(start));
         }
 
         Start = start;

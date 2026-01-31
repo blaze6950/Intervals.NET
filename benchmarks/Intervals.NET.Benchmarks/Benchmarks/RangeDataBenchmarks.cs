@@ -14,7 +14,7 @@ public class RangeDataBenchmarks
     [Params(10, 1000, 100000)]
     public int N;
 
-    private IntegerFixedStepDomain _domain = new();
+    private readonly IntegerFixedStepDomain _domain = new();
     private Range<int> _fullRange;
     private RangeData<int, int, IntegerFixedStepDomain> _rangeData;
     private int[] _backingArray = null!;

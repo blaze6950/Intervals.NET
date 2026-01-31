@@ -10,7 +10,7 @@ namespace Intervals.NET.Benchmarks.Benchmarks;
 [MemoryDiagnoser]
 public class RangeDataExtensionsBenchmarks
 {
-    private IntegerFixedStepDomain _domain = new();
+    private readonly IntegerFixedStepDomain _domain = new();
     private RangeData<int, int, IntegerFixedStepDomain> _left = null!;
     private RangeData<int, int, IntegerFixedStepDomain> _right = null!;
 

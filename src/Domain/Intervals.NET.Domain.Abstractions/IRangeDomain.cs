@@ -39,7 +39,8 @@ public interface IRangeDomain<T> where T : IComparable<T>
 
     /// <summary>
     /// Calculates the distance in discrete steps between two values.
-    /// This operation is O(1) and returns an exact integer count.
+    /// Implementations may have different complexity characteristics: fixed-step domains typically
+    /// compute this in O(1), while variable-step domains may iterate and therefore be O(N).
     /// </summary>
     /// <param name="start">The starting value.</param>
     /// <param name="end">The ending value.</param>

@@ -8,7 +8,7 @@
         <PackageId>Intervals.NET.Data</PackageId>
         <Version>0.0.1</Version>
         <Authors>blaze6950</Authors>
-        <Description>RangeData&lt;TRange, TData, TDomain&gt; — a lazy, immutable abstraction that couples a logical Range&lt;TRange&gt;; a data sequence (IEnumerable&lt;TData&gt;); and a discrete IRangeDomain&lt;TRange&gt;. Ensures the domain-measured range length matches the data sequence length, enables right-biased union/intersection, and provides efficient, low-allocation operations for time-series, event streams, and incremental datasets.</Description>
+        <Description>RangeData&lt;TRange, TData, TDomain&gt; — a lazy, immutable abstraction that couples a logical Range&lt;TRange&gt;; a data sequence (IEnumerable&lt;TData&gt;); and a discrete IRangeDomain&lt;TRange&gt;. Designed so the domain-measured range length matches the data sequence length (optionally validated via the IsValid extension), enables right-biased union/intersection, and provides efficient, low-allocation operations for time-series, event streams, and incremental datasets.</Description>
         <PackageTags>rangedata;range;interval;timeseries;data;lazy;immutable;domain;serialization;union;intersection;sliding-window</PackageTags>
         <RepositoryUrl>https://github.com/blaze6950/Intervals.NET</RepositoryUrl>
         <PackageProjectUrl>https://github.com/blaze6950/Intervals.NET</PackageProjectUrl>

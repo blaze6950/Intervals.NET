@@ -15,8 +15,6 @@ public class RangeDataExtensions_TrimOverflowTests
         var originalRange = Range.Closed<int>(0, 100);
         var rd = new RangeData<int, int, HugeDistanceDomainStub>(originalRange, data, hugeDomain);
 
-        var newStart = Range.Closed<int>(1, 100).Start; // some value inside
-
         // Act
         var result = RangeDataExtensions.TrimStart(rd, 1);
 

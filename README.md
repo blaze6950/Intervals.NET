@@ -61,7 +61,7 @@ A production-ready .NET library for working with mathematical intervals and rang
   - [Working with Custom Types](#working-with-custom-types)
   - [Domain Extensions](#domain-extensions) 👈 *NEW: Step-based operations*
   - [Advanced Usage Examples](#advanced-usage-examples) 👈 *Click to expand*
-- [Performance](#-performance)
+- [RangeData Library](#-rangedata-library) 👈 *Click to expand*
 - [Performance](#-performance)
   - [Detailed Benchmark Results](#detailed-benchmark-results) 👈 *Click to expand*
 - [Testing & Quality](#-testing--quality)

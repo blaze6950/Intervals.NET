@@ -1,4 +1,5 @@
 ﻿using Intervals.NET.Domain.Abstractions;
+using Intervals.NET.Extensions;
 
 namespace Intervals.NET.Data;
 
@@ -83,10 +84,29 @@ public record RangeData<TRangeType, TDataType, TRangeDomain> where TRangeType : 
     /// <exception cref="ArgumentException">
     /// Thrown if the sub-range is not finite.
     /// </exception>
-    public RangeData<TRangeType, TDataType, TRangeDomain> this[Range<TRangeType> subRange] =>
-        TryGet(subRange, out var data)
-            ? data!
-            : throw new ArgumentException("Sub-range must be finite.", nameof(subRange));
+    public RangeData<TRangeType, TDataType, TRangeDomain> this[Range<TRangeType> subRange]
+    {
+        get
+        {
+            if (!subRange.Start.IsFinite || !subRange.End.IsFinite)
+            {
+                throw new ArgumentException("Sub-range must be finite.", nameof(subRange));
+            }
+
+            if (!Range.Contains(subRange))
+            {
+                throw new ArgumentOutOfRangeException(nameof(subRange), subRange, "Sub-range is outside the bounds of the source range.");
+            }
+
+            if (TryGet(subRange, out var data))
+            {
+                return data!;
+            }
+
+            // Fallback: if TryGet failed for other reasons (overflow), provide a generic exception
+            throw new InvalidOperationException($"Unable to retrieve sub-range {subRange} from RangeData.");
+        }
+    }
 
     /// <summary>
     /// Tries to get the data element corresponding to the specified point within the range.
@@ -101,8 +121,19 @@ public record RangeData<TRangeType, TDataType, TRangeDomain> where TRangeType : 
     /// </returns>
     public bool TryGet(TRangeType point, out TDataType? data)
     {
-        var index = Domain.Distance(Range.Start.Value, point);
-        
+        // Ensure the requested point is logically contained in the parent range (respects inclusive/exclusive bounds)
+        if (!Range.Contains(point))
+        {
+            data = default;
+            return false;
+        }
+
+        // Align baseStart to the first included element of the parent range. This ensures indices map
+        // to the actual first element of Data even when the parent range is exclusive at the start.
+        var baseStart = Range.IsStartInclusive ? Range.Start.Value : Domain.Add(Range.Start.Value, 1);
+
+        var index = Domain.Distance(baseStart, point);
+
         // Guard against index overflow (long → int cast)
         if (index < 0 || index > int.MaxValue)
         {
@@ -111,13 +142,13 @@ public record RangeData<TRangeType, TDataType, TRangeDomain> where TRangeType : 
         }
 
         var intIndex = (int)index;
-        
+
         // Skip to the target index and check if an element exists
         // This supports null values as valid data (unlike ElementAtOrDefault)
         // and avoids exceptions (unlike ElementAt)
         var remaining = Data.Skip(intIndex);
         using var enumerator = remaining.GetEnumerator();
-        
+
         if (enumerator.MoveNext())
         {
             data = enumerator.Current;
@@ -147,8 +178,19 @@ public record RangeData<TRangeType, TDataType, TRangeDomain> where TRangeType : 
             return false;
         }
 
-        var startIndex = Domain.Distance(Range.Start.Value, subRange.Start.Value);
-        var endIndex = Domain.Distance(Range.Start.Value, subRange.End.Value);
+        // Ensure the requested subRange is fully contained within this.Range (respects inclusive/exclusive bounds)
+        if (!Range.Contains(subRange))
+        {
+            data = null;
+            return false;
+        }
+
+        // Align baseStart to the first included element of the parent range so indices are computed
+        // relative to the first element held by Data.
+        var baseStart = Range.IsStartInclusive ? Range.Start.Value : Domain.Add(Range.Start.Value, 1);
+
+        var startIndex = Domain.Distance(baseStart, subRange.Start.Value);
+        var endIndex = Domain.Distance(baseStart, subRange.End.Value);
 
         // Adjust indices based on inclusiveness
         // If start is exclusive, skip the boundary element
