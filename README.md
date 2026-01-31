@@ -1605,6 +1605,39 @@ public void ValidateCoordinates(double lat, double lon)
 
 # RangeData Library
 
+## RangeData Overview
+
+`RangeData<TRange, TData, TDomain>` is a lightweight, in-process, **lazy, domain-aware** data structure that combines ranges with associated data sequences. It allows **composable operations** like intersection, union, trimming, and projections while maintaining strict invariants.
+
+| Feature / Library                                               | RangeData | Intervals.NET | System.Range | Rx        | Pandas    | C++20 Ranges | Kafka Streams / EventStore   |
+|-----------------------------------------------------------------|-----------|---------------|--------------|-----------|-----------|--------------|------------------------------|
+| **Lazy evaluation**                                             | ✅ Yes     | ✅ Partial     | ✅ Yes        | ✅ Yes     | ❌ No      | ✅ Yes        | ✅ Yes                        |
+| **Domain-aware discrete ranges**                                | ✅ Yes     | ✅ Yes         | ❌ No         | ❌ No      | ❌ No      | ✅ Partial    | ✅ Partial                    |
+| **Associated data (`IEnumerable`)**                             | ✅ Yes     | ❌ No          | ❌ No         | ✅ Yes     | ✅ Yes     | ❌ No         | ✅ Yes                        |
+| **Strict invariant (range length = data length)**               | ✅ Yes     | ❌ No          | ❌ No         | ❌ No      | ❌ No      | ❌ No         | ❌ No                         |
+| **Right-biased union / intersection**                           | ✅ Yes     | ❌ No          | ❌ No         | ❌ No      | ❌ No      | ❌ No         | ✅ Yes                        |
+| **Lazy composition (skip/take/concat without materialization)** | ✅ Yes     | ❌ No          | ❌ No         | ✅ Yes     | ❌ No      | ✅ Yes        | ✅ Partial                    |
+| **In-process, single-machine**                                  | ✅ Yes     | ✅ Yes         | ✅ Yes        | ✅ Yes     | ✅ Yes     | ✅ Yes        | ❌ No (distributed)           |
+| **Distributed / persisted event streams**                       | ❌ No      | ❌ No          | ❌ No         | ❌ No      | ❌ No      | ❌ No         | ✅ Yes                        |
+| **Composable slices / trimming / projections**                  | ✅ Yes     | ❌ No          | ❌ No         | ✅ Partial | ✅ Partial | ✅ Partial    | ✅ Partial                    |
+| **Generic over any data / domain**                              | ✅ Yes     | ✅ Partial     | ❌ No         | ✅ Partial | ❌ No      | ✅ Partial    | ✅ Partial                    |
+| **Use case: in-memory sliding window / cache / projections**    | ✅ Yes     | ❌ No          | ❌ No         | ✅ Partial | ✅ Partial | ✅ Partial    | ✅ Yes                        |
+
+<details>
+<summary>🛠️ Implementation Details & Notes</summary>
+
+- **Lazy evaluation:** `RangeData` builds **iterator graphs** using `IEnumerable`. Data is only materialized when iterated. Operations like `Skip`, `Take`, `Concat` do **not allocate new arrays or lists**.
+- **Domain-awareness:** Supports any discrete domain via `IRangeDomain<T>`. This allows flexible steps, custom metrics, and ensures consistent range arithmetic.
+- **Strict invariant:** The **range length always equals the data sequence length**. Operations that would violate this invariant are not allowed.
+- **Right-biased operations:** `Union` and `Intersect` always take **data from the right operand** in overlapping regions, ideal for cache updates or incremental data ingestion.
+- **Composable slices:** Supports trimming (`TrimStart`, `TrimEnd`) and projections while keeping laziness intact. You can work with a `RangeData` without ever iterating the data.
+- **Trade-offs:** Zero allocation is **not fully achievable** because `IEnumerable` is a reference type. Some intermediate enumerables may exist, but memory usage remains minimal.
+- **Comparison to event streaming:** Conceptually similar to event sourcing projections or Kafka streams (right-biased, discrete offsets), but fully **in-process**, lightweight, and generic.
+- **Ideal use cases:** Sliding window caches, time-series processing, projections of incremental datasets, or any scenario requiring **efficient, composable range-data operations**.
+
+</details>
+
+
 ## Overview
 
 `RangeData<TRange, TData, TDomain>` is an abstraction that couples:
