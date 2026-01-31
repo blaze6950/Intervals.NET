@@ -61,13 +61,23 @@ jobs:
         if: always()
         run: |
           if [ -f "${{ env.TEST_PATH }}" ]; then
-            dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
+            dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults --logger "trx;LogFileName=test_results.trx"
             mkdir -p test-artifacts || true
             cp ./TestResults/*/test_results.trx test-artifacts/ || true
             echo "Tests executed"
           else
             echo "No test project found at ${{ env.TEST_PATH }}"
           fi
+
+      - name: Upload coverage reports to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./TestResults/**/coverage.cobertura.xml
+          fail_ci_if_error: false
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload test results
         if: always()
