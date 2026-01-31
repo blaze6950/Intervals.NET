@@ -1,11 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Intervals.NET.Data.Extensions;
-using Intervals.NET;
-using Intervals.NET.Data;
 using Intervals.NET.Domain.Default.Numeric;
-using Xunit;
 using Range = Intervals.NET.Factories.Range;
 
 namespace Intervals.NET.Data.Tests.Extensions;
@@ -159,11 +154,11 @@ public class RangeDataExtensions_AdjacencyAndValidityTests
 
         private sealed class ThrowingEnumerator : IEnumerator<int>
         {
-            public int Current => throw new System.NotSupportedException();
+            public int Current => throw new NotSupportedException();
             object IEnumerator.Current => Current;
             public void Dispose() { }
             public bool MoveNext() => throw new InvalidOperationException("boom");
-            public void Reset() => throw new System.NotSupportedException();
+            public void Reset() => throw new NotSupportedException();
         }
     }
 }
