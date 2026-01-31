@@ -44,7 +44,7 @@ jobs:
         run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
 
       - name: Run Domain.Extensions tests
-        run: dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults
+        run: dotnet test ${{ env.PROJECT_PATH }} --configuration Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
