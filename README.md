@@ -62,6 +62,7 @@ A production-ready .NET library for working with mathematical intervals and rang
   - [Domain Extensions](#domain-extensions) 👈 *NEW: Step-based operations*
   - [Advanced Usage Examples](#advanced-usage-examples) 👈 *Click to expand*
 - [Performance](#-performance)
+- [Performance](#-performance)
   - [Detailed Benchmark Results](#detailed-benchmark-results) 👈 *Click to expand*
 - [Testing & Quality](#-testing--quality)
 - [API Reference](#api-reference)
@@ -1601,6 +1602,87 @@ public void ValidateCoordinates(double lat, double lon)
 ```
 
 </details>
+
+# RangeData Library
+
+## Overview
+
+`RangeData<TRange, TData, TDomain>` is an abstraction that couples:
+
+- a **logical range** (`Range<TRange>`),
+- a **data sequence** (`IEnumerable<TData>`),
+- a **discrete domain** (`IRangeDomain<TRange>`) that defines steps and distances.
+
+> **Key Invariant:** The length of the range (measured in domain steps) **must exactly match** the number of data elements. This ensures strict consistency between the range and its data.
+
+This abstraction allows working with **large or dynamic sequences** without immediately materializing them, making all operations lazy and memory-efficient.
+
+---
+
+## Core Design Principles
+
+- **Immutability:** All operations return new `RangeData` instances; originals remain unchanged.
+- **Lazy evaluation:** LINQ operators and iterators are used; data is processed only on enumeration.
+- **Domain-agnostic:** Supports any `IRangeDomain<T>` implementation.
+- **Right-biased operations:** On intersection or union, data from the *right* (fresh/new) range takes priority.
+- **Minimal allocations:** No unnecessary arrays or lists; only `IEnumerable` iterators are created.
+
+<details>
+<summary>Extension Methods Details</summary>
+
+### Intersection (`Intersect`)
+- Returns the intersection of two `RangeData` objects.
+- Data is **sourced from the right range** (fresh data).
+- Returns `null` if there is no overlap.
+- Lazy, O(n) for skip/take on the data sequence.
+
+### Union (`Union`)
+- Combines two ranges if they are **overlapping or adjacent**.
+- In overlapping regions, **right range data takes priority**.
+- Returns `null` if ranges are completely disjoint.
+- Handles three cases:
+  1. Left fully contained in right → only right data used.
+  2. Partial overlap → left non-overlapping portion + right data.
+  3. Left wraps around right → left non-overlapping left + right + left non-overlapping right.
+
+### TrimStart / TrimEnd
+- Trim the range from the start or end.
+- Returns new `RangeData` with sliced data.
+- Returns `null` if the trim removes the entire range.
+
+### Containment & Adjacency Checks
+- `Contains(value)` / `Contains(range)` check range membership.
+- `IsTouching`, `IsBeforeAndAdjacentTo`, `IsAfterAndAdjacentTo` verify **overlap or adjacency**.
+- Useful for merging sequences or building ordered chains.
+
+</details>
+
+<details>
+<summary>Trade-offs & Limitations</summary>
+
+- `IEnumerable` does not automatically validate the invariant — users are responsible for ensuring data length matches range length.
+- Lazy operations only incur complexity O(n) **when iterating**.
+- Not fully zero-allocation: iterators themselves are allocated, but overhead is minimal.
+- Lazy iterators enable **Sliding Window Cache** scenarios: data can expire without being enumerated.
+
+</details>
+
+<details>
+<summary>Use Cases & Examples</summary>
+
+- **Time-series processing:** merging and slicing measurements over time ranges.
+- **Event-sourcing projections:** managing streams of events with metadata.
+- **Sliding Window Cache:** lazy access to partially loaded sequences.
+- **Incremental datasets:** combining fresh updates with historical data.
+
+```csharp
+var domain = new IntegerFixedStepDomain();
+var oldData = new RangeData(Range.Closed(10, 20), oldValues, domain);
+var newData = new RangeData(Range.Closed(18, 30), newValues, domain);
+
+// Right-biased union
+var union = oldData.Union(newData); // Range [10, 30], overlapping [18,20] comes from newData
+</details> 
 
 ## ⚡ Performance
 

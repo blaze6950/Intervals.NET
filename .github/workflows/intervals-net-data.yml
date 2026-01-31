@@ -1,0 +1,116 @@
+name: CI/CD - Intervals.NET.Data
+
+on:
+  push:
+    branches: [ master, main ]
+    paths:
+      - 'src/Intervals.NET.Data/**'
+      - 'tests/Intervals.NET.Data/**'
+      - 'global.json'
+      - '.github/workflows/intervals-net-data.yml'
+  pull_request:
+    branches: [ master, main ]
+    paths:
+      - 'src/Intervals.NET.Data/**'
+      - 'tests/Intervals.NET.Data/**'
+      - 'global.json'
+      - '.github/workflows/intervals-net-data.yml'
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.x.x'
+  PROJECT_PATH: 'src/Intervals.NET.Data/Intervals.NET.Data.csproj'
+  TEST_PATH: 'tests/Intervals.NET.Data/Intervals.NET.Data.Tests.csproj'
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: "intervals-net-data-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-packages-${{ runner.os }}-$(md5sum ${{ env.PROJECT_PATH }} | cut -d ' ' -f 1)
+          restore-keys: |
+            nuget-packages-${{ runner.os }}-
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Run tests (if present)
+        if: always()
+        run: |
+          if [ -f "${{ env.TEST_PATH }}" ]; then
+            dotnet test ${{ env.TEST_PATH }} --configuration Release --no-build --verbosity normal --logger "trx;LogFileName=test_results.trx" --results-directory ./TestResults
+            mkdir -p test-artifacts || true
+            cp ./TestResults/*/test_results.trx test-artifacts/ || true
+            echo "Tests executed"
+          else
+            echo "No test project found at ${{ env.TEST_PATH }}"
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: intervals-net-data-test-results
+          path: test-artifacts/
+
+  publish-nuget:
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore ${{ env.PROJECT_PATH }}
+
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Pack Intervals.NET.Data
+        run: dotnet pack ${{ env.PROJECT_PATH }} --configuration Release --no-build --output ./artifacts
+
+      - name: Publish Intervals.NET.Data to NuGet
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          if [ -z "${NUGET_API_KEY}" ]; then
+            echo "NUGET_API_KEY not set, skipping push"
+            exit 0
+          fi
+          dotnet nuget push ./artifacts/Intervals.NET.Data.*.nupkg --api-key ${NUGET_API_KEY} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Upload package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: intervals-net-data-package
+          path: ./artifacts/*.nupkg

@@ -36,4 +36,13 @@ public interface IRangeDomain<T> where T : IComparable<T>
     /// <param name="value">The value to be ceiled.</param>
     /// <returns>The smallest domain boundary that is greater than or equal to the specified value.</returns>
     T Ceiling(T value);
+
+    /// <summary>
+    /// Calculates the distance in discrete steps between two values.
+    /// This operation is O(1) and returns an exact integer count.
+    /// </summary>
+    /// <param name="start">The starting value.</param>
+    /// <param name="end">The ending value.</param>
+    /// <returns>The number of complete steps from start to end.</returns>
+    long Distance(T start, T end);
 }

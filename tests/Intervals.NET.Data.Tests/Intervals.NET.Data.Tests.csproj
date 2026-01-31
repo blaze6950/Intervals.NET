@@ -7,6 +7,7 @@
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <RootNamespace>Intervals.NET.Data.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,11 +22,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Intervals.NET\Intervals.NET.csproj" />
-      <ProjectReference Include="..\..\src\Intervals.NET.Data\Intervals.NET.Data.csproj" />
-      <ProjectReference Include="..\..\src\Domain\Intervals.NET.Domain.Abstractions\Intervals.NET.Domain.Abstractions.csproj" />
       <ProjectReference Include="..\..\src\Domain\Intervals.NET.Domain.Default\Intervals.NET.Domain.Default.csproj" />
-      <ProjectReference Include="..\..\src\Domain\Intervals.NET.Domain.Extensions\Intervals.NET.Domain.Extensions.csproj" />
+      <ProjectReference Include="..\..\src\Intervals.NET.Data\Intervals.NET.Data.csproj" />
+      <ProjectReference Include="..\..\src\Intervals.NET\Intervals.NET.csproj" />
     </ItemGroup>
 
 </Project>

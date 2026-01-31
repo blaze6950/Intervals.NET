@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		.github\workflows\domain-default.yml = .github\workflows\domain-default.yml
 		.github\workflows\domain-extensions.yml = .github\workflows\domain-extensions.yml
 		.github\workflows\intervals-net.yml = .github\workflows\intervals-net.yml
+		.github\workflows\intervals-net-data.yml = .github\workflows\intervals-net-data.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EAF02F30-A5E4-4237-B402-6F946F2B2C09}"
@@ -55,6 +56,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Domain.Defaul
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Domain.Extensions.Tests", "tests\Intervals.NET.Domain.Extensions.Tests\Intervals.NET.Domain.Extensions.Tests.csproj", "{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{07DC76CB-F380-40B5-A4C5-7241D10D180C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Data", "src\Intervals.NET.Data\Intervals.NET.Data.csproj", "{B5095989-5E11-405B-A1C8-D38210B64C91}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{74428AFD-6630-46D5-8FE5-BD0B272DD619}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intervals.NET.Data.Tests", "tests\Intervals.NET.Data.Tests\Intervals.NET.Data.Tests.csproj", "{AD1E4AC1-99BF-4C55-B63E-BEE289C9D144}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +102,14 @@ Global
 		{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5095989-5E11-405B-A1C8-D38210B64C91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5095989-5E11-405B-A1C8-D38210B64C91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5095989-5E11-405B-A1C8-D38210B64C91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5095989-5E11-405B-A1C8-D38210B64C91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD1E4AC1-99BF-4C55-B63E-BEE289C9D144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD1E4AC1-99BF-4C55-B63E-BEE289C9D144}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD1E4AC1-99BF-4C55-B63E-BEE289C9D144}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD1E4AC1-99BF-4C55-B63E-BEE289C9D144}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A2F7DF66-08BE-438A-A354-C09499B8B8B7} = {EAF02F30-A5E4-4237-B402-6F946F2B2C09}
@@ -106,5 +123,9 @@ Global
 		{592DCBFE-8570-44E3-B9DD-351AA775BFC8} = {28A5727D-3EDB-4F19-8B68-1DBD790EB8E2}
 		{EAC4D033-A7D7-4242-8661-3F231257B4FE} = {592DCBFE-8570-44E3-B9DD-351AA775BFC8}
 		{9F5470DF-88E2-44DC-B6D0-176EBFAF5A25} = {592DCBFE-8570-44E3-B9DD-351AA775BFC8}
+		{07DC76CB-F380-40B5-A4C5-7241D10D180C} = {EAF02F30-A5E4-4237-B402-6F946F2B2C09}
+		{B5095989-5E11-405B-A1C8-D38210B64C91} = {07DC76CB-F380-40B5-A4C5-7241D10D180C}
+		{74428AFD-6630-46D5-8FE5-BD0B272DD619} = {28A5727D-3EDB-4F19-8B68-1DBD790EB8E2}
+		{AD1E4AC1-99BF-4C55-B63E-BEE289C9D144} = {74428AFD-6630-46D5-8FE5-BD0B272DD619}
 	EndGlobalSection
 EndGlobal

@@ -30,20 +30,9 @@ public readonly record struct Range<T> where T : IComparable<T>
     internal Range(RangeValue<T> start, RangeValue<T> end, bool isStartInclusive = true, bool isEndInclusive = false)
     {
         // Validate that start <= end when both are finite
-        if (start.IsFinite && end.IsFinite)
+        if (!TryValidateBounds(start, end, isStartInclusive, isEndInclusive, out var message))
         {
-            var comparison = RangeValue<T>.Compare(start, end);
-            if (comparison > 0)
-            {
-                throw new ArgumentException("Start value cannot be greater than end value.", nameof(start));
-            }
-
-            // If start == end, at least one bound must be inclusive for the range to contain any values
-            if (comparison == 0 && !isStartInclusive && !isEndInclusive)
-            {
-                throw new ArgumentException("When start equals end, at least one bound must be inclusive.",
-                    nameof(start));
-            }
+            throw new ArgumentException(message, nameof(start));
         }
 
         Start = start;
@@ -53,12 +42,53 @@ public readonly record struct Range<T> where T : IComparable<T>
     }
 
     /// <summary>
+    /// Checks whether the provided bounds form a valid range. Returns false and an explanatory message when invalid.
+    /// </summary>
+    /// <param name="start">Start bound.</param>
+    /// <param name="end">End bound.</param>
+    /// <param name="isStartInclusive">Whether start is inclusive.</param>
+    /// <param name="isEndInclusive">Whether end is inclusive.</param>
+    /// <param name="message">Optional error message when validation fails.</param>
+    internal static bool TryValidateBounds(RangeValue<T> start, RangeValue<T> end, bool isStartInclusive, bool isEndInclusive, out string? message)
+    {
+        message = null;
+
+        // Only validate ordering when both bounds are finite
+        if (start.IsFinite && end.IsFinite)
+        {
+            var comparison = RangeValue<T>.Compare(start, end);
+            if (comparison > 0)
+            {
+                message = "Start value cannot be greater than end value.";
+                return false;
+            }
+
+            // If start == end, at least one bound must be inclusive for the range to contain any values
+            if (comparison == 0 && !isStartInclusive && !isEndInclusive)
+            {
+                message = "When start equals end, at least one bound must be inclusive.";
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Internal constructor that skips validation for performance.
     /// Use only when values are already validated (e.g., from parser).
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal Range(RangeValue<T> start, RangeValue<T> end, bool isStartInclusive, bool isEndInclusive, bool skipValidation)
     {
+        if (!skipValidation)
+        {
+            if (!TryValidateBounds(start, end, isStartInclusive, isEndInclusive, out var message))
+            {
+                throw new ArgumentException(message, nameof(start));
+            }
+        }
+
         Start = start;
         End = end;
         IsStartInclusive = isStartInclusive;
@@ -88,6 +118,12 @@ public readonly record struct Range<T> where T : IComparable<T>
     /// Meaning the range includes the end value: ..., end]
     /// </summary>
     public bool IsEndInclusive { get; }
+
+    /// <summary>
+    /// Returns true when this Range's bounds and inclusivity form a valid range.
+    /// This is computed on-demand.
+    /// </summary>
+    public bool IsValid => TryValidateBounds(Start, End, IsStartInclusive, IsEndInclusive, out _);
 
     /// <summary>
     /// Returns a string representation of the range.
