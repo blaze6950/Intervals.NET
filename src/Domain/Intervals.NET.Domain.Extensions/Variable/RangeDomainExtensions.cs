@@ -79,13 +79,15 @@ public static class RangeDomainExtensions
     /// <typeparam name="TRangeValue">The type of the values in the range. Must implement IComparable&lt;T&gt;.</typeparam>
     /// <typeparam name="TDomain">The type of the domain that implements IVariableStepDomain&lt;TRangeValue&gt;.</typeparam>
     /// <returns>
-    /// The span (distance) of the range as a double representing the number of complete domain steps,
-    /// or infinity if the range is unbounded.
+    /// The span (distance) of the range as a double representing the number of complete discrete domain steps,
+    /// or positive infinity if the range is unbounded.
+    /// The return type is double to accommodate infinity values; the actual step count is always an integer (converted from long).
     /// </returns>
     /// <remarks>
     /// <para>
-    /// Counts the number of domain steps that fall within the range boundaries, respecting inclusivity.
-    /// The result is returned as a double for consistency with the variable-step domain API.
+    /// Counts the number of discrete domain steps that fall within the range boundaries, respecting inclusivity.
+    /// Variable-step domains use <see cref="IRangeDomain{T}.Distance"/> which returns a long (discrete step count),
+    /// not fractional distances. The double return type exists solely to represent infinity for unbounded ranges.
     /// </para>
     /// 
     /// <para>
