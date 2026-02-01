@@ -379,8 +379,8 @@ public class RangeDataExtensionsTests
     public void IsTouching_WithAdjacentRanges_ReturnsTrue()
     {
         // Arrange
-        var data1 = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }; // [10, 20]
-        var data2 = new[] { 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 }; // (20, 30]
+        var data1 = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }; // [10, 20] - 11 elements
+        var data2 = new[] { 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 }; // (20, 30] - 10 elements
 
         var rd1 = new RangeData<int, int, IntegerFixedStepDomain>(
             Range.Closed<int>(10, 20), data1, _domain);
