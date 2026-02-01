@@ -27,6 +27,13 @@ namespace Intervals.NET.Data;
 /// For better performance with repeated access, consider materializing the data sequence (e.g., using ToList() or ToArray())
 /// before passing it to RangeData.
 /// </para>
+/// <para>
+/// <strong>Equality Semantics:</strong> This record type overrides equality to compare only the <see cref="Range"/> 
+/// and <see cref="Domain"/> properties. The <see cref="Data"/> property is intentionally excluded from equality comparison.
+/// This means two RangeData instances with the same Range and Domain but different Data will be considered equal.
+/// This design treats RangeData as an identity based on its logical span (range + domain), not its content (data).
+/// Be aware of this behavior when using RangeData in sets, dictionaries, or other equality-based collections.
+/// </para>
 /// </remarks>
 public record RangeData<TRangeType, TDataType, TRangeDomain> where TRangeType : IComparable<TRangeType>
     where TRangeDomain : IRangeDomain<TRangeType>

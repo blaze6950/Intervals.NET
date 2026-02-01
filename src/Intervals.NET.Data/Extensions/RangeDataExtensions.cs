@@ -446,7 +446,6 @@ public static class RangeDataExtensions
     /// Trims the end of the range to a new end value, adjusting data accordingly.
     /// <para>
     /// Returns a new RangeData with the trimmed range and sliced data.
-    /// If trimming removes the entire range, returns null.
     /// </para>
     /// <para>
     /// ⚡ <strong>Performance:</strong> O(n) where n is the number of elements to take.
@@ -463,8 +462,10 @@ public static class RangeDataExtensions
     /// The type of the range domain that implements IRangeDomain&lt;TRangeType&gt;.
     /// </typeparam>
     /// <returns>
-    /// A new RangeData with the trimmed range and sliced data,
-    /// or null if the new end is not within the current range.
+    /// A new RangeData with the trimmed range and sliced data if the new end is within the current range;
+    /// <c>null</c> if the new end lies completely outside the original range;
+    /// a non-null RangeData with an empty range and empty data sequence if trimming results in a logically empty 
+    /// but still in-bounds range (for example, the start equals the end with at least one boundary exclusive).
     /// </returns>
     /// <remarks>
     /// <para><strong>Example:</strong></para>
