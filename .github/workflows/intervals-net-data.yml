@@ -52,10 +52,10 @@ jobs:
             nuget-packages-${{ runner.os }}-
 
       - name: Restore dependencies
-        run: dotnet restore ${{ env.PROJECT_PATH }}
+        run: dotnet restore ${{ env.TEST_PATH }}
 
       - name: Build
-        run: dotnet build ${{ env.PROJECT_PATH }} --configuration Release --no-restore
+        run: dotnet build ${{ env.TEST_PATH }} --configuration Release --no-restore
 
       - name: Run tests (if present)
         if: always()
