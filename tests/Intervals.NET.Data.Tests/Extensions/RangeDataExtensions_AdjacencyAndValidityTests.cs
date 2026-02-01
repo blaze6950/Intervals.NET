@@ -82,7 +82,7 @@ public class RangeDataExtensions_AdjacencyAndValidityTests
     {
         // Arrange
         var leftData = Enumerable.Range(1, 11).ToArray(); // [10,20]
-        var rightData = Enumerable.Range(21, 10).ToArray(); // (20,29] but we'll use OpenClosed(20,30)
+        var rightData = Enumerable.Range(21, 10).ToArray(); // (20,30]
 
         var left = new RangeData<int, int, IntegerFixedStepDomain>(
             Range.Closed<int>(10, 20), leftData, _domain);

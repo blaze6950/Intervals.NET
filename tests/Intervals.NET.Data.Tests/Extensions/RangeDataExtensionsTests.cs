@@ -184,8 +184,7 @@ public class RangeDataExtensionsTests
     }
 
     [Fact]
-    public void
-        Union_DataOrderIsLeftThenRightAndOneIntersectedDiscretePointWithDifferentDataValues_ResultInNewRangeDataWithTheRightValueWIthinIntersection()
+    public void Union_IntersectionAtDiscretePoint_RightValueTakesPreferenceWithinIntersection()
     {
         // Arrange
         var data1 = new[] { 1, 2, 3 }; // [10, 12]
