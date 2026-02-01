@@ -47,7 +47,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
-          key: nuget-packages-${{ runner.os }}-$(md5sum ${{ env.PROJECT_PATH }} | cut -d ' ' -f 1)
+          key: nuget-packages-${{ runner.os }}-${{ hashFiles('src/Intervals.NET.Data/Intervals.NET.Data.csproj', 'tests/Intervals.NET.Data.Tests/Intervals.NET.Data.Tests.csproj', 'global.json') }}
           restore-keys: |
             nuget-packages-${{ runner.os }}-
 
