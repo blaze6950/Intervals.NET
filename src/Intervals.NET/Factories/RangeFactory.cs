@@ -165,7 +165,7 @@ public static class Range
         if (Range<T>.TryValidateBounds(start, end, isStartInclusive, isEndInclusive, out message))
         {
             // Construct range without re-validating (skipValidation = true)
-            range = new Range<T>(start, end, isStartInclusive, isEndInclusive, true);
+            range = new Range<T>(start, end, isStartInclusive, isEndInclusive, skipValidation: true);
             return true;
         }
 

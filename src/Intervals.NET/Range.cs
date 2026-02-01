@@ -53,22 +53,19 @@ public readonly record struct Range<T> where T : IComparable<T>
     {
         message = null;
 
-        // Only validate ordering when both bounds are finite
-        if (start.IsFinite && end.IsFinite)
+        // Validate ordering regardless of finiteness (RangeValue.Compare handles infinities correctly)
+        var comparison = RangeValue<T>.Compare(start, end);
+        if (comparison > 0)
         {
-            var comparison = RangeValue<T>.Compare(start, end);
-            if (comparison > 0)
-            {
-                message = "Start value cannot be greater than end value.";
-                return false;
-            }
+            message = "Start value cannot be greater than end value.";
+            return false;
+        }
 
-            // If start == end, at least one bound must be inclusive for the range to contain any values
-            if (comparison == 0 && !isStartInclusive && !isEndInclusive)
-            {
-                message = "When start equals end, at least one bound must be inclusive.";
-                return false;
-            }
+        // If start == end, at least one bound must be inclusive for the range to contain any values
+        if (comparison == 0 && !isStartInclusive && !isEndInclusive)
+        {
+            message = "When start equals end, at least one bound must be inclusive.";
+            return false;
         }
 
         return true;

@@ -978,6 +978,122 @@ public class RangeFactoryTests
         Assert.True(range2.IsEndInclusive);
     }
 
+    [Fact]
+    public void Create_WithPositiveInfinityStartAndFiniteEnd_ThrowsArgumentException()
+    {
+        // Arrange
+        var start = RangeValue<int>.PositiveInfinity;
+        var end = new RangeValue<int>(100);
+
+        // Act
+        var exception = Record.Exception(() => Range.Create(start, end, true, true));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<ArgumentException>(exception);
+        Assert.Contains("Start value cannot be greater than end value", exception.Message);
+    }
+
+    [Fact]
+    public void Create_WithPositiveInfinityStartAndNegativeInfinityEnd_ThrowsArgumentException()
+    {
+        // Arrange
+        var start = RangeValue<int>.PositiveInfinity;
+        var end = RangeValue<int>.NegativeInfinity;
+
+        // Act
+        var exception = Record.Exception(() => Range.Create(start, end, false, false));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<ArgumentException>(exception);
+        Assert.Contains("Start value cannot be greater than end value", exception.Message);
+    }
+
+    [Fact]
+    public void Create_WithFiniteStartAndNegativeInfinityEnd_ThrowsArgumentException()
+    {
+        // Arrange
+        var start = new RangeValue<int>(0);
+        var end = RangeValue<int>.NegativeInfinity;
+
+        // Act
+        var exception = Record.Exception(() => Range.Create(start, end, true, true));
+
+        // Assert
+        Assert.NotNull(exception);
+        Assert.IsType<ArgumentException>(exception);
+        Assert.Contains("Start value cannot be greater than end value", exception.Message);
+    }
+
+    [Fact]
+    public void TryCreate_WithPositiveInfinityStartAndFiniteEnd_ReturnsFalse()
+    {
+        // Arrange
+        var start = RangeValue<int>.PositiveInfinity;
+        var end = new RangeValue<int>(100);
+
+        // Act
+        var result = Range.TryCreate(start, end, true, true, out var range, out var message);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(default(Range<int>), range);
+        Assert.NotNull(message);
+        Assert.Contains("Start value cannot be greater than end value", message);
+    }
+
+    [Fact]
+    public void TryCreate_WithPositiveInfinityStartAndNegativeInfinityEnd_ReturnsFalse()
+    {
+        // Arrange
+        var start = RangeValue<int>.PositiveInfinity;
+        var end = RangeValue<int>.NegativeInfinity;
+
+        // Act
+        var result = Range.TryCreate(start, end, false, false, out var range, out var message);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(default(Range<int>), range);
+        Assert.NotNull(message);
+        Assert.Contains("Start value cannot be greater than end value", message);
+    }
+
+    [Fact]
+    public void TryCreate_WithFiniteStartAndNegativeInfinityEnd_ReturnsFalse()
+    {
+        // Arrange
+        var start = new RangeValue<int>(0);
+        var end = RangeValue<int>.NegativeInfinity;
+
+        // Act
+        var result = Range.TryCreate(start, end, true, true, out var range, out var message);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(default(Range<int>), range);
+        Assert.NotNull(message);
+        Assert.Contains("Start value cannot be greater than end value", message);
+    }
+
+    [Fact]
+    public void TryCreate_WithValidInfinityBounds_ReturnsTrue()
+    {
+        // Arrange
+        var start = RangeValue<int>.NegativeInfinity;
+        var end = RangeValue<int>.PositiveInfinity;
+
+        // Act
+        var result = Range.TryCreate(start, end, false, false, out var range, out var message);
+
+        // Assert
+        Assert.True(result);
+        Assert.Null(message);
+        Assert.True(range.Start.IsNegativeInfinity);
+        Assert.True(range.End.IsPositiveInfinity);
+    }
+
     #endregion
 
     #region Edge Cases Tests
