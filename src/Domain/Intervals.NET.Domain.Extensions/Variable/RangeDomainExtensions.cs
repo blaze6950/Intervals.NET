@@ -79,13 +79,13 @@ public static class RangeDomainExtensions
     /// <typeparam name="TRangeValue">The type of the values in the range. Must implement IComparable&lt;T&gt;.</typeparam>
     /// <typeparam name="TDomain">The type of the domain that implements IVariableStepDomain&lt;TRangeValue&gt;.</typeparam>
     /// <returns>
-    /// The span (distance) of the range as a double, potentially including fractional steps,
+    /// The span (distance) of the range as a double representing the number of complete domain steps,
     /// or infinity if the range is unbounded.
     /// </returns>
     /// <remarks>
     /// <para>
     /// Counts the number of domain steps that fall within the range boundaries, respecting inclusivity.
-    /// Unlike fixed-step domains, this may return fractional values to account for partial steps.
+    /// The result is returned as a double for consistency with the variable-step domain API.
     /// </para>
     /// 
     /// <para>

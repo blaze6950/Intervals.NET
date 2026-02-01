@@ -459,7 +459,7 @@ public static class RangeDataExtensions
     /// </typeparam>
     /// <returns>
     /// A new RangeData with the trimmed range and sliced data,
-    /// or null if the new end is before the current start.
+    /// or null if the new end is not within the current range.
     /// </returns>
     /// <remarks>
     /// <para><strong>Example:</strong></para>
@@ -469,6 +469,7 @@ public static class RangeDataExtensions
     /// 
     /// var trimmed = rd.TrimEnd(25);  // Range [10, 25], first 16 elements
     /// var invalid = rd.TrimEnd(5);   // null (new end before start)
+    /// var invalid2 = rd.TrimEnd(35); // null (new end after current end)
     /// </code>
     /// </remarks>
     public static RangeData<TRangeType, TDataType, TRangeDomain>? TrimEnd<TRangeType, TDataType, TRangeDomain>(
@@ -488,8 +489,8 @@ public static class RangeDataExtensions
             return null;
         }
 
-        // Check if the new range is valid (has any values)
-        if (!trimmedRange.Overlaps(source.Range))
+        // Check if the trimmed range is fully contained within the source range
+        if (!source.Range.Contains(trimmedRange))
         {
             return null;
         }
