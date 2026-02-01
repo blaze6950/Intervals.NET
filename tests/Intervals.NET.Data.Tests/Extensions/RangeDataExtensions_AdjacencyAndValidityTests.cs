@@ -81,8 +81,8 @@ public class RangeDataExtensions_AdjacencyAndValidityTests
     public void IsBeforeAndAdjacentTo_WithOneInclusiveOtherExclusive_ReturnsTrue()
     {
         // Arrange
-        var leftData = Enumerable.Range(1, 11).ToArray(); // [10,20]
-        var rightData = Enumerable.Range(21, 10).ToArray(); // (20,30]
+        var leftData = Enumerable.Range(1, 11).ToArray(); // [10,20] - 11 elements
+        var rightData = Enumerable.Range(21, 10).ToArray(); // (20,30] - 10 elements (21-30)
 
         var left = new RangeData<int, int, IntegerFixedStepDomain>(
             Range.Closed<int>(10, 20), leftData, _domain);
