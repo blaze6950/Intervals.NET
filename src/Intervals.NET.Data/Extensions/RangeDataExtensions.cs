@@ -600,10 +600,25 @@ public static class RangeDataExtensions
             endIndex--;
         }
 
-        long expectedCount = endIndex - startIndex + 1;
-        if (expectedCount <= 0)
+        long expectedCount;
+        if (endIndex < startIndex)
         {
             expectedCount = 0;
+        }
+        else
+        {
+            try
+            {
+                checked
+                {
+                    expectedCount = (endIndex - startIndex) + 1;
+                }
+            }
+            catch (OverflowException)
+            {
+                message = $"Range {source.Range} is too large to validate.";
+                return false;
+            }
         }
 
         try

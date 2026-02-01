@@ -1715,6 +1715,8 @@ var newData = new RangeData(Range.Closed(18, 30), newValues, domain);
 
 // Right-biased union
 var union = oldData.Union(newData); // Range [10, 30], overlapping [18,20] comes from newData
+```
+
 </details> 
 
 ## ⚡ Performance
