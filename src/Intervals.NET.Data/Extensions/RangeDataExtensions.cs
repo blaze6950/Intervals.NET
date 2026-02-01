@@ -385,6 +385,7 @@ public static class RangeDataExtensions
     /// </summary>
     /// <param name="source">The source RangeData object.</param>
     /// <param name="newStart">The new start value for the range.</param>
+    /// <param name="isStartInclusive">Whether the new start boundary is inclusive. Defaults to true.</param>
     /// <typeparam name="TRangeType">
     /// The type of the range values. Must implement IComparable&lt;TRangeType&gt;.
     /// </typeparam>
@@ -394,7 +395,7 @@ public static class RangeDataExtensions
     /// </typeparam>
     /// <returns>
     /// A new RangeData with the trimmed range and sliced data,
-    /// or null if the new start is beyond the current end.
+    /// or null if the new start is not within the current range.
     /// </returns>
     /// <remarks>
     /// <para><strong>Example:</strong></para>
@@ -402,20 +403,23 @@ public static class RangeDataExtensions
     /// var domain = new IntegerFixedStepDomain();
     /// var rd = new RangeData(Range.Closed(10, 30), data, domain);
     /// 
-    /// var trimmed = rd.TrimStart(15);  // Range [15, 30], data from index 5 onward
-    /// var invalid = rd.TrimStart(40);  // null (new start beyond end)
+    /// var trimmed = rd.TrimStart(15);         // Range [15, 30], inclusive by default
+    /// var trimmed2 = rd.TrimStart(15, false); // Range (15, 30], exclusive start
+    /// var invalid = rd.TrimStart(40);         // null (new start beyond end)
+    /// var invalid2 = rd.TrimStart(5);         // null (new start before current start)
     /// </code>
     /// </remarks>
     public static RangeData<TRangeType, TDataType, TRangeDomain>? TrimStart<TRangeType, TDataType, TRangeDomain>(
         this RangeData<TRangeType, TDataType, TRangeDomain> source,
-        TRangeType newStart)
+        TRangeType newStart,
+        bool isStartInclusive = true)
         where TRangeType : IComparable<TRangeType>
         where TRangeDomain : IRangeDomain<TRangeType>
     {
         if (!Factories.Range.TryCreate(
                 new RangeValue<TRangeType>(newStart),
                 source.Range.End,
-                source.Range.IsStartInclusive,
+                isStartInclusive,
                 source.Range.IsEndInclusive,
                 out var trimmedRange,
                 out _))
@@ -423,8 +427,8 @@ public static class RangeDataExtensions
             return null;
         }
 
-        // Check if the new range is valid (has any values)
-        if (!trimmedRange.Overlaps(source.Range))
+        // Check if the trimmed range is fully contained within the source range
+        if (!source.Range.Contains(trimmedRange))
         {
             return null;
         }
@@ -450,6 +454,7 @@ public static class RangeDataExtensions
     /// </summary>
     /// <param name="source">The source RangeData object.</param>
     /// <param name="newEnd">The new end value for the range.</param>
+    /// <param name="isEndInclusive">Whether the new end boundary is inclusive. Defaults to true.</param>
     /// <typeparam name="TRangeType">
     /// The type of the range values. Must implement IComparable&lt;TRangeType&gt;.
     /// </typeparam>
@@ -467,14 +472,16 @@ public static class RangeDataExtensions
     /// var domain = new IntegerFixedStepDomain();
     /// var rd = new RangeData(Range.Closed(10, 30), data, domain);
     /// 
-    /// var trimmed = rd.TrimEnd(25);  // Range [10, 25], first 16 elements
-    /// var invalid = rd.TrimEnd(5);   // null (new end before start)
-    /// var invalid2 = rd.TrimEnd(35); // null (new end after current end)
+    /// var trimmed = rd.TrimEnd(25);         // Range [10, 25], inclusive by default
+    /// var trimmed2 = rd.TrimEnd(25, false); // Range [10, 25), exclusive end
+    /// var invalid = rd.TrimEnd(5);          // null (new end before start)
+    /// var invalid2 = rd.TrimEnd(35);        // null (new end after current end)
     /// </code>
     /// </remarks>
     public static RangeData<TRangeType, TDataType, TRangeDomain>? TrimEnd<TRangeType, TDataType, TRangeDomain>(
         this RangeData<TRangeType, TDataType, TRangeDomain> source,
-        TRangeType newEnd)
+        TRangeType newEnd,
+        bool isEndInclusive = true)
         where TRangeType : IComparable<TRangeType>
         where TRangeDomain : IRangeDomain<TRangeType>
     {
@@ -482,7 +489,7 @@ public static class RangeDataExtensions
                 source.Range.Start,
                 new RangeValue<TRangeType>(newEnd),
                 source.Range.IsStartInclusive,
-                source.Range.IsEndInclusive,
+                isEndInclusive,
                 out var trimmedRange,
                 out _))
         {
