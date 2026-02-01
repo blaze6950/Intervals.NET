@@ -122,7 +122,9 @@ public static class RangeDomainExtensions
                 return HandleSingleStepCase(range, domain);
         }
 
-        var distance = domain.Distance(firstStep, lastStep);
+        // Note: IRangeDomain.Distance returns long, but for variable-step domains we interpret
+        // this as the number of complete steps and add 1.0 to get the span including boundaries
+        var distance = (double)domain.Distance(firstStep, lastStep);
         return distance + 1.0;
 
         // Local functions

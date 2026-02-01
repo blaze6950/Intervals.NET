@@ -53,7 +53,7 @@ public static class RangeDataExtensions
         where TRangeType : IComparable<TRangeType>
         where TRangeDomain : IRangeDomain<TRangeType>
     {
-        if (!left.Domain.Equals(right.Domain))
+        if (!EqualityComparer<TRangeDomain>.Default.Equals(left.Domain, right.Domain))
         {
             throw new ArgumentException(
                 $"Cannot {operationName} RangeData objects with different domain instances. " +

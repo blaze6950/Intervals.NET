@@ -73,11 +73,12 @@ public record RangeData<TRangeType, TDataType, TRangeDomain> where TRangeType : 
     /// The point within the range for which to retrieve the data element.
     /// </param>
     /// <exception cref="IndexOutOfRangeException">
-    /// Thrown if the calculated index is outside the bounds of the data collection.
+    /// Thrown if no data element is available for the specified point, for example because the point is
+    /// outside the range or the underlying data sequence does not provide a value for that point.
     /// </exception>
     public TDataType this[TRangeType point] => TryGet(point, out var data)
         ? data!
-        : throw new IndexOutOfRangeException($"The point {point} is outside the bounds of the range data.");
+        : throw new IndexOutOfRangeException($"No data element is available for point {point} in this RangeData (point may be outside the range or the underlying data sequence may be too short).");
 
     /// <summary>
     /// Gets the data elements corresponding to the specified sub-range within the range,

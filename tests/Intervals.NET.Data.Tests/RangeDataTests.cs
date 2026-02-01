@@ -166,11 +166,6 @@ public class RangeDataTests
     [Fact]
     public void SubRangeIndexer_OpenRange_SinglePointRange_ThrowsArgumentException()
     {
-        // Arrange
-        var range = Range.Closed<int>(0, 10);
-        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        var rangeData = new RangeData<int, int, IntegerFixedStepDomain>(range, data, _domain);
-
         // Act - Get (5, 5) → should throw because (5, 5) is invalid (start == end with both exclusive)
         var exception = Record.Exception(() => Range.Open(5, 5));
 
