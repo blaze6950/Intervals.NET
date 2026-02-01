@@ -20,7 +20,7 @@ on:
 env:
   DOTNET_VERSION: '8.x.x'
   PROJECT_PATH: 'src/Intervals.NET.Data/Intervals.NET.Data.csproj'
-  TEST_PATH: 'tests/Intervals.NET.Data/Intervals.NET.Data.Tests.csproj'
+  TEST_PATH: 'tests/Intervals.NET.Data.Tests/Intervals.NET.Data.Tests.csproj'
 
 permissions:
   contents: read
