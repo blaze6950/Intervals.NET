@@ -38,7 +38,12 @@ public record RangeData<TRangeType, TDataType, TRangeDomain> where TRangeType : 
         }
 
         ArgumentNullException.ThrowIfNull(data);
-        ArgumentNullException.ThrowIfNull(domain);
+        // Use pattern matching null-check to avoid boxing when TRangeDomain is a value type (struct).
+        // ArgumentNullException.ThrowIfNull(domain) would box the value-type generic, causing an allocation.
+        if (domain is null)
+        {
+            throw new ArgumentNullException(nameof(domain));
+        }
 
         Range = range;
         Data = data;
