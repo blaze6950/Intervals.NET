@@ -149,13 +149,13 @@ public static class Range
     /// Attempts to create a range with explicit inclusivity settings.
     /// Returns a boolean indicating whether the created range is valid.
     /// </summary>
-    /// <param name="start"></param>
-    /// <param name="end"></param>
-    /// <param name="isStartInclusive"></param>
-    /// <param name="isEndInclusive"></param>
+    /// <param name="start">The starting value of the range.</param>
+    /// <param name="end">The ending value of the range.</param>
+    /// <param name="isStartInclusive">True if the start value is inclusive; false if exclusive.</param>
+    /// <param name="isEndInclusive">True if the end value is inclusive; false if exclusive.</param>
     /// <param name="range">The resulting range when creation succeeds; default when it fails.</param>
     /// <param name="message">An optional message describing why creation failed.</param>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of values in the range. Must implement IComparable&lt;T&gt;.</typeparam>
     /// <returns>True when creation succeeded and range is valid; false otherwise.</returns>
     public static bool TryCreate<T>(RangeValue<T> start, RangeValue<T> end, bool isStartInclusive,
         bool isEndInclusive, out Range<T> range, out string? message)
