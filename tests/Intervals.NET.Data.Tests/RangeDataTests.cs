@@ -1,3 +1,4 @@
+using Intervals.NET.Data.Tests.Helpers;
 using Intervals.NET.Domain.Default.Numeric;
 using Range = Intervals.NET.Factories.Range;
 
@@ -482,6 +483,202 @@ public class RangeDataTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal([-2, -1, 0, 1, 2], result.Data);
+    }
+
+    #endregion
+
+    #region Overflow and Edge Case Tests
+
+    [Fact]
+    public void PointIndexer_WithInsufficientData_ThrowsIndexOutOfRangeException()
+    {
+        // Arrange - Range expects 11 elements but only provide 5
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4 };
+        var rangeData = new RangeData<int, int, IntegerFixedStepDomain>(range, data, _domain);
+
+        // Act & Assert - Accessing beyond available data
+        Assert.Throws<IndexOutOfRangeException>(() => rangeData[7]);
+    }
+
+    [Fact]
+    public void TryGet_Point_WithInsufficientData_ReturnsFalse()
+    {
+        // Arrange - Range expects 11 elements but only provide 5
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4 };
+        var rangeData = new RangeData<int, int, IntegerFixedStepDomain>(range, data, _domain);
+
+        // Act
+        var result = rangeData.TryGet(7, out var value);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(default, value);
+    }
+
+    [Fact]
+    public void SubRangeIndexer_WithSubRangeOutsideParentRange_ThrowsArgumentOutOfRangeException()
+    {
+        // Arrange
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        var rangeData = new RangeData<int, int, IntegerFixedStepDomain>(range, data, _domain);
+
+        // Act & Assert - Sub-range extends beyond parent range
+        var subRange = Range.Closed<int>(5, 15);
+        Assert.Throws<ArgumentOutOfRangeException>(() => rangeData[subRange]);
+    }
+
+    [Fact]
+    public void TryGet_SubRange_WithSubRangeOutsideParentRange_ReturnsFalse()
+    {
+        // Arrange
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        var rangeData = new RangeData<int, int, IntegerFixedStepDomain>(range, data, _domain);
+
+        // Act
+        var subRange = Range.Closed<int>(5, 15);
+        var result = rangeData.TryGet(subRange, out var resultData);
+
+        // Assert
+        Assert.False(result);
+        Assert.Null(resultData);
+    }
+
+    [Fact]
+    public void SubRangeIndexer_WithInfiniteSubRange_ThrowsArgumentException()
+    {
+        // Arrange
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        var rangeData = new RangeData<int, int, IntegerFixedStepDomain>(range, data, _domain);
+
+        // Act & Assert - Sub-range with infinite end
+        var subRange = Range.Create(new RangeValue<int>(5), RangeValue<int>.PositiveInfinity, true, false);
+        Assert.Throws<ArgumentException>(() => rangeData[subRange]);
+    }
+
+    [Fact]
+    public void TryGet_SubRange_WithInfiniteSubRange_ReturnsFalse()
+    {
+        // Arrange
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        var rangeData = new RangeData<int, int, IntegerFixedStepDomain>(range, data, _domain);
+
+        // Act
+        var subRange = Range.Create(new RangeValue<int>(5), RangeValue<int>.PositiveInfinity, true, false);
+        var result = rangeData.TryGet(subRange, out var resultData);
+
+        // Assert
+        Assert.False(result);
+        Assert.Null(resultData);
+    }
+
+    [Fact]
+    public void SubRangeIndexer_WithOverflowInTryGet_ThrowsInvalidOperationException()
+    {
+        // Arrange - Use domain that causes overflow in TryGet but not in Contains check
+        var hugeDomain = new HugeDistanceDomainStub(((long)int.MaxValue) + 100);
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        var rangeData = new RangeData<int, int, HugeDistanceDomainStub>(range, data, hugeDomain);
+
+        // Act & Assert - The subrange is contained, but TryGet will fail due to overflow
+        // This triggers the InvalidOperationException fallback
+        var subRange = Range.Closed<int>(2, 5);
+        var exception = Assert.Throws<InvalidOperationException>(() => rangeData[subRange]);
+        Assert.Contains("Unable to retrieve sub-range", exception.Message);
+    }
+
+    [Fact]
+    public void TryGet_Point_WithNegativeIndexFromDomain_ReturnsFalse()
+    {
+        // Arrange - Use domain that returns negative distance
+        var hugeDomain = new HugeDistanceDomainStub(-100);
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        var rangeData = new RangeData<int, int, HugeDistanceDomainStub>(range, data, hugeDomain);
+
+        // Act
+        var result = rangeData.TryGet(5, out var value);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(default, value);
+    }
+
+    [Fact]
+    public void TryGet_Point_WithIndexExceedingIntMax_ReturnsFalse()
+    {
+        // Arrange - Use domain that returns distance > int.MaxValue
+        var hugeDomain = new HugeDistanceDomainStub(long.MaxValue);
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        var rangeData = new RangeData<int, int, HugeDistanceDomainStub>(range, data, hugeDomain);
+
+        // Act
+        var result = rangeData.TryGet(5, out var value);
+
+        // Assert
+        Assert.False(result);
+        Assert.Equal(default, value);
+    }
+
+    [Fact]
+    public void TryGet_SubRange_WithStartIndexExceedingIntMax_ReturnsFalse()
+    {
+        // Arrange - Use domain that returns huge distances
+        var hugeDomain = new HugeDistanceDomainStub(((long)int.MaxValue) + 100);
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        var rangeData = new RangeData<int, int, HugeDistanceDomainStub>(range, data, hugeDomain);
+
+        // Act
+        var subRange = Range.Closed<int>(2, 5);
+        var result = rangeData.TryGet(subRange, out var resultData);
+
+        // Assert
+        Assert.False(result);
+        Assert.Null(resultData);
+    }
+
+    [Fact]
+    public void TryGet_SubRange_WithNegativeStartIndex_ReturnsFalse()
+    {
+        // Arrange - Use domain that returns negative distance
+        var hugeDomain = new HugeDistanceDomainStub(-50);
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        var rangeData = new RangeData<int, int, HugeDistanceDomainStub>(range, data, hugeDomain);
+
+        // Act
+        var subRange = Range.Closed<int>(2, 5);
+        var result = rangeData.TryGet(subRange, out var resultData);
+
+        // Assert
+        Assert.False(result);
+        Assert.Null(resultData);
+    }
+
+    [Fact]
+    public void TryGet_SubRange_WithEndIndexExceedingIntMax_ReturnsFalse()
+    {
+        // Arrange - Use domain that returns huge distance for endIndex
+        var hugeDomain = new HugeDistanceDomainStub(((long)int.MaxValue) + 100);
+        var range = Range.Closed<int>(0, 10);
+        var data = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        var rangeData = new RangeData<int, int, HugeDistanceDomainStub>(range, data, hugeDomain);
+
+        // Act - Both start and end indices will exceed int.MaxValue
+        var subRange = Range.Closed<int>(2, 5);
+        var result = rangeData.TryGet(subRange, out var resultData);
+
+        // Assert
+        Assert.False(result);
+        Assert.Null(resultData);
     }
 
     #endregion
