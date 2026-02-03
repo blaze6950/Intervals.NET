@@ -219,13 +219,6 @@ public record RangeData<TRangeType, TDataType, TRangeDomain> where TRangeType : 
             endIndex--;
         }
 
-        // Guard against index overflow (long → int cast)
-        if (startIndex < 0 || startIndex > int.MaxValue || endIndex < 0 || endIndex > int.MaxValue)
-        {
-            data = null;
-            return false;
-        }
-
         // Calculate the count of elements to take
         // If adjusted indices result in startIndex > endIndex, the range is empty
         var count = endIndex - startIndex + 1;
@@ -234,6 +227,15 @@ public record RangeData<TRangeType, TDataType, TRangeDomain> where TRangeType : 
             // Return empty RangeData for empty ranges
             data = Empty(subRange, Domain);
             return true;
+        }
+
+        // Guard against index overflow (long → int cast)
+        // Note: We check this after the empty-range handling because a negative endIndex
+        // combined with count <= 0 indicates a logically empty range, not an error
+        if (startIndex < 0 || startIndex > int.MaxValue || endIndex < 0 || endIndex > int.MaxValue)
+        {
+            data = null;
+            return false;
         }
 
         // Guard against count overflow
