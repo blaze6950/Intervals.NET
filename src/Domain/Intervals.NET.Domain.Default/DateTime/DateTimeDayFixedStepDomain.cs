@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// <summary>
 /// Fixed step domain for DateTime with day steps. Steps are added or subtracted in whole days.
 /// </summary>
-public readonly struct DateTimeDayFixedStepDomain : IFixedStepDomain<System.DateTime>
+public readonly record struct DateTimeDayFixedStepDomain : IFixedStepDomain<System.DateTime>
 {
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

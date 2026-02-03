@@ -10,7 +10,7 @@ namespace Intervals.NET.Domain.Default.TimeSpan;
 /// <remarks>
 /// <para>This is the finest granularity TimeSpan domain, operating at the tick level (100ns precision).</para>
 /// </remarks>
-public readonly struct TimeSpanTickFixedStepDomain : IFixedStepDomain<global::System.TimeSpan>
+public readonly record struct TimeSpanTickFixedStepDomain : IFixedStepDomain<global::System.TimeSpan>
 {
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

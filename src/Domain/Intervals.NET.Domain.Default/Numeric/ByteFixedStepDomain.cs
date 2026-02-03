@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.Numeric;
 /// <summary>
 /// Provides a fixed-step domain for bytes (Byte). Steps are of size 1.
 /// </summary>
-public readonly struct ByteFixedStepDomain : IFixedStepDomain<byte>
+public readonly record struct ByteFixedStepDomain : IFixedStepDomain<byte>
 {
     /// <inheritdoc/>
     [Pure]

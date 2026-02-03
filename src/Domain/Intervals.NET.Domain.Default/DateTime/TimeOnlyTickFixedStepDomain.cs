@@ -10,7 +10,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// <remarks>
 /// <para>This is the finest granularity TimeOnly domain.</para>
 /// </remarks>
-public readonly struct TimeOnlyTickFixedStepDomain : IFixedStepDomain<TimeOnly>
+public readonly record struct TimeOnlyTickFixedStepDomain : IFixedStepDomain<TimeOnly>
 {
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

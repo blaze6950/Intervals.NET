@@ -11,7 +11,7 @@ namespace Intervals.NET.Domain.Default.Numeric;
 /// This domain treats float values as having discrete steps of 1.0f.
 /// Due to floating-point precision limitations, results may not be exact for very large values.
 /// </remarks>
-public readonly struct FloatFixedStepDomain : IFixedStepDomain<float>
+public readonly record struct FloatFixedStepDomain : IFixedStepDomain<float>
 {
     /// <inheritdoc/>
     [Pure]

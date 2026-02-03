@@ -290,6 +290,9 @@ public record RangeData<TRangeType, TDataType, TRangeDomain> where TRangeType : 
             return false;
         }
 
+        // Range.Equals is allocation-free (value type)
+        // Domain.Equals is allocation-free when TRangeDomain is a record struct (automatic IEquatable<TSelf>)
+        // or when it's a class implementing IEquatable<TClassName>
         return Range.Equals(other.Range)
                && Domain.Equals(other.Domain);
     }

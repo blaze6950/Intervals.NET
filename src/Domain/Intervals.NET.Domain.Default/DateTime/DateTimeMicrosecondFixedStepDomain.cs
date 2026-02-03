@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// <summary>
 /// Fixed step domain for DateTime with microsecond steps. Steps are added or subtracted in whole microseconds.
 /// </summary>
-public readonly struct DateTimeMicrosecondFixedStepDomain : IFixedStepDomain<System.DateTime>
+public readonly record struct DateTimeMicrosecondFixedStepDomain : IFixedStepDomain<System.DateTime>
 {
     private const long TicksPerMicrosecond = 10;
 

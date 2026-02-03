@@ -10,7 +10,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// <remarks>
 /// <para><strong>Requires:</strong> .NET 6.0 or greater.</para>
 /// </remarks>
-public readonly struct TimeOnlyMillisecondFixedStepDomain : IFixedStepDomain<TimeOnly>
+public readonly record struct TimeOnlyMillisecondFixedStepDomain : IFixedStepDomain<TimeOnly>
 {
     private const long TicksPerMillisecond = global::System.TimeSpan.TicksPerMillisecond;
 

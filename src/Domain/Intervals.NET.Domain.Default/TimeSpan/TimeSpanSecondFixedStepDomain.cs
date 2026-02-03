@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.TimeSpan;
 /// <summary>
 /// Provides a fixed-step domain implementation for <see cref="global::System.TimeSpan"/> with a step size of 1 second.
 /// </summary>
-public readonly struct TimeSpanSecondFixedStepDomain : IFixedStepDomain<global::System.TimeSpan>
+public readonly record struct TimeSpanSecondFixedStepDomain : IFixedStepDomain<global::System.TimeSpan>
 {
     private const long TicksPerSecond = global::System.TimeSpan.TicksPerSecond;
 

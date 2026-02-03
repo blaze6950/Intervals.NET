@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.Numeric;
 /// <summary>
 /// Provides a fixed-step domain for short integers (Int16). Steps are of size 1.
 /// </summary>
-public readonly struct ShortFixedStepDomain : IFixedStepDomain<short>
+public readonly record struct ShortFixedStepDomain : IFixedStepDomain<short>
 {
     /// <inheritdoc/>
     [Pure]

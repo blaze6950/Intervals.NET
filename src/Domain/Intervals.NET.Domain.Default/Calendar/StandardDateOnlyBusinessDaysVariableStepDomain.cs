@@ -64,7 +64,7 @@ namespace Intervals.NET.Domain.Default.Calendar;
 /// <item><description><see cref="IVariableStepDomain{T}"/> - Base interface for variable-step domains</description></item>
 /// </list>
 /// </remarks>
-public readonly struct StandardDateOnlyBusinessDaysVariableStepDomain : IVariableStepDomain<DateOnly>
+public readonly record struct StandardDateOnlyBusinessDaysVariableStepDomain : IVariableStepDomain<DateOnly>
 {
     /// <summary>
     /// Adds the specified number of business days to the given date.

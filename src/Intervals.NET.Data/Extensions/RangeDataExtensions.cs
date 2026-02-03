@@ -42,9 +42,17 @@ public static class RangeDataExtensions
     /// Validates that two RangeData objects have equal domains.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// While the generic type constraint ensures both operands have the same TRangeDomain type,
     /// custom domain implementations may have instance-specific state. This validation ensures
     /// that operations are performed on compatible domain instances.
+    /// </para>
+    /// <para>
+    /// <strong>Performance:</strong> This comparison is allocation-free when TRangeDomain is a record struct
+    /// (automatic IEquatable&lt;TSelf&gt; implementation) or a class implementing IEquatable&lt;TClassName&gt;.
+    /// EqualityComparer&lt;T&gt;.Default will use the type's IEquatable implementation directly without boxing.
+    /// All built-in domains are record structs, ensuring zero-allocation equality checks.
+    /// </para>
     /// </remarks>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void ValidateDomainEquality<TRangeType, TDataType, TRangeDomain>(

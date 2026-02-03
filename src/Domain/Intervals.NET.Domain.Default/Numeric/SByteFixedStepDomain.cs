@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.Numeric;
 /// <summary>
 /// Provides a fixed-step domain for signed bytes (SByte). Steps are of size 1.
 /// </summary>
-public readonly struct SByteFixedStepDomain : IFixedStepDomain<sbyte>
+public readonly record struct SByteFixedStepDomain : IFixedStepDomain<sbyte>
 {
     /// <inheritdoc/>
     [Pure]

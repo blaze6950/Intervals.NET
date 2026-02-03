@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// <summary>
 /// Fixed step domain for DateTime with month steps. Steps are added or subtracted in whole months.
 /// </summary>
-public readonly struct DateTimeMonthFixedStepDomain : IFixedStepDomain<System.DateTime>
+public readonly record struct DateTimeMonthFixedStepDomain : IFixedStepDomain<System.DateTime>
 {
     /// <inheritdoc/>
     [Pure]
