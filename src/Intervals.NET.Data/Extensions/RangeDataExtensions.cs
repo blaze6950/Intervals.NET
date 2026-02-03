@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Intervals.NET;
 using Intervals.NET.Domain.Abstractions;
 using Intervals.NET.Extensions;
 
@@ -23,7 +24,7 @@ namespace Intervals.NET.Data.Extensions;
 /// <list type="bullet">
 /// <item><description><strong>Immutability:</strong> All operations return new instances; no mutation occurs.</description></item>
 /// <item><description><strong>Domain-Agnostic:</strong> Operations work with any <see cref="IRangeDomain{T}"/> implementation.</description></item>
-/// <item><description><strong>Consistency Guarantee:</strong> Extensions never create RangeData with mismatched range/data lengths.</description></item>
+/// <item><description><strong>Consistency Guarantee:</strong> Extensions are designed not to create RangeData with mismatched range/data lengths when the input RangeData instances satisfy the invariant.</description></item>
 /// <item><description><strong>Lazy Evaluation:</strong> Data sequences use LINQ operators; materialization is deferred.</description></item>
 /// </list>
 /// 
@@ -377,7 +378,6 @@ public static class RangeDataExtensions
     /// Trims the start of the range to a new start value, adjusting data accordingly.
     /// <para>
     /// Returns a new RangeData with the trimmed range and sliced data.
-    /// If trimming removes the entire range, returns null.
     /// </para>
     /// <para>
     /// ⚡ <strong>Performance:</strong> O(n) where n is the number of elements to skip.
@@ -394,8 +394,10 @@ public static class RangeDataExtensions
     /// The type of the range domain that implements IRangeDomain&lt;TRangeType&gt;.
     /// </typeparam>
     /// <returns>
-    /// A new RangeData with the trimmed range and sliced data,
-    /// or null if the new start is not within the current range.
+    /// A new RangeData with the trimmed range and sliced data if the new start is within the current range;
+    /// <c>null</c> if the new start lies completely outside the original range;
+    /// a non-null RangeData with an empty range and empty data sequence if trimming results in a logically empty 
+    /// but still in-bounds range (for example, the start equals the end with at least one boundary exclusive).
     /// </returns>
     /// <remarks>
     /// <para><strong>Example:</strong></para>

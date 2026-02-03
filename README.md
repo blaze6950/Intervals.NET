@@ -1628,7 +1628,7 @@ public void ValidateCoordinates(double lat, double lon)
 
 - **Lazy evaluation:** `RangeData` builds **iterator graphs** using `IEnumerable`. Data is only materialized when iterated. Operations like `Skip`, `Take`, `Concat` do **not allocate new arrays or lists**.
 - **Domain-awareness:** Supports any discrete domain via `IRangeDomain<T>`. This allows flexible steps, custom metrics, and ensures consistent range arithmetic.
-- **Strict invariant:** The **range length always equals the data sequence length**. Operations that would violate this invariant are not allowed.
+- **Expected invariant/contract:** The **range length should equal the data sequence length**. `RangeData` and `RangeDataExtensions` do **not** enforce this at runtime for performance reasons; callers are responsible for providing consistent inputs or can validate them (for example with `IsValid`) when safety is more important than allocation/CPU overhead.
 - **Right-biased operations:** `Union` and `Intersect` always take **data from the right operand** in overlapping regions, ideal for cache updates or incremental data ingestion.
 - **Composable slices:** Supports trimming (`TrimStart`, `TrimEnd`) and projections while keeping laziness intact. You can work with a `RangeData` without ever iterating the data.
 - **Trade-offs:** Zero allocation is **not fully achievable** because `IEnumerable` is a reference type. Some intermediate enumerables may exist, but memory usage remains minimal.
