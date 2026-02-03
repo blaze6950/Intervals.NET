@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>Intervals.NET.Domain.Abstractions</PackageId>
-        <Version>0.0.1</Version>
+        <Version>0.0.2</Version>
         <Authors>blaze6950</Authors>
         <Description>Core abstractions for domain-specific range operations in Intervals.NET. Defines interfaces for fixed-step and variable-step domains, enabling type-safe, performant range manipulations with explicit O(1) vs O(N) semantics. Use this package to implement custom domains or extend the library.</Description>
         <PackageTags>range;interval;domain;abstractions;interfaces;performance;fixed-step;variable-step;generic;intervals</PackageTags>

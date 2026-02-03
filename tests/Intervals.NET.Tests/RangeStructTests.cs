@@ -194,18 +194,19 @@ public class RangeStructTests
     }
 
     [Fact]
-    public void Constructor_WithPositiveInfinityStartAndNegativeInfinityEnd_DoesNotValidate()
+    public void Constructor_WithPositiveInfinityStartAndNegativeInfinityEnd_ThrowsArgumentException()
     {
-        // Arrange - This is logically wrong but not validated when infinities are involved
+        // Arrange - This is logically invalid and should now be validated
         var start = RangeValue<int>.PositiveInfinity;
         var end = RangeValue<int>.NegativeInfinity;
 
         // Act
-        var range = new Range<int>(start, end);
+        var exception = Record.Exception(() => new Range<int>(start, end));
 
-        // Assert - Constructor doesn't validate infinity order
-        Assert.True(range.Start.IsPositiveInfinity);
-        Assert.True(range.End.IsNegativeInfinity);
+        // Assert - Constructor now validates infinity order
+        Assert.NotNull(exception);
+        Assert.IsType<ArgumentException>(exception);
+        Assert.Contains("Start value cannot be greater than end value", exception.Message);
     }
 
     #endregion

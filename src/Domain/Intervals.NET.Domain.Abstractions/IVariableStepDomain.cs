@@ -8,15 +8,9 @@ namespace Intervals.NET.Domain.Abstractions;
 /// <typeparam name="T">
 /// The type of the values in the domain. Must implement IComparable&lt;T&gt;.
 /// </typeparam>
-public interface IVariableStepDomain<T> : IRangeDomain<T> where T : IComparable<T>
-{
-    /// <summary>
-    /// Calculates the distance between two values in domain-specific units.
-    /// May return fractional values to account for partial steps.
-    /// ⚠️ Warning: This operation may be O(N) depending on the domain implementation.
-    /// </summary>
-    /// <param name="start">The starting value.</param>
-    /// <param name="end">The ending value.</param>
-    /// <returns>The distance from start to end, potentially including fractional steps.</returns>
-    double Distance(T start, T end);
-}
+/// <remarks>
+/// For stateless logic, implement as a readonly record struct for automatic allocation-free equality.
+/// For stateful domains (e.g., business day calendars with holiday data), implement as a class
+/// with explicit IEquatable&lt;TClassName&gt; to compare domain state/configuration.
+/// </remarks>
+public interface IVariableStepDomain<T> : IRangeDomain<T> where T : IComparable<T>;

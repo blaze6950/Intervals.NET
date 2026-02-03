@@ -144,6 +144,35 @@ public static class Range
         where T : IComparable<T>
         => new(start, end, isStartInclusive, isEndInclusive);
 
+
+    /// <summary>
+    /// Attempts to create a range with explicit inclusivity settings.
+    /// Returns a boolean indicating whether the created range is valid.
+    /// </summary>
+    /// <param name="start">The starting value of the range.</param>
+    /// <param name="end">The ending value of the range.</param>
+    /// <param name="isStartInclusive">True if the start value is inclusive; false if exclusive.</param>
+    /// <param name="isEndInclusive">True if the end value is inclusive; false if exclusive.</param>
+    /// <param name="range">The resulting range when creation succeeds; default when it fails.</param>
+    /// <param name="message">An optional message describing why creation failed.</param>
+    /// <typeparam name="T">The type of values in the range. Must implement IComparable&lt;T&gt;.</typeparam>
+    /// <returns>True when creation succeeded and range is valid; false otherwise.</returns>
+    public static bool TryCreate<T>(RangeValue<T> start, RangeValue<T> end, bool isStartInclusive,
+        bool isEndInclusive, out Range<T> range, out string? message)
+        where T : IComparable<T>
+    {
+        // Validate bounds first without throwing
+        if (Range<T>.TryValidateBounds(start, end, isStartInclusive, isEndInclusive, out message))
+        {
+            // Construct range without re-validating (skipValidation = true)
+            range = new Range<T>(start, end, isStartInclusive, isEndInclusive, skipValidation: true);
+            return true;
+        }
+
+        range = default;
+        return false;
+    }
+
     /// <summary>
     /// Parses a range from the given input string.
     /// The expected format is:

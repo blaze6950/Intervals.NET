@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// <summary>
 /// Fixed step domain for DateTime with minute steps. Steps are added or subtracted in whole minutes.
 /// </summary>
-public readonly struct DateTimeMinuteFixedStepDomain : IFixedStepDomain<System.DateTime>
+public readonly record struct DateTimeMinuteFixedStepDomain : IFixedStepDomain<System.DateTime>
 {
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

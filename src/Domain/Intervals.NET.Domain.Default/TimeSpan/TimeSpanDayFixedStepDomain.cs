@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.TimeSpan;
 /// <summary>
 /// Provides a fixed-step domain implementation for <see cref="global::System.TimeSpan"/> with a step size of 1 day (24 hours).
 /// </summary>
-public readonly struct TimeSpanDayFixedStepDomain : IFixedStepDomain<global::System.TimeSpan>
+public readonly record struct TimeSpanDayFixedStepDomain : IFixedStepDomain<global::System.TimeSpan>
 {
     private const long TicksPerDay = global::System.TimeSpan.TicksPerDay;
 

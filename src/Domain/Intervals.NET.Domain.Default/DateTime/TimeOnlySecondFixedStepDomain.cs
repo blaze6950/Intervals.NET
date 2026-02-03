@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// <summary>
 /// Provides a fixed-step domain implementation for <see cref="TimeOnly"/> with a step size of 1 second.
 /// </summary>
-public readonly struct TimeOnlySecondFixedStepDomain : IFixedStepDomain<TimeOnly>
+public readonly record struct TimeOnlySecondFixedStepDomain : IFixedStepDomain<TimeOnly>
 {
     private const long TicksPerSecond = global::System.TimeSpan.TicksPerSecond;
 

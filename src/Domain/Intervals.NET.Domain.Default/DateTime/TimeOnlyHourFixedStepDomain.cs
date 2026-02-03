@@ -10,7 +10,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// <remarks>
 /// <para><strong>Requires:</strong> .NET 6.0 or greater.</para>
 /// </remarks>
-public readonly struct TimeOnlyHourFixedStepDomain : IFixedStepDomain<TimeOnly>
+public readonly record struct TimeOnlyHourFixedStepDomain : IFixedStepDomain<TimeOnly>
 {
     private const long TicksPerHour = global::System.TimeSpan.TicksPerHour;
 

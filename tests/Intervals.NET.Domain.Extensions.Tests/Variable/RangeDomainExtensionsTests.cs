@@ -345,7 +345,7 @@ public class RangeDomainExtensionsTests
         // Arrange - both times within the same business day, exclusive boundaries
         var start = new DateTime(2024, 1, 1, 10, 0, 0); // Monday 10 AM
         var end = new DateTime(2024, 1, 1, 15, 0, 0);   // Monday 3 PM
-        var range = RangeFactory.Open<DateTime>(start, end);
+        var range = RangeFactory.Open(start, end);
         var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
 
         // Act
@@ -380,7 +380,7 @@ public class RangeDomainExtensionsTests
         // Arrange - exclusive boundaries on consecutive business days
         var start = new DateTime(2024, 1, 1);  // Monday
         var end = new DateTime(2024, 1, 2);    // Tuesday
-        var range = RangeFactory.Open<DateTime>(start, end);
+        var range = RangeFactory.Open(start, end);
         var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
 
         // Act
@@ -398,7 +398,7 @@ public class RangeDomainExtensionsTests
         // Arrange - valid range that becomes empty after floor adjustments with exclusive boundaries
         var start = new DateTime(2024, 1, 1, 23, 0, 0);  // Monday, 11 PM
         var end = new DateTime(2024, 1, 2, 1, 0, 0);     // Tuesday, 1 AM
-        var range = RangeFactory.Open<DateTime>(start, end);
+        var range = RangeFactory.Open(start, end);
         var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
 
         // Act
@@ -436,7 +436,7 @@ public class RangeDomainExtensionsTests
         // Arrange - Monday to Friday, end exclusive
         var start = new DateTime(2024, 1, 1, 0, 0, 0);  // Monday midnight
         var end = new DateTime(2024, 1, 5, 0, 0, 0);    // Friday midnight
-        var range = RangeFactory.ClosedOpen<DateTime>(start, end);
+        var range = RangeFactory.ClosedOpen(start, end);
         var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
 
         // Act

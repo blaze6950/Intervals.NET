@@ -11,7 +11,7 @@ namespace Intervals.NET.Domain.Default.Numeric;
 /// Distance calculation may not be accurate for ranges larger than long.MaxValue.
 /// In such cases, the distance is clamped to long.MaxValue.
 /// </remarks>
-public readonly struct ULongFixedStepDomain : IFixedStepDomain<ulong>
+public readonly record struct ULongFixedStepDomain : IFixedStepDomain<ulong>
 {
     /// <inheritdoc/>
     [Pure]

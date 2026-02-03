@@ -7,7 +7,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// <summary>
 /// Fixed step domain for DateTime with second steps. Steps are added or subtracted in whole seconds.
 /// </summary>
-public readonly struct DateTimeSecondFixedStepDomain : IFixedStepDomain<System.DateTime>
+public readonly record struct DateTimeSecondFixedStepDomain : IFixedStepDomain<System.DateTime>
 {
     /// <inheritdoc/>
     [Pure]

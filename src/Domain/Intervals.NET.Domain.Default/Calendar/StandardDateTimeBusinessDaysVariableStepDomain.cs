@@ -64,7 +64,7 @@ namespace Intervals.NET.Domain.Default.Calendar;
 /// <item><description><see cref="IVariableStepDomain{T}"/> - Base interface for variable-step domains</description></item>
 /// </list>
 /// </remarks>
-public readonly struct StandardDateTimeBusinessDaysVariableStepDomain : IVariableStepDomain<System.DateTime>
+public readonly record struct StandardDateTimeBusinessDaysVariableStepDomain : IVariableStepDomain<System.DateTime>
 {
     /// <summary>
     /// Adds the specified number of business days to the given date.
@@ -186,17 +186,17 @@ public readonly struct StandardDateTimeBusinessDaysVariableStepDomain : IVariabl
     /// <para>⚠️ <strong>Performance:</strong> O(N) - Iterates through each day in the range.</para>
     /// </remarks>
     [Pure]
-    public double Distance(System.DateTime start, System.DateTime end)
+    public long Distance(System.DateTime start, System.DateTime end)
     {
         var current = Floor(start);
         var target = Floor(end);
 
         if (current == target)
         {
-            return 0.0; // Same date = 0 steps needed
+            return 0; // Same date = 0 steps needed
         }
 
-        double count = 0;
+        long count = 0;
 
         if (current < target)
         {

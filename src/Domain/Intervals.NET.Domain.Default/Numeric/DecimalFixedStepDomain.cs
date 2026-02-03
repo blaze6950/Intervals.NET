@@ -8,7 +8,7 @@ namespace Intervals.NET.Domain.Default.Numeric;
 /// Provides a fixed-step domain for decimal numbers. Steps are of size 1.
 /// This domain provides precise decimal arithmetic without floating-point errors.
 /// </summary>
-public readonly struct DecimalFixedStepDomain : IFixedStepDomain<decimal>
+public readonly record struct DecimalFixedStepDomain : IFixedStepDomain<decimal>
 {
     /// <inheritdoc/>
     [Pure]

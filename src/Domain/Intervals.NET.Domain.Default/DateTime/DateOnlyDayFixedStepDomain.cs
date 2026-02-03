@@ -11,7 +11,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// <para>DateOnly represents dates without time components and is naturally aligned to day boundaries.</para>
 /// <para><strong>Requires:</strong> .NET 6.0 or greater.</para>
 /// </remarks>
-public readonly struct DateOnlyDayFixedStepDomain : IFixedStepDomain<DateOnly>
+public readonly record struct DateOnlyDayFixedStepDomain : IFixedStepDomain<DateOnly>
 {
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

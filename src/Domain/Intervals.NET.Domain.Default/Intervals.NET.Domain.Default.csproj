@@ -6,7 +6,7 @@
         <Nullable>enable</Nullable>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>Intervals.NET.Domain.Default</PackageId>
-        <Version>0.0.1</Version>
+        <Version>0.0.2</Version>
         <Authors>blaze6950</Authors>
         <Description>Ready-to-use domain implementations for Intervals.NET. Includes 36 optimized domains: numeric types (int, long, double, decimal, etc.), DateTime/DateOnly/TimeOnly with multiple granularities (day, hour, minute, second, tick), TimeSpan domains, and business calendar support. All struct-based with aggressive inlining for maximum performance.</Description>
         <PackageTags>range;interval;domain;datetime;numeric;timespan;calendar;business-days;performance;zero-allocation;generic;intervals</PackageTags>

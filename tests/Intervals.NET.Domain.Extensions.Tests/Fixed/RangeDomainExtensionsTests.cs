@@ -33,7 +33,7 @@ public class RangeDomainExtensionsTests
     public void Span_IntegerOpenRange_ReturnsCorrectDistance()
     {
         // Arrange
-        var range = RangeFactory.Open<int>(10, 20);
+        var range = RangeFactory.Open(10, 20);
         var domain = new IntegerFixedStepDomain();
 
         // Act
@@ -49,7 +49,7 @@ public class RangeDomainExtensionsTests
     public void Span_IntegerClosedOpenRange_ReturnsCorrectDistance()
     {
         // Arrange
-        var range = RangeFactory.ClosedOpen<int>(10, 20);
+        var range = RangeFactory.ClosedOpen(10, 20);
         var domain = new IntegerFixedStepDomain();
 
         // Act
@@ -219,7 +219,7 @@ public class RangeDomainExtensionsTests
         // Arrange - DateTime values in the middle of a day (not aligned to day boundaries)
         var start = new DateTime(2024, 1, 1, 10, 0, 0);
         var end = new DateTime(2024, 1, 1, 15, 0, 0);
-        var range = RangeFactory.Open<DateTime>(start, end);
+        var range = RangeFactory.Open(start, end);
         var domain = new DateTimeDayFixedStepDomain();
 
         // Act
@@ -252,7 +252,7 @@ public class RangeDomainExtensionsTests
     public void Span_EmptyRange_ExclusiveBoundariesSameValue_ReturnsZero()
     {
         // Arrange - exclusive boundaries on the same integer
-        var range = RangeFactory.Open<int>(10, 11);
+        var range = RangeFactory.Open(10, 11);
         var domain = new IntegerFixedStepDomain();
 
         // Act
@@ -270,7 +270,7 @@ public class RangeDomainExtensionsTests
         // Arrange - test a range that becomes empty after floor adjustments
         var start2 = new DateTime(2024, 1, 1, 23, 0, 0);  // Jan 1, 11 PM
         var end2 = new DateTime(2024, 1, 2, 1, 0, 0);     // Jan 2, 1 AM
-        var range = RangeFactory.Open<DateTime>(start2, end2);
+        var range = RangeFactory.Open(start2, end2);
         var domain = new DateTimeDayFixedStepDomain();
 
         // Act
@@ -308,7 +308,7 @@ public class RangeDomainExtensionsTests
         // Arrange
         var start = new DateTime(2024, 1, 1, 0, 0, 0);
         var end = new DateTime(2024, 1, 3, 0, 0, 0);
-        var range = RangeFactory.ClosedOpen<DateTime>(start, end);
+        var range = RangeFactory.ClosedOpen(start, end);
         var domain = new DateTimeDayFixedStepDomain();
 
         // Act

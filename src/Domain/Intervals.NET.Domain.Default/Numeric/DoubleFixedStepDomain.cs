@@ -10,7 +10,7 @@ namespace Intervals.NET.Domain.Default.Numeric;
 /// Note: Due to floating-point precision limitations, this domain is best suited
 /// for integer-like double values. For precise decimal arithmetic, use DecimalFixedStepDomain.
 /// </summary>
-public readonly struct DoubleFixedStepDomain : IFixedStepDomain<double>
+public readonly record struct DoubleFixedStepDomain : IFixedStepDomain<double>
 {
     /// <inheritdoc/>
     [Pure]

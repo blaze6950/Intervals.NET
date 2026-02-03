@@ -8,7 +8,7 @@ namespace Intervals.NET.Domain.Default.DateTime;
 /// Fixed step domain for DateTime with tick steps. Steps are added or subtracted in ticks.
 /// A tick is 100 nanoseconds, the smallest unit of time in .NET DateTime.
 /// </summary>
-public readonly struct DateTimeTicksFixedStepDomain : IFixedStepDomain<System.DateTime>
+public readonly record struct DateTimeTicksFixedStepDomain : IFixedStepDomain<System.DateTime>
 {
     [Pure]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
