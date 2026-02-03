@@ -1603,9 +1603,9 @@ public void ValidateCoordinates(double lat, double lon)
 
 </details>
 
-# RangeData Library
+## RangeData Library
 
-## RangeData Overview
+### RangeData Overview
 
 `RangeData<TRange, TData, TDomain>` is a lightweight, in-process, **lazy, domain-aware** data structure that combines ranges with associated data sequences. It allows **composable operations** like intersection, union, trimming, and projections while maintaining strict invariants.
 
@@ -1638,7 +1638,7 @@ public void ValidateCoordinates(double lat, double lon)
 </details>
 
 
-## Overview
+### Overview
 
 `RangeData<TRange, TData, TDomain>` is an abstraction that couples:
 
@@ -1652,7 +1652,7 @@ This abstraction allows working with **large or dynamic sequences** without imme
 
 ---
 
-## Core Design Principles
+### Core Design Principles
 
 - **Immutability:** All operations return new `RangeData` instances; originals remain unchanged.
 - **Lazy evaluation:** LINQ operators and iterators are used; data is processed only on enumeration.
@@ -1663,13 +1663,13 @@ This abstraction allows working with **large or dynamic sequences** without imme
 <details>
 <summary>Extension Methods Details</summary>
 
-### Intersection (`Intersect`)
+#### Intersection (`Intersect`)
 - Returns the intersection of two `RangeData` objects.
 - Data is **sourced from the right range** (fresh data).
 - Returns `null` if there is no overlap.
 - Lazy, O(n) for skip/take on the data sequence.
 
-### Union (`Union`)
+#### Union (`Union`)
 - Combines two ranges if they are **overlapping or adjacent**.
 - In overlapping regions, **right range data takes priority**.
 - Returns `null` if ranges are completely disjoint.
@@ -1678,12 +1678,12 @@ This abstraction allows working with **large or dynamic sequences** without imme
   2. Partial overlap → left non-overlapping portion + right data.
   3. Left wraps around right → left non-overlapping left + right + left non-overlapping right.
 
-### TrimStart / TrimEnd
+#### TrimStart / TrimEnd
 - Trim the range from the start or end.
 - Returns new `RangeData` with sliced data.
 - Returns `null` if the trim removes the entire range.
 
-### Containment & Adjacency Checks
+#### Containment & Adjacency Checks
 - `Contains(value)` / `Contains(range)` check range membership.
 - `IsTouching`, `IsBeforeAndAdjacentTo`, `IsAfterAndAdjacentTo` verify **overlap or adjacency**.
 - Useful for merging sequences or building ordered chains.
