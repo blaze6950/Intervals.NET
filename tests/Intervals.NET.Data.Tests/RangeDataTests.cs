@@ -325,6 +325,62 @@ public class RangeDataTests
         Assert.Empty(result.Data);
     }
 
+    [Fact]
+    public void TryGet_SubRange_EmptyButContained_WithExclusiveStartParent_ReturnsTrueWithEmptyData()
+    {
+        // Arrange - Parent range: (10,20] means it contains 11, 12, ..., 20
+        var parentRange = Range.OpenClosed<int>(10, 20);
+        var data = new[] { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
+        var rangeData = new RangeData<int, int, IntegerFixedStepDomain>(parentRange, data, _domain);
+
+        // Act - Sub-range (10,10] is logically empty but contained in parent
+        // This tests the fix for the bug where endIndex becomes -1, and the negative-index guard
+        // would return false before the empty-range handling was reached
+        var subRange = Range.OpenClosed<int>(10, 10);
+        var success = rangeData.TryGet(subRange, out var result);
+
+        // Assert - Should return true with empty data, not false
+        Assert.True(success);
+        Assert.NotNull(result);
+        Assert.Empty(result.Data);
+    }
+
+    [Fact]
+    public void TryGet_SubRange_EmptyAtStartBoundary_WithClosedOpenParent_ReturnsTrueWithEmptyData()
+    {
+        // Arrange - Parent range: [10,20) means it contains 10, 11, ..., 19
+        var parentRange = Range.ClosedOpen(10, 20);
+        var data = new[] { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+        var rangeData = new RangeData<int, int, IntegerFixedStepDomain>(parentRange, data, _domain);
+
+        // Act - Sub-range [10,10) is logically empty
+        var subRange = Range.ClosedOpen(10, 10);
+        var success = rangeData.TryGet(subRange, out var result);
+
+        // Assert - Should return true with empty data
+        Assert.True(success);
+        Assert.NotNull(result);
+        Assert.Empty(result.Data);
+    }
+
+    [Fact]
+    public void TryGet_SubRange_EmptyAtEndBoundary_WithOpenClosedParent_ReturnsTrueWithEmptyData()
+    {
+        // Arrange - Parent range: (10,20] means it contains 11, 12, ..., 20
+        var parentRange = Range.OpenClosed<int>(10, 20);
+        var data = new[] { 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 };
+        var rangeData = new RangeData<int, int, IntegerFixedStepDomain>(parentRange, data, _domain);
+
+        // Act - Sub-range [20,20) is logically empty but at the end boundary
+        var subRange = Range.ClosedOpen(20, 20);
+        var success = rangeData.TryGet(subRange, out var result);
+
+        // Assert - Should return true with empty data
+        Assert.True(success);
+        Assert.NotNull(result);
+        Assert.Empty(result.Data);
+    }
+
     #endregion
 
     #region TryGet Tests - Point
