@@ -499,4 +499,259 @@ public class RangeDomainExtensionsTests
     }
 
     #endregion
+
+    #region Shift Tests - StandardDateTimeBusinessDaysVariableStepDomain
+
+    [Fact]
+    public void Shift_DateTime_BusinessDaysRange_ShiftsCorrectly()
+    {
+        // Arrange - Monday to Friday
+        var range = RangeFactory.Closed<DateTime>(new DateTime(2024, 1, 1), new DateTime(2024, 1, 5));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act - Shift forward by 3 business days
+        var shifted = range.Shift(domain, 3);
+
+        // Assert - Should shift to Thursday-Wednesday, skipping weekend
+        Assert.Equal(new DateTime(2024, 1, 4).Date, shifted.Start.Value.Date);
+        Assert.Equal(new DateTime(2024, 1, 10).Date, shifted.End.Value.Date);
+        Assert.True(shifted.IsStartInclusive);
+        Assert.True(shifted.IsEndInclusive);
+    }
+
+    [Fact]
+    public void Shift_DateTime_BusinessDaysRangeNegativeOffset_ShiftsCorrectly()
+    {
+        // Arrange - Wednesday to Friday
+        var range = RangeFactory.Closed<DateTime>(new DateTime(2024, 1, 10), new DateTime(2024, 1, 12));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act - Shift back by 3 business days
+        var shifted = range.Shift(domain, -3);
+
+        // Assert - Should shift back to Friday-Tuesday (previous week), skipping weekend
+        Assert.Equal(new DateTime(2024, 1, 5).Date, shifted.Start.Value.Date);
+        Assert.Equal(new DateTime(2024, 1, 9).Date, shifted.End.Value.Date);
+    }
+
+    [Fact]
+    public void Shift_DateTime_UnboundedRange_PreservesInfinity()
+    {
+        // Arrange
+        var range = RangeFactory.Closed<DateTime>(RangeValue<DateTime>.NegativeInfinity, new DateTime(2024, 1, 10));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act
+        var shifted = range.Shift(domain, 5);
+
+        // Assert
+        Assert.False(shifted.Start.IsFinite);
+        Assert.True(shifted.Start.IsNegativeInfinity);
+        Assert.Equal(new DateTime(2024, 1, 17).Date, shifted.End.Value.Date);
+    }
+
+    [Fact]
+    public void Shift_DateTime_PreservesInclusivity()
+    {
+        // Arrange
+        var range = RangeFactory.Open<DateTime>(new DateTime(2024, 1, 1), new DateTime(2024, 1, 5));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act
+        var shifted = range.Shift(domain, 2);
+
+        // Assert
+        Assert.Equal(new DateTime(2024, 1, 3).Date, shifted.Start.Value.Date);
+        Assert.Equal(new DateTime(2024, 1, 9).Date, shifted.End.Value.Date);
+        Assert.False(shifted.IsStartInclusive);
+        Assert.False(shifted.IsEndInclusive);
+    }
+
+    [Fact]
+    public void Shift_DateTime_PreservesTimeComponent()
+    {
+        // Arrange - Monday 9 AM to Friday 5 PM
+        var range = RangeFactory.Closed<DateTime>(
+            new DateTime(2024, 1, 1, 9, 0, 0),
+            new DateTime(2024, 1, 5, 17, 0, 0));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act
+        var shifted = range.Shift(domain, 3);
+
+        // Assert - Time components preserved
+        Assert.Equal(9, shifted.Start.Value.Hour);
+        Assert.Equal(17, shifted.End.Value.Hour);
+    }
+
+    #endregion
+
+    #region Shift Tests - StandardDateOnlyBusinessDaysVariableStepDomain
+
+    [Fact]
+    public void Shift_DateOnly_BusinessDaysRange_ShiftsCorrectly()
+    {
+        // Arrange - Monday to Friday
+        var range = RangeFactory.Closed<DateOnly>(new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 5));
+        var domain = new StandardDateOnlyBusinessDaysVariableStepDomain();
+
+        // Act - Shift forward by 3 business days
+        var shifted = range.Shift(domain, 3);
+
+        // Assert - Should shift to Thursday-Wednesday, skipping weekend
+        Assert.Equal(new DateOnly(2024, 1, 4), shifted.Start.Value);
+        Assert.Equal(new DateOnly(2024, 1, 10), shifted.End.Value);
+    }
+
+    [Fact]
+    public void Shift_DateOnly_AcrossWeekend_SkipsWeekend()
+    {
+        // Arrange - Thursday to Friday
+        var range = RangeFactory.Closed<DateOnly>(new DateOnly(2024, 1, 4), new DateOnly(2024, 1, 5));
+        var domain = new StandardDateOnlyBusinessDaysVariableStepDomain();
+
+        // Act - Shift forward by 2 business days
+        var shifted = range.Shift(domain, 2);
+
+        // Assert - Should shift to Monday-Tuesday, skipping weekend
+        Assert.Equal(new DateOnly(2024, 1, 8), shifted.Start.Value);
+        Assert.Equal(new DateOnly(2024, 1, 9), shifted.End.Value);
+    }
+
+    #endregion
+
+    #region Expand Tests - StandardDateTimeBusinessDaysVariableStepDomain
+
+    [Fact]
+    public void Expand_DateTime_BusinessDaysRange_ExpandsCorrectly()
+    {
+        // Arrange - Tuesday to Thursday
+        var range = RangeFactory.Closed<DateTime>(new DateTime(2024, 1, 2), new DateTime(2024, 1, 4));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act - Expand by 2 business days on left, 3 on right
+        var expanded = range.Expand(domain, left: 2, right: 3);
+
+        // Assert - Left: 2 days before Tuesday = previous Friday
+        // Right: 3 days after Thursday = next Tuesday
+        Assert.Equal(new DateTime(2023, 12, 29).Date, expanded.Start.Value.Date);
+        Assert.Equal(new DateTime(2024, 1, 9).Date, expanded.End.Value.Date);
+    }
+
+    [Fact]
+    public void Expand_DateTime_BusinessDaysRangeNegativeValues_ContractsRange()
+    {
+        // Arrange - Monday to Friday (5 business days)
+        var range = RangeFactory.Closed<DateTime>(new DateTime(2024, 1, 1), new DateTime(2024, 1, 5));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act - Contract by 1 business day on each side
+        var expanded = range.Expand(domain, left: -1, right: -1);
+
+        // Assert - Should contract to Tuesday-Thursday
+        Assert.Equal(new DateTime(2024, 1, 2).Date, expanded.Start.Value.Date);
+        Assert.Equal(new DateTime(2024, 1, 4).Date, expanded.End.Value.Date);
+    }
+
+    [Fact]
+    public void Expand_DateTime_UnboundedRange_PreservesInfinity()
+    {
+        // Arrange
+        var range = RangeFactory.Closed<DateTime>(RangeValue<DateTime>.NegativeInfinity, new DateTime(2024, 1, 10));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act
+        var expanded = range.Expand(domain, left: 5, right: 5);
+
+        // Assert
+        Assert.False(expanded.Start.IsFinite);
+        Assert.True(expanded.Start.IsNegativeInfinity);
+        Assert.Equal(new DateTime(2024, 1, 17).Date, expanded.End.Value.Date);
+    }
+
+    [Fact]
+    public void Expand_DateTime_AsymmetricExpansion_WorksCorrectly()
+    {
+        // Arrange - Monday to Wednesday
+        var range = RangeFactory.Closed<DateTime>(new DateTime(2024, 1, 1), new DateTime(2024, 1, 3));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act - Expand left by 3, right by 0
+        var expanded = range.Expand(domain, left: 3, right: 0);
+
+        // Assert - 3 business days before Monday = previous Wednesday
+        Assert.Equal(new DateTime(2023, 12, 27).Date, expanded.Start.Value.Date);
+        Assert.Equal(new DateTime(2024, 1, 3).Date, expanded.End.Value.Date);
+    }
+
+    [Fact]
+    public void Expand_DateTime_PreservesInclusivity()
+    {
+        // Arrange
+        var range = RangeFactory.OpenClosed<DateTime>(new DateTime(2024, 1, 2), new DateTime(2024, 1, 4));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act
+        var expanded = range.Expand(domain, left: 1, right: 1);
+
+        // Assert
+        Assert.Equal(new DateTime(2024, 1, 1).Date, expanded.Start.Value.Date);
+        Assert.Equal(new DateTime(2024, 1, 5).Date, expanded.End.Value.Date);
+        Assert.False(expanded.IsStartInclusive);
+        Assert.True(expanded.IsEndInclusive);
+    }
+
+    [Fact]
+    public void Expand_DateTime_PreservesTimeComponent()
+    {
+        // Arrange - Tuesday 10 AM to Thursday 3 PM
+        var range = RangeFactory.Closed<DateTime>(
+            new DateTime(2024, 1, 2, 10, 0, 0),
+            new DateTime(2024, 1, 4, 15, 0, 0));
+        var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+
+        // Act
+        var expanded = range.Expand(domain, left: 1, right: 1);
+
+        // Assert - Time components preserved
+        Assert.Equal(10, expanded.Start.Value.Hour);
+        Assert.Equal(15, expanded.End.Value.Hour);
+    }
+
+    #endregion
+
+    #region Expand Tests - StandardDateOnlyBusinessDaysVariableStepDomain
+
+    [Fact]
+    public void Expand_DateOnly_BusinessDaysRange_ExpandsCorrectly()
+    {
+        // Arrange - Tuesday to Thursday
+        var range = RangeFactory.Closed<DateOnly>(new DateOnly(2024, 1, 2), new DateOnly(2024, 1, 4));
+        var domain = new StandardDateOnlyBusinessDaysVariableStepDomain();
+
+        // Act - Expand by 2 business days on left, 3 on right
+        var expanded = range.Expand(domain, left: 2, right: 3);
+
+        // Assert - Left: 2 days before Tuesday = previous Friday
+        // Right: 3 days after Thursday = next Tuesday
+        Assert.Equal(new DateOnly(2023, 12, 29), expanded.Start.Value);
+        Assert.Equal(new DateOnly(2024, 1, 9), expanded.End.Value);
+    }
+
+    [Fact]
+    public void Expand_DateOnly_AcrossWeekend_SkipsWeekend()
+    {
+        // Arrange - Thursday to Friday
+        var range = RangeFactory.Closed<DateOnly>(new DateOnly(2024, 1, 4), new DateOnly(2024, 1, 5));
+        var domain = new StandardDateOnlyBusinessDaysVariableStepDomain();
+
+        // Act - Expand right by 2 business days
+        var expanded = range.Expand(domain, left: 0, right: 2);
+
+        // Assert - 2 business days after Friday = next Tuesday
+        Assert.Equal(new DateOnly(2024, 1, 4), expanded.Start.Value);
+        Assert.Equal(new DateOnly(2024, 1, 9), expanded.End.Value);
+    }
+
+    #endregion
 }

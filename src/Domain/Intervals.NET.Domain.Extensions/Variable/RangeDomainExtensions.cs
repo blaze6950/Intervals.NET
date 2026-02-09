@@ -79,15 +79,13 @@ public static class RangeDomainExtensions
     /// <typeparam name="TRangeValue">The type of the values in the range. Must implement IComparable&lt;T&gt;.</typeparam>
     /// <typeparam name="TDomain">The type of the domain that implements IVariableStepDomain&lt;TRangeValue&gt;.</typeparam>
     /// <returns>
-    /// The span (distance) of the range as a double representing the number of complete discrete domain steps,
-    /// or positive infinity if the range is unbounded.
-    /// The return type is double to accommodate infinity values; the actual step count is always an integer (converted from long).
+    /// The number of domain steps contained within the range boundaries, or infinity if the range is unbounded.
     /// </returns>
     /// <remarks>
     /// <para>
     /// Counts the number of discrete domain steps that fall within the range boundaries, respecting inclusivity.
     /// Variable-step domains use <see cref="IRangeDomain{T}.Distance"/> which returns a long (discrete step count),
-    /// not fractional distances. The double return type exists solely to represent infinity for unbounded ranges.
+    /// not fractional distances.
     /// </para>
     /// 
     /// <para>
@@ -101,76 +99,9 @@ public static class RangeDomainExtensions
     /// Consider caching results if the span will be used multiple times.
     /// </para>
     /// </remarks>
-    public static RangeValue<double> Span<TRangeValue, TDomain>(this Range<TRangeValue> range, TDomain domain)
+    public static RangeValue<long> Span<TRangeValue, TDomain>(this Range<TRangeValue> range, TDomain domain)
         where TRangeValue : IComparable<TRangeValue>
-        where TDomain : IVariableStepDomain<TRangeValue>
-    {
-        // If either boundary is unbounded in the direction that expands the range, span is infinite
-        if (range.Start.IsNegativeInfinity || range.End.IsPositiveInfinity)
-        {
-            return RangeValue<double>.PositiveInfinity;
-        }
-
-        var firstStep = CalculateFirstStep(range, domain);
-        var lastStep = CalculateLastStep(range, domain);
-
-        switch (firstStep.CompareTo(lastStep))
-        {
-            // After domain alignment, boundaries can cross (e.g., open range smaller than one step)
-            // Example: (Jan 1 00:00, Jan 1 00:01) with day domain -> firstStep=Jan 2, lastStep=Dec 31
-            case > 0:
-                return 0.0;
-            case 0:
-                return HandleSingleStepCase(range, domain);
-        }
-
-        // Note: IRangeDomain.Distance returns long, but for variable-step domains we interpret
-        // this as the number of complete steps and add 1.0 to get the span including boundaries
-        var distance = (double)domain.Distance(firstStep, lastStep);
-        return distance + 1.0;
-
-        // Local functions
-        static TRangeValue CalculateFirstStep(Range<TRangeValue> r, TDomain d)
-        {
-            if (r.IsStartInclusive)
-            {
-                // Include boundary: use floor to include the step we're on/in
-                return d.Floor(r.Start.Value);
-            }
-
-            // Exclude boundary: floor to get the boundary, then add 1 to skip it
-            var flooredStart = d.Floor(r.Start.Value);
-            return d.Add(flooredStart, 1);
-        }
-
-        static TRangeValue CalculateLastStep(Range<TRangeValue> r, TDomain d)
-        {
-            if (r.IsEndInclusive)
-            {
-                // Include boundary: use floor to include the step we're on/in
-                return d.Floor(r.End.Value);
-            }
-
-            // Exclude boundary: floor to get the boundary, then subtract 1 to exclude it
-            var flooredEnd = d.Floor(r.End.Value);
-            return d.Add(flooredEnd, -1);
-        }
-
-        static double HandleSingleStepCase(Range<TRangeValue> r, TDomain d)
-        {
-            // If both floor to the same step, check if either bound is actually ON that step
-            var startIsOnBoundary = d.Floor(r.Start.Value).CompareTo(r.Start.Value) == 0;
-            var endIsOnBoundary = d.Floor(r.End.Value).CompareTo(r.End.Value) == 0;
-
-            if (r is { IsStartInclusive: true, IsEndInclusive: true } && (startIsOnBoundary || endIsOnBoundary))
-            {
-                return 1.0;
-            }
-
-            // Otherwise, they're in between domain steps, return 0
-            return 0.0;
-        }
-    }
+        where TDomain : IVariableStepDomain<TRangeValue> => Internal.RangeDomainOperations.CalculateSpan(range, domain);
 
     /// <summary>
     /// Expands the given range by specified ratios on the left and right sides using the provided variable-step domain.
@@ -204,25 +135,20 @@ public static class RangeDomainExtensions
     /// 
     /// <para><strong>Truncation Behavior:</strong></para>
     /// <para>
-    /// The offset is calculated as <c>(long)(span * ratio)</c>, which truncates any fractional part.
-    /// For variable-step domains, span is a double that may include fractional steps, so truncation
-    /// can result in precision loss.
+    /// The offset is calculated as <c>(long)(span * ratio)</c>, which truncates any fractional part
+    /// from the ratio multiplication.
     /// </para>
     /// <para><strong>Example:</strong></para>
     /// <code>
-    /// // Variable-step domain might return fractional span
-    /// var span = 10.7;  // e.g., business days with partial periods
-    /// var ratio = 0.5;
-    /// var offset = (long)(span * ratio);  // (long)5.35 = 5
-    /// // The 0.35 fractional part is discarded
-    /// </code>
+    /// var range = Range.Closed(new DateTime(2026, 1, 20), new DateTime(2026, 1, 26));
+    /// var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+    /// var span = range.Span(domain);  // 5 business days (Mon-Fri)
     /// 
-    /// <para><strong>Note:</strong></para>
-    /// <para>
-    /// If exact fractional expansion is required, consider using the Expand method directly
-    /// with calculated offsets, or implement custom logic that handles fractional steps
-    /// according to your domain's semantics.
-    /// </para>
+    /// // Expand by 40% on each side:
+    /// var expanded = range.ExpandByRatio(domain, 0.4, 0.4);
+    /// // Calculation: leftOffset = (long)(5 * 0.4) = (long)2.0 = 2
+    /// // Result: expanded by 2 business days on each side
+    /// </code>
     /// </remarks>
     public static Range<TRangeValue> ExpandByRatio<TRangeValue, TDomain>(
         this Range<TRangeValue> range,
@@ -233,16 +159,109 @@ public static class RangeDomainExtensions
         where TRangeValue : IComparable<TRangeValue>
         where TDomain : IVariableStepDomain<TRangeValue>
     {
-        var distance = range.Span(domain);
-
-        if (!distance.IsFinite)
-        {
-            throw new ArgumentException("Cannot expand range by ratio when span is infinite.", nameof(range));
-        }
-
-        var leftOffset = (long)(distance.Value * leftRatio);
-        var rightOffset = (long)(distance.Value * rightRatio);
-
-        return range.Expand(domain, leftOffset, rightOffset);
+        return Internal.RangeDomainOperations.ExpandByRatio(range, domain, leftRatio, rightRatio);
     }
+
+    /// <summary>
+    /// Shifts the given range by the specified offset using the provided variable-step domain.
+    /// <para>
+    /// ⚠️ <strong>Performance:</strong> May be O(N) - The domain's Add() method may require iteration.
+    /// </para>
+    /// </summary>
+    /// <param name="range">The range to be shifted.</param>
+    /// <param name="domain">The variable-step domain that defines how to add an offset to values of type T.</param>
+    /// <param name="offset">
+    /// The offset by which to shift the range. Positive values shift the range forward,
+    /// negative values shift it backward.
+    /// </param>
+    /// <typeparam name="TRangeValue">The type of the values in the range. Must implement IComparable&lt;T&gt;.</typeparam>
+    /// <typeparam name="TDomain">The type of the domain that implements IVariableStepDomain&lt;TRangeValue&gt;.</typeparam>
+    /// <returns>A new <see cref="Range{T}"/> instance representing the shifted range with the same inclusivity.</returns>
+    /// <remarks>
+    /// <para>
+    /// This operation preserves:
+    /// </para>
+    /// <list type="bullet">
+    /// <item><description>Range inclusivity flags (both start and end)</description></item>
+    /// <item><description>Infinite boundaries (infinity + offset = infinity)</description></item>
+    /// <item><description>Relative distance between boundaries</description></item>
+    /// </list>
+    /// 
+    /// <para><strong>Examples:</strong></para>
+    /// <code>
+    /// var range = Range.Closed(new DateTime(2026, 1, 20), new DateTime(2026, 1, 24));  // Tue-Fri
+    /// var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+    /// 
+    /// // Shift forward by 3 business days - may iterate through calendar
+    /// var shifted = range.Shift(domain, 3);  // Fri-Tue (skips weekend)
+    /// </code>
+    /// 
+    /// <para><strong>Performance:</strong></para>
+    /// <para>
+    /// May be O(N) - Variable-step domains may need to iterate through steps to perform Add().
+    /// For example, business day domains must iterate through calendar days, checking each for weekends/holidays.
+    /// </para>
+    /// </remarks>
+    public static Range<TRangeValue> Shift<TRangeValue, TDomain>(
+        this Range<TRangeValue> range,
+        TDomain domain,
+        long offset)
+        where TRangeValue : IComparable<TRangeValue>
+        where TDomain : IVariableStepDomain<TRangeValue> =>
+        Internal.RangeDomainOperations.Shift(range, domain, offset);
+
+    /// <summary>
+    /// Expands the given range by the specified amounts on the left and right sides using the provided variable-step domain.
+    /// <para>
+    /// ⚠️ <strong>Performance:</strong> May be O(N) - The domain's Add() method may require iteration.
+    /// </para>
+    /// </summary>
+    /// <param name="range">The range to be expanded.</param>
+    /// <param name="domain">The variable-step domain that defines how to add an offset to values of type T.</param>
+    /// <param name="left">
+    /// The amount to expand the range on the left side. Positive values expand the range to the left
+    /// (move start boundary backward), while negative values contract it (move start forward).
+    /// </param>
+    /// <param name="right">
+    /// The amount to expand the range on the right side. Positive values expand the range to the right
+    /// (move end boundary forward), while negative values contract it (move end backward).
+    /// </param>
+    /// <typeparam name="TRangeValue">The type of the values in the range. Must implement IComparable&lt;T&gt;.</typeparam>
+    /// <typeparam name="TDomain">The type of the domain that implements IVariableStepDomain&lt;TRangeValue&gt;.</typeparam>
+    /// <returns>A new <see cref="Range{T}"/> instance representing the expanded range.</returns>
+    /// <remarks>
+    /// <para>
+    /// This operation allows asymmetric expansion - you can expand different amounts on each side.
+    /// Negative values cause contraction instead of expansion.
+    /// </para>
+    /// 
+    /// <para><strong>Examples:</strong></para>
+    /// <code>
+    /// var range = Range.Closed(new DateTime(2026, 1, 20), new DateTime(2026, 1, 24));  // Tue-Fri
+    /// var domain = new StandardDateTimeBusinessDaysVariableStepDomain();
+    /// 
+    /// // Expand by 2 business days on left, 3 on right - may iterate through calendar
+    /// var expanded = range.Expand(domain, left: 2, right: 3);  // Previous Fri - Next Wed
+    /// </code>
+    /// 
+    /// <para><strong>Performance:</strong></para>
+    /// <para>
+    /// May be O(N) - Variable-step domains may need to iterate through steps to perform Add().
+    /// For example, business day domains must iterate through calendar days, checking each for weekends/holidays.
+    /// The operation calls Add() twice (once for each boundary), so total complexity depends on the offset sizes.
+    /// </para>
+    /// 
+    /// <para><strong>See Also:</strong></para>
+    /// <list type="bullet">
+    /// <item><description><c>ExpandByRatio</c> - For proportional expansion based on range span</description></item>
+    /// </list>
+    /// </remarks>
+    public static Range<TRangeValue> Expand<TRangeValue, TDomain>(
+        this Range<TRangeValue> range,
+        TDomain domain,
+        long left = 0,
+        long right = 0)
+        where TRangeValue : IComparable<TRangeValue>
+        where TDomain : IVariableStepDomain<TRangeValue> =>
+        Internal.RangeDomainOperations.Expand(range, domain, left, right);
 }

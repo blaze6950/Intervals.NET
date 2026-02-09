@@ -1,5 +1,4 @@
-﻿using Intervals.NET;
-using Intervals.NET.Domain.Abstractions;
+﻿using Intervals.NET.Domain.Abstractions;
 using Intervals.NET.Extensions;
 
 namespace Intervals.NET.Data;
