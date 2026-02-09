@@ -1,5 +1,4 @@
 using System.Runtime.CompilerServices;
-using Intervals.NET;
 using Intervals.NET.Domain.Abstractions;
 using Intervals.NET.Extensions;
 
